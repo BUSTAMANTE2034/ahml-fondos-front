@@ -1,0 +1,109 @@
+import MenuDesplegable from '@ui/myMenu'
+import OpcionMenu from '@ui/menuItem'
+
+import Edit from '@icons/edit.svg'
+import DeleteIcon from '@icons/deleteR.svg'
+import Menu from '@icons/options.svg'
+
+
+import Eye from '@icons/eye.svg'
+import Download from '@icons/download.svg'
+
+import Disable from '@icons/inactiveB.svg'
+import EnableButton from '@icons/activeBr.svg'
+
+import { useRecordFiles } from './record-file-context.js'
+
+import { formatFecha, getAvailabilityLabel, getEntyityLabel, invertDate } from '@/components/ui/functions'
+import { RecordFile } from '@/lib/api/models/record-file.js'
+
+interface Props {
+  item: RecordFile
+}
+const RecordFilesRow = ({ item:recordFile }: Props) => {
+  const { openEdit, openDelete, openShow,openCover} =
+    useRecordFiles()
+
+  return (
+    <div
+      className={`grid grid-cols-[1.6fr_0.6fr_0.6fr_0.2fr]  md:grid-cols-[1fr_0.3fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.3fr_0.2fr] text-xs md:text-sm  px-2  rounded-2xl   
+    w-full items-center  text-left hover:bg-main-gray  ${
+        (recordFile.availability_status==='on_loan') &&
+        'bg-yellow-200 4 hover:bg-yellow-100 '
+      } ${
+        (recordFile.availability_status==='under_review') &&
+        'bg-orange-200 4 hover:bg-orange-100 '
+      } ${
+        (recordFile.availability_status==='unavailable') &&
+        'bg-red-200 4 hover:bg-red-100 '
+      } `}
+    >
+      <span className="hidden lg:block text-xs ">{recordFile.reference_code}</span>
+      <span className="text-xs font-medium">{recordFile.file_number}</span>
+      <span className="text-xs">{recordFile.box_number}</span>
+      <span className="hidden lg:block text-xs">{recordFile.fund?.acronym}</span>
+       <span className=" text-xs">{recordFile.section?.acronym}</span>
+       <span className="text-xs">{recordFile.series?.acronym}</span>
+       <span className="hidden lg:block text-xs">{recordFile.sensitive_data?'Delicado':'Normal'}</span>
+       
+       <span className="text-xs">{getAvailabilityLabel(recordFile.availability_status)}</span>
+       <span className="text-xs">{invertDate( recordFile.file_date)}</span>
+              <span className="text-xs">{recordFile.location?.name}</span>
+      <span className="flex items-center ml-auto">
+        <MenuDesplegable
+          trigger={
+            <img
+              src={ Menu}
+              alt="menu"
+              className="cursor-pointer rounded-full h-7 w-7"
+            />
+          }
+        >
+          <OpcionMenu
+            icon={
+              <img
+                src={ Eye}
+                alt="Ver"
+                className="w-5"
+              />
+            }
+            text="Ver"
+            onClick={() => openShow(recordFile)}
+          />
+          
+
+          <OpcionMenu
+            icon={
+              <img
+                src={Edit}
+                alt="Editar"
+                className="w-5"
+              />
+            }
+            text='Editar'
+            onClick={() => openEdit(recordFile)}
+          />
+           <OpcionMenu
+            icon={
+              <img
+                src={Download}
+                alt="Carátula"
+                className="w-5"
+              />
+            }
+            text='Carátula'
+            onClick={() => openCover(recordFile)}
+          />
+          <OpcionMenu
+            icon={<img src={DeleteIcon} alt="Eliminar" className="w-5" />}
+            text='Eliminar'
+            onClick={() => openDelete(recordFile)}
+            className="text-red-500"
+          />
+          
+        </MenuDesplegable>
+      </span>
+    </div>
+  )
+}
+export default RecordFilesRow

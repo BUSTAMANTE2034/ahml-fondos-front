@@ -1,0 +1,156 @@
+.success {
+  background-color: #3d7ebb;
+}
+
+.danger {
+  background-color: #e40408;
+}
+
+.info {
+  background-color: #3d7ebb;
+}
+
+.warning {
+  background-color: #d25b1f;
+}
+
+.notification-container {
+  font-size: 14px;
+  box-sizing: border-box;
+  position: fixed;
+  z-index: 999999;
+  right: 10px;
+  top: 0;
+  bottom: 0;
+  max-width: 450px;
+  width: auto;
+  min-width: 250px;
+}
+
+.top-right {
+  top: 12px;
+  right: 12px;
+  transition: transform 0.4s ease-in-out;
+  animation: toast-in-right 0.4s;
+}
+
+.bottom-right {
+  bottom: 12px;
+  right: 12px;
+  transition: transform 0.4s ease-in-out;
+  animation: toast-in-right 0.4s;
+}
+
+.top-left {
+  top: 12px;
+  left: 12px;
+  transition: transform 0.4s ease-in;
+  animation: toast-in-left 0.4s;
+}
+
+.bottom-left {
+  bottom: 12px;
+  left: 12px;
+  transition: transform 0.4s ease-in;
+  animation: toast-in-left 0.4s;
+}
+
+.notification {
+  background: #fff;
+  transition: 0.3s ease;
+  position: relative;
+  pointer-events: auto;
+  overflow: hidden;
+  margin-bottom: 15px;
+  width: 300px;
+  /* max-height: 100px; */
+  border-radius: 24px;
+  box-shadow: 0 0 10px #999;
+  color: #000;
+  opacity: 0.9;
+  background-position: 15px;
+  background-repeat: no-repeat;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  padding: 5px;
+}
+
+.notification:hover {
+  box-shadow: 0 0 12px #fff;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.tex-container {
+  flex: 1;
+}
+
+.notification-title {
+  font-weight: bolder;
+  font-size: 16px;
+  text-align: left;
+  /* width: 300px; */
+}
+
+.notification-message {
+  text-align: left;
+  /* line-height: 1; */
+  /* margin-top: 5px; */
+  /* height: 18px; */
+  overflow: hidden;
+  /* word-break: break-all; */
+  /* text-overflow: ellipsis; */
+  /* white-space: nowrap; */
+}
+
+
+.notification-img {
+  height: 24px;
+  min-width: 24px;
+  width: 24px;
+  object-fit: contain;
+  color: white;
+}
+
+.toast {
+  color: #ecf5fa;
+  background-color: #002855;
+}
+
+.notification-container button {
+  font-weight: 700;
+  color: #ecf5fa;
+  outline: none;
+  border: none;
+  text-shadow: 0 1px 0 #ecf5fa;
+  line-height: 1;
+  font-size: 16px;
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  margin-right: 4px;
+}
+
+@keyframes toast-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes toast-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+

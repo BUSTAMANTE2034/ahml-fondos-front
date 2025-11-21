@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import 'tailwindcss';
+@import './toast.css';
+
+/*fonts and colors to app*/
+@theme {
+  --font-poppins: 'Poppins', sans-serif;
+
+  /*COLORS*/
+  /*Brown*/
+  --color-brown-0: #f1eae0;
+  --color-brown-1: #e0a872;
+  --color-brown-2: #c89156;
+  --color-brown-3: #af7833;
+  --color-brown-4: #734a1f;
+  --color-brown-5: #622d10;
+  /*Gray*/
+  --color-gray-0: #f0f0f0;
+  --color-gray-1: #e0e0e0;
+  --color-gray-2: #d0d0d0;
+  --color-gray-3: #c0c0c0;
+  --color-gray-4: #b0b0b0;
+  /*Black*/
+  --color-black-0: #0a0a0a;
+  --color-black-1: #1a1a1a;
+  --color-black-2: #2a2a2a;
+  --color-black-3: #3a3a3a;
+  --color-black-4: #4a4a4a;
+  /*Red*/
+  --color-light-red: #f43538; /* +10% */
+  --color-light2-red: #f76568; /* +20% */
+  --color-dark-red: #c00306; /* -10% */
+  --color-dark2-red: #9a0305; /* -20% */
+  --color-red: #e40408;
+  /*Notifications*/
+  --color-noti-error: #e40408;
+  --color-noti-success-blue: #3d7ebb;
+  --color-noti-success-green: #5fa239;
+  --color-text-green: #5fa239;
+  --color-text-blue: #3d7ebb;
+   --color-main-blue: #3d7ebb;
+  /*TRANSPARENTS*/
+  --color-transparent-gray: rgba(229, 229, 229, 0.7);
+  --color-transparent-black: rgba(94, 94, 94, 0.7);
+
+  --color-main-gray: #f5f5f5;
+  --color-light-gray: #eeeeee;
+  --color-dark-gray: #e5e5e5;
+  --color-dark-gray2: #a1a1a1;
+  --color-dark2-gray: #5e5e5e;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-poppins);
+    @apply m-0 p-0;
+  }
+}
+
+@layer components {
+  .text-shadow {
+    text-shadow: 1px 1px 2px rgb(0, 0, 0);
+  }
+  .main-button {
+    @apply w-32 md:w-40 h-10 md:h-12 rounded-lg p-0.5 font-bold cursor-pointer bg-black-1 border border-black-2;
+  }
+  .login-button {
+    @apply w-full text-center text-xl text-white font-bold h-10 md:h-12 cursor-pointer bg-black-2 rounded-4xl border border-black-1 shadow-lg
+    hover:bg-black-3 active:bg-black-1;
+  }
+  .input {
+    @apply text-base w-full border border-black-3 rounded-3xl px-4 py-3  bg-black-4
+    focus:outline-none focus:ring-0  focus:border-gray-0
+     text-white;
+  }
+  .input2 {
+    @apply text-sm w-full border border-dark-gray2 rounded-3xl px-4 py-3 
+    focus:outline-none focus:ring-0  focus:border-red-400
+     text-black;
+  }
+ /*SIDEBAR OPTION*/
+  .sidebarbutton {
+    @apply flex flex-row items-center h-8  gap-2 px-2 py-1 text-sm transition-all duration-300 focus:outline-none focus:ring-0
+    ease-in-out transform will-change-transform hover:bg-black-4 hover:rounded-3xl active:bg-black-2 hover:scale-[1.05] ;
+  }
+  /*ICONS SIZE*/
+  .icon-size {
+    @apply w-8 h-8;
+  }
+
+  .scroll-t {
+    scrollbar-width: thin;
+    /* scrollbar-color: #e5e5e5 #fff; */
+  }
+  .scroll-t::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .scroll-gray {
+    scrollbar-width: thin;
+    scrollbar-color: #a0a0a0 #3c3c3c;
+  }
+  .scroll-gray::-webkit-scrollbar {
+    width: 8px;
+  }
+  /*BUTTONS*/
+  .create {
+    @apply w-25 md:w-30 h-10 rounded-3xl p-0.5 font-bold cursor-pointer
+         bg-gradient-to-r from-blue-800 to-blue-600;
+  }
+  .create span {
+    @apply w-full h-full rounded-3xl  text-sm flex items-center justify-center  
+         bg-gradient-to-r from-blue-800 to-blue-600 text-white hover:from-blue-700 hover:to-blue-500 active:from-blue-600 active:to-blue-400;
+  }
+
+  .cancel {
+    @apply w-25 md:w-30 h-10 rounded-3xl p-0.5 font-bold cursor-pointer
+         bg-gradient-to-r from-gray-500 to-gray-500;
+  }
+  .cancel span {
+    @apply w-full h-full rounded-3xl  text-sm flex items-center justify-center  
+         bg-gradient-to-r from-gray-500 to-gray-500 text-white hover:from-gray-400 hover:to-gray-400 active:from-gray-300 active:to-gray-300;
+  }
+  .delete {
+    @apply w-25 md:w-30 h-10 rounded-3xl p-0.5 font-bold cursor-pointer
+         bg-gradient-to-r from-light-red to-red;
+  }
+  .delete span {
+    @apply w-full h-full rounded-3xl  text-sm flex items-center justify-center  
+         bg-gradient-to-r from-light-red to-red text-white hover:from-light2-red hover:to-light-red active:from-light2-red active:to-light2-red;
+  }
+  .close {
+    @apply absolute top-1 right-1 w-10 h-10 cursor-pointer hover:bg-dark-gray  active:bg-main-gray  rounded-lg;
+  }
+  .close span {
+    @apply font-bold text-lg md:text-xl dark:text-dark-gray;
+  }
+
+  .close2 {
+    @apply absolute top-1 right-1 w-8 h-8 cursor-pointer  hover:bg-main-gray  active:bg-dark-gray  rounded-3xl;
+  }
+  .close2 span {
+    @apply font-medium text-base md:text-lg ;
+  }
+  @media (min-width: 768px) {
+    .icon-size {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+  /*TABLAS*/
+
+/*Managers*/
+ .mytableHead{
+    @apply grid grid-cols-[1fr_1.8fr_0.2fr]  md:grid-cols-[1fr_1fr_1.8fr_0.2fr] w-full items-center gap-2 py-1  border-b-2  dark:border-main-blue border-main-blue font-bold text-base md:text-lg text-left 
+  }
+  .mytableBody{
+    @apply w-full grid gap-1 
+  }
+  .mytableRow{
+    @apply grid grid-cols-[1fr_1fr_1.8fr_0.2fr]   md:grid-cols-[1fr_1fr_1fr_1.8fr_1fr_0.2fr] p-1 rounded-lg text-sm md:text-base gap-2 
+    w-full items-center  text-left hover:bg-main-gray 
+  }
+
+/* input[spellcheck="true"].has-text {
+  text-decoration: underline red wavy;
+}
+
+input[spellcheck="true"]:not(.has-text) {
+  text-decoration: none;
+} */
+
+}
