@@ -202,7 +202,7 @@ export const SeriesProvider = ({ children }: { children: ReactNode }) => {
   const handleCreate = async (data: CreateSeries) => {
     try {
       await createSeries(data)
-      await refetch()
+      
 
       toastSuccess({
         id: 301,
@@ -210,6 +210,7 @@ export const SeriesProvider = ({ children }: { children: ReactNode }) => {
         message: 'La serie fue creada correctamente.',
       })
 
+      await refetch()
       closeCreate()
     } catch (err) {
       const msg = getStandarMessageError(err)
@@ -246,7 +247,6 @@ export const SeriesProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       await updateSeries(selected.id, payload)
-      await refetch()
 
       toastSuccess({
         id: 303,
@@ -255,6 +255,7 @@ export const SeriesProvider = ({ children }: { children: ReactNode }) => {
       })
 
       closeEdit()
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
       if (msg) {
@@ -286,7 +287,7 @@ export const SeriesProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       await updateSeries(selected.id, { is_active: active })
-      await refetch()
+    
 
       toastSuccess({
         id: 305,
@@ -299,6 +300,7 @@ export const SeriesProvider = ({ children }: { children: ReactNode }) => {
       setSelected(null)
       setEnableOpen(false)
       setDisableOpen(false)
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
 
@@ -331,7 +333,7 @@ export const SeriesProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       await deleteSeries(selected.id)
-      await refetch()
+      
 
       toastSuccess({
         id: 307,
@@ -340,6 +342,7 @@ export const SeriesProvider = ({ children }: { children: ReactNode }) => {
       })
 
       closeDelete()
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
 

@@ -254,13 +254,13 @@ export const ArchivistsProvider = ({ children }: { children: ReactNode }) => {
   const handleCreate = async (data: CreateUser) => {
     try {
       await createArchivist(data);
-      await getUsers();
       toastSuccess({
         id: 102,
         title: "¡Éxito!",
         message: "Archivista creado correctamente",
       });
       closeCreate();
+      await getUsers()
     } catch (err) {
       const standardMessage = getStandarMessageError(err);
       if (standardMessage) {
@@ -297,13 +297,13 @@ export const ArchivistsProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       await updateArchivist(selected.id, payload);
-      await getUsers();
       toastSuccess({
         id: 104,
         title: "¡Éxito!",
         message: "Archivista actualizado correctamente",
       });
       closeEdit();
+      await getUsers()
     } catch (err) {
       const standardMessage = getStandarMessageError(err);
       if (standardMessage) {
@@ -337,7 +337,6 @@ export const ArchivistsProvider = ({ children }: { children: ReactNode }) => {
         selected.id,
         { is_active } as Partial<UpdateUser>
       );
-      await getUsers();
 
       toastSuccess({
         id: 108,
@@ -349,6 +348,7 @@ export const ArchivistsProvider = ({ children }: { children: ReactNode }) => {
 
       closeEnable();
       closeDisable();
+      await getUsers()
     } catch (err) {
       const standardMessage = getStandarMessageError(err);
       if (standardMessage) {
@@ -379,7 +379,6 @@ export const ArchivistsProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       await deleteArchivist(selected.id);
-      await getUsers();
 
       toastSuccess({
         id: 106,
@@ -388,6 +387,7 @@ export const ArchivistsProvider = ({ children }: { children: ReactNode }) => {
       });
 
       closeDelete();
+      await getUsers()
     } catch (err) {
       const standardMessage = getStandarMessageError(err);
       if (standardMessage) {
@@ -417,7 +417,6 @@ export const ArchivistsProvider = ({ children }: { children: ReactNode }) => {
     try {
       const ok = await recoverPassword({ user_id });
 
-      await getUsers();
 
       if (ok) {
         toastSuccess({
@@ -428,6 +427,7 @@ export const ArchivistsProvider = ({ children }: { children: ReactNode }) => {
       }
 
       closeRecover();
+      await getUsers()
     } catch (err) {
       const standardMessage = getStandarMessageError(err);
 

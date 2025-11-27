@@ -1,10 +1,14 @@
-import React, { createContext, useContext, useState, ReactNode } from "react"
+import React, { createContext, useContext, useState, ReactNode } from 'react'
 
 import {
   RecordFile,
   CreateRecordFile,
   UpdateRecordFile,
-} from "@models/record-file"
+  RecordFileAvailability,
+  RecordFileOrderByParam,
+} from '@models/record-file'
+import { useCreateMovement } from "@hooks/movements"
+
 
 import {
   useGetRecordFiles,
@@ -13,22 +17,30 @@ import {
   useDeleteRecordFile,
   useExportRecordFilesPDF,
   usePrintCoverPage,
-} from "@hooks/record-files/index"
+} from '@hooks/record-files'
+
+import { useCreateLoan, useReceiveLoanRecord } from '@hooks/loans'
 
 import {
   ApiError,
   getStandarMessageError,
   getApiMessage,
-} from "@/lib/types/errors"
+} from '@/lib/types/errors'
 
-import { useToast, useAuth } from "@contexts/index"
+import { useToast, useAuth } from '@contexts/index'
+import { CreateLoan, Loan } from '@/lib/api/models/loan'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { CreateMovementHistory } from '@/lib/api/models/movement'
 
+// ============================================
+// CONTEXT TYPES
+// ============================================
 interface ContextValue {
   recordFiles: RecordFile[]
   pages: number | null
   current_page: number | null
 
-  // búsqueda
+  // búsqueda global
   query: string
   queryInput: string
   setQuery: (q: string) => void
@@ -41,29 +53,55 @@ interface ContextValue {
   goNext: () => void
   goPrev: () => void
 
-  // filtros adicionales
-  fund_id: number | null
-  setFundId: (v: number | null) => void
-  section_id: number | null
-  setSectionId: (v: number | null) => void
-  series_id: number | null
-  setSeriesId: (v: number | null) => void
-  location_id: number | null
-  setLocationId: (v: number | null) => void
-  deterioration_status_id: number | null
-  setDeteriorationStatusId: (v: number | null) => void
-  availability_status: string | null
-  setAvailabilityStatus: (v: string | null) => void
-  created_after: string | null
-  setCreatedAfter: (d: string | null) => void
-  created_before: string | null
-  setCreatedBefore: (d: string | null) => void
+  // ====== FILTROS DIRECTOS ======
+  reference_code: string
+  setReferenceCode: (v: string) => void
+
+  previous_reference_code: string
+setPreviousReferenceCode: (v: string) => void
+
+  file_number: string
+  setFileNumber: (v: string) => void
+
+  box_number: string
+  setBoxNumber: (v: string) => void
+
+  // ====== CONFIDENCIALIDAD ======
+  sensitive: 'all' | 'delicate' | 'not_delicate'
+  setSensitive: (v: 'all' | 'delicate' | 'not_delicate') => void
+
+  // ====== FILTROS POR NOMBRE ======
+  fund_name: string
+  setFundName: (v: string) => void
+
+  section_name: string
+  setSectionName: (v: string) => void
+
+  series_name: string
+  setSeriesName: (v: string) => void
+
+  location_name: string
+  setLocationName: (v: string) => void
+
+  deterioration_name: string
+  setDeteriorationName: (v: string) => void
+
+  typology_name: string
+  setTypologyName: (v: string) => void
+
+  // disponibilidad
+  availability_status: RecordFileAvailability | 'all'
+  setAvailabilityStatus: (v: RecordFileAvailability | 'all') => void
+
+  // fechas documentales
   file_date_after: string | null
-  setFileDateAfter: (d: string | null) => void
+  setFileDateAfter: (v: string | null) => void
   file_date_before: string | null
-  setFileDateBefore: (d: string | null) => void
-  typology_ids: number[]
-  setTypologyIds: (arr: number[]) => void
+  setFileDateBefore: (v: string | null) => void
+
+  // order
+  order_by: RecordFileOrderByParam | null
+  setOrderBy: (v: RecordFileOrderByParam | null) => void
 
   // refetch
   refetch: () => Promise<void>
@@ -72,36 +110,44 @@ interface ContextValue {
   selected: RecordFile | null
   setSelected: (u: RecordFile | null) => void
 
-  // create
+  selectedLoan: Loan | null
+  setSelectedLoan: (u: Loan | null) => void
+
+  // CREATE
   isCreateOpen: boolean
   openCreate: () => void
   closeCreate: () => void
   handleCreate: (data: CreateRecordFile) => Promise<void>
 
-  // edit
+  // EDIT
   isEditOpen: boolean
   openEdit: (u: RecordFile) => void
   closeEdit: () => void
   handleUpdate: (data: UpdateRecordFile) => Promise<void>
 
-  // delete
+  // DELETE
   isDeleteOpen: boolean
   openDelete: (u: RecordFile) => void
   closeDelete: () => void
   handleDelete: () => Promise<void>
 
-  // show
+  // SHOW
   isShowOpen: boolean
   openShow: (u: RecordFile) => void
   closeShow: () => void
 
-  // export list PDF
+  // EXPORT PDF
   isExportOpen: boolean
   openExport: () => void
   closeExport: () => void
   handleExport: () => Promise<void>
 
-  // print cover page
+  // EXPORT EXCEL
+  isExportExcelOpen: boolean
+  openExportExcel: () => void
+  closeExportExcel: () => void
+
+  // PRINT COVER
   isCoverOpen: boolean
   openCover: (u: RecordFile) => void
   closeCover: () => void
@@ -114,7 +160,10 @@ interface ContextValue {
   loadingDelete: boolean
   loadingExport: boolean
   loadingPrint: boolean
-
+  loadingCreateLoan: boolean
+  loadingReceive: boolean
+loadingCreateMovement: boolean
+errorCreateMovement: string | null
   // errors
   errorGet: string | null
   errorCreate: string | null
@@ -122,22 +171,55 @@ interface ContextValue {
   errorDelete: string | null
   errorExport: string | null
   errorPrint: string | null
+  errorCreateLoan: string | null
+  errorReceive: string | null
+
+  resetFilters: () => void
+
+  
+  //CREATE
+  isCreateLoanOpen: boolean
+  openCreateLoan: (u: RecordFile) => void
+  closeCreateLoan: () => void
+  handleCreateLoan: (data: CreateLoan) => Promise<void>
+
+   //CREATE MOVEMENT
+   isCreateMovementOpen: boolean
+  openCreateMovement: (u: RecordFile) => void
+  closeCreateMovement: () => void
+  handleCreateMovement: (data: CreateMovementHistory) => Promise<void>
+
+
+  //RECIEVE
+  isReceiveOpen: boolean
+  openReceive: (u: RecordFile) => void
+  closeReceive: () => void
+  handleReceive: () => Promise<void>
 }
 
 const RecordFilesContext = createContext<ContextValue | null>(null)
 
 export const useRecordFiles = () => {
   const ctx = useContext(RecordFilesContext)
-  if (!ctx) throw new Error("useRecordFiles must be inside RecordFilesProvider")
+  if (!ctx) throw new Error('useRecordFiles must be inside RecordFilesProvider')
   return ctx
 }
 
 export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
   const { logout } = useAuth()
   const { toastSuccess, toastError } = useToast()
+const navigate = useNavigate();
+  const location = useLocation();
 
+  const goLoans = () => {
+    const parts = location.pathname.split("/");
+    parts[parts.length - 1] = "loans"; // reemplaza el último segmento
+
+    const newPath = parts.join("/");
+    navigate(newPath);
+  };
   // ==========================================================
-  // GET RECORD FILES
+  // GET RECORD FILES (HOOK COMPLETO Y CORREGIDO)
   // ==========================================================
   const {
     recordFiles,
@@ -156,32 +238,69 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
     queryInput,
     setQuery,
 
-    fund_id,
-    setFundId,
-    section_id,
-    setSectionId,
-    series_id,
-    setSeriesId,
-    location_id,
-    setLocationId,
-    deterioration_status_id,
-    setDeteriorationStatusId,
+    // directos
+    reference_code,
+    setReferenceCode,
+    previous_reference_code,
+    setPreviousReferenceCode,
+    file_number,
+    setFileNumber,
+    box_number,
+    setBoxNumber,
+
+    // confidencialidad
+    sensitive,
+    setSensitive,
+
+    // filtros por nombre
+    fund_name,
+    setFundName,
+    section_name,
+    setSectionName,
+    series_name,
+    setSeriesName,
+    location_name,
+    setLocationName,
+    deterioration_name,
+    setDeteriorationName,
+    typology_name,
+    setTypologyName,
+
+    // disponibilidad
     availability_status,
     setAvailabilityStatus,
-    created_after,
-    setCreatedAfter,
-    created_before,
-    setCreatedBefore,
+
+    // fechas documentales
     file_date_after,
     setFileDateAfter,
     file_date_before,
     setFileDateBefore,
-    typology_ids,
-    setTypologyIds,
+
+    // ordenamiento
+    order_by,
+    setOrderBy,
 
     refetch,
   } = useGetRecordFiles()
 
+  const {
+    createLoan,
+    loading: loadingCreateLoan,
+    error: errorCreateLoan,
+  } = useCreateLoan()
+
+  // =======================================
+  // UPDATE (solo descripción)
+  // =======================================
+
+  // =======================================
+  // RECEIVE (devolver préstamo)
+  // =======================================
+  const {
+    receiveLoanRecord,
+    loading: loadingReceive,
+    error: errorReceive,
+  } = useReceiveLoanRecord()
   // ==========================================================
   // CREATE
   // ==========================================================
@@ -210,7 +329,7 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
   } = useDeleteRecordFile()
 
   // ==========================================================
-  // EXPORT PDF (LIST)
+  // EXPORT PDF
   // ==========================================================
   const {
     exportPDF,
@@ -231,19 +350,47 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
   // MODALS & SELECTED
   // ==========================================================
   const [selected, setSelected] = useState<RecordFile | null>(null)
-
+  const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null)
   const [isCreateOpen, setCreateOpen] = useState(false)
   const [isEditOpen, setEditOpen] = useState(false)
   const [isDeleteOpen, setDeleteOpen] = useState(false)
   const [isShowOpen, setShowOpen] = useState(false)
   const [isExportOpen, setExportOpen] = useState(false)
-  const [isCoverOpen, setCoverOpen] = useState(false)
+  const [isExportExcelOpen, setExportExcelOpen] = useState(false)
 
-  // Create
+  const [isCreateLoanOpen, setCreateLoanOpen] = useState(false)
+  const [isReceiveOpen, setReceiveOpen] = useState(false)
+const [isCreateMovementOpen, setCreateMovementOpen] = useState(false)
+const [selectedMovementRecordFile, setSelectedMovementRecordFile] = useState<RecordFile | null>(null)
+
+const openCreateMovement = (u: RecordFile) => {
+  setSelected(u)
+  setCreateMovementOpen(true)
+}
+
+const closeCreateMovement = () => {
+  setSelected(null)
+  setCreateMovementOpen(false)
+}
+  const openCreateLoan = (u: RecordFile) => {setSelected(u)
+  setCreateLoanOpen(true)}
+  const closeCreateLoan = () => {setSelected(null) 
+    setCreateLoanOpen(false)}
+const {
+  createMovement,
+  loading: loadingCreateMovement,
+  error: errorCreateMovement,
+} = useCreateMovement()
+
+  const [isCoverOpen, setCoverOpen] = useState(false)
+  const openExportExcel = () => {
+    setExportExcelOpen(true)
+  }
+  const closeExportExcel = () => setExportExcelOpen(false)
+
   const openCreate = () => setCreateOpen(true)
   const closeCreate = () => setCreateOpen(false)
 
-  // Edit
   const openEdit = (u: RecordFile) => {
     setSelected(u)
     setEditOpen(true)
@@ -253,7 +400,6 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
     setEditOpen(false)
   }
 
-  // Delete
   const openDelete = (u: RecordFile) => {
     setSelected(u)
     setDeleteOpen(true)
@@ -263,7 +409,6 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
     setDeleteOpen(false)
   }
 
-  // Show
   const openShow = (u: RecordFile) => {
     setSelected(u)
     setShowOpen(true)
@@ -273,11 +418,9 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
     setShowOpen(false)
   }
 
-  // Export PDF
   const openExport = () => setExportOpen(true)
   const closeExport = () => setExportOpen(false)
 
-  // Cover Page
   const openCover = (u: RecordFile) => {
     setSelected(u)
     setCoverOpen(true)
@@ -287,35 +430,108 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
     setCoverOpen(false)
   }
 
+  const openReceive = (u: RecordFile) => {
+    setSelected(u)
+    setReceiveOpen(true)
+  }
+  const closeReceive = () => {
+    setSelected(null)
+    setReceiveOpen(false)
+  }
   // ==========================================================
   // CREATE HANDLER
   // ==========================================================
+  const handleCreateMovement = async (data: CreateMovementHistory) => {
+  if (!selected) return
+  try {
+    // aseguramos el record_file_id que viene del expediente
+    const payload: CreateMovementHistory = {
+      ...data,
+      record_file_id: selected.id,
+    }
+
+    await createMovement(payload)
+
+    toastSuccess({
+      id: 801,
+      title: "Movimiento registrado",
+      message: "El movimiento del expediente se registró correctamente.",
+    })
+
+    closeCreateMovement()
+    await refetch()  // refresca expedientes si es necesario
+  } catch (err) {
+    const msg = getStandarMessageError(err)
+    if (msg) {
+      if (msg === "Sesión expirada.") await logout()
+      return toastError({ id: 802, title: "Error", message: msg })
+    }
+
+    return toastError({
+      id: 802,
+      title: "Error",
+      message: getApiMessage(err as ApiError),
+    })
+  }
+}
+
+
   const handleCreate = async (data: CreateRecordFile) => {
     try {
       await createRecordFile(data)
-      await refetch()
+      
 
       toastSuccess({
         id: 301,
-        title: "Expediente creado",
-        message: "El expediente fue creado correctamente.",
+        title: 'Expediente creado',
+        message: 'El expediente fue creado correctamente.',
       })
 
       closeCreate()
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
       if (msg) {
-        if (msg === "Sesión expirada.") await logout()
-        return toastError({ id: 302, title: "Error", message: msg })
-      throw err 
+        if (msg === 'Sesión expirada.') await logout()
+        toastError({ id: 302, title: 'Error', message: msg })
+        throw err
       }
 
       toastError({
         id: 302,
-        title: "Error",
+        title: 'Error',
         message: getApiMessage(err as ApiError),
       })
-      throw err 
+      throw err
+    }
+  }
+
+  // =======================================
+  // CREATE HANDLER
+  // =======================================
+  const handleCreateLoan = async (data: CreateLoan) => {
+    try {
+      await createLoan(data)
+      toastSuccess({
+        id: 701,
+        title: 'Préstamo creado',
+        message: 'El préstamo fue creado correctamente.',
+      })
+
+      closeCreateLoan()
+      goLoans()
+    } catch (err) {
+      const msg = getStandarMessageError(err)
+      if (msg) {
+        if (msg === 'Sesión expirada.') await logout()
+        return toastError({ id: 702, title: 'Error', message: msg })
+      }
+
+      return toastError({
+        id: 702,
+        title: 'Error',
+        message: getApiMessage(err as ApiError),
+      })
     }
   }
 
@@ -326,35 +542,35 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
     if (!selected) return
 
     const payload = Object.fromEntries(
-      Object.entries(data).filter(([_, v]) => v !== "" && v !== null)
+      Object.entries(data).filter(([_, v]) => v !== '' && v !== null)
     ) as UpdateRecordFile
 
     try {
       await updateRecordFile(selected.id, payload)
-      await refetch()
+      
 
       toastSuccess({
         id: 303,
-        title: "Expediente actualizado",
-        message: "El expediente fue actualizado correctamente.",
+        title: 'Expediente actualizado',
+        message: 'El expediente fue actualizado correctamente.',
       })
 
       closeEdit()
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
-
       if (msg) {
-        if (msg === "Sesión expirada.") await logout()
-        return toastError({ id: 304, title: "Error", message: msg })
-      throw err 
+        if (msg === 'Sesión expirada.') await logout()
+        toastError({ id: 304, title: 'Error', message: msg })
+        throw err
       }
 
       toastError({
         id: 304,
-        title: "Error",
+        title: 'Error',
         message: getApiMessage(err as ApiError),
       })
-      throw err 
+      throw err
     }
   }
 
@@ -366,26 +582,26 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       await deleteRecordFile(selected.id)
-      await refetch()
+      
 
       toastSuccess({
         id: 307,
-        title: "Expediente eliminado",
-        message: "El expediente fue eliminado correctamente.",
+        title: 'Expediente eliminado',
+        message: 'El expediente fue eliminado correctamente.',
       })
 
       closeDelete()
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
-
       if (msg) {
-        if (msg === "Sesión expirada.") await logout()
-        return toastError({ id: 308, title: "Error", message: msg })
+        if (msg === 'Sesión expirada.') await logout()
+        return toastError({ id: 308, title: 'Error', message: msg })
       }
 
       toastError({
         id: 308,
-        title: "Error",
+        title: 'Error',
         message: getApiMessage(err as ApiError),
       })
     }
@@ -399,14 +615,14 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
       await exportPDF()
       toastSuccess({
         id: 401,
-        title: "Exportado",
-        message: "El PDF fue generado correctamente.",
+        title: 'Exportado',
+        message: 'El PDF fue generado correctamente.',
       })
       closeExport()
     } catch (err) {
       toastError({
         id: 402,
-        title: "Error al exportar",
+        title: 'Error al exportar',
         message: getApiMessage(err as ApiError),
       })
     }
@@ -421,14 +637,74 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
       await printCover(selected.id)
       toastSuccess({
         id: 501,
-        title: "Carátula generada",
-        message: "La carátula del expediente fue generada correctamente.",
+        title: 'Carátula generada',
+        message: 'La carátula del expediente fue generada correctamente.',
       })
       closeCover()
     } catch (err) {
       toastError({
         id: 502,
-        title: "Error al generar carátula",
+        title: 'Error al generar carátula',
+        message: getApiMessage(err as ApiError),
+      })
+    }
+  }
+  const resetFilters = () => {
+    // búsqueda global
+    setQuery('')
+
+    // filtros directos
+    setReferenceCode('')
+    setPreviousReferenceCode('')
+    setBoxNumber('')
+    setFileNumber('')
+    setSensitive('all')
+
+    // filtros por nombre
+    setFundName('')
+    setSectionName('')
+    setSeriesName('')
+    setLocationName('')
+    setDeteriorationName('')
+    setTypologyName('')
+
+    // disponibilidad
+    setAvailabilityStatus('all')
+
+    // fechas
+
+    setFileDateAfter(null)
+    setFileDateBefore(null)
+
+    // orden
+    setOrderBy(null)
+  }
+
+  const handleReceive = async () => {
+    if (!selected) return
+
+    try {
+      await receiveLoanRecord(selected.id)
+      
+
+      toastSuccess({
+        id: 705,
+        title: 'Préstamo devuelto',
+        message: 'El expediente fue marcado como devuelto.',
+      })
+
+      closeReceive()
+      await refetch()
+    } catch (err) {
+      const msg = getStandarMessageError(err)
+      if (msg) {
+        if (msg === 'Sesión expirada.') await logout()
+        return toastError({ id: 706, title: 'Error', message: msg })
+      }
+
+      return toastError({
+        id: 706,
+        title: 'Error',
         message: getApiMessage(err as ApiError),
       })
     }
@@ -444,36 +720,53 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
         pages,
         current_page,
 
+        // búsqueda global
         query,
         queryInput,
         setQuery,
 
-        fund_id,
-        setFundId,
-        section_id,
-        setSectionId,
-        series_id,
-        setSeriesId,
-        location_id,
-        setLocationId,
-        deterioration_status_id,
-        setDeteriorationStatusId,
+        // filtros directos
+        reference_code,
+        setReferenceCode,
+        previous_reference_code,setPreviousReferenceCode,
+        file_number,
+        setFileNumber,
+        box_number,
+        setBoxNumber,
+
+        // confidencialidad
+        sensitive,
+        setSensitive,
+
+        // filtros por nombre
+        fund_name,
+        setFundName,
+        section_name,
+        setSectionName,
+        series_name,
+        setSeriesName,
+        location_name,
+        setLocationName,
+        deterioration_name,
+        setDeteriorationName,
+        typology_name,
+        setTypologyName,
+
+        // disponibilidad
         availability_status,
         setAvailabilityStatus,
 
-        created_after,
-        created_before,
-        setCreatedAfter,
-        setCreatedBefore,
-
+        // fechas documentales
         file_date_after,
-        file_date_before,
         setFileDateAfter,
+        file_date_before,
         setFileDateBefore,
 
-        typology_ids,
-        setTypologyIds,
+        // orden
+        order_by,
+        setOrderBy,
 
+        // paginación
         hasNext,
         hasPrev,
         nextPage,
@@ -485,11 +778,23 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
 
         selected,
         setSelected,
+        selectedLoan,
+        setSelectedLoan,
 
         isCreateOpen,
         openCreate,
         closeCreate,
         handleCreate,
+
+        isCreateLoanOpen,
+        openCreateLoan,
+        closeCreateLoan,
+        handleCreateLoan,
+
+        isReceiveOpen,
+        openReceive,
+        closeReceive,
+        handleReceive,
 
         isEditOpen,
         openEdit,
@@ -521,6 +826,8 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
         loadingDelete,
         loadingExport,
         loadingPrint,
+        loadingCreateLoan,
+        loadingReceive,
 
         errorGet,
         errorCreate,
@@ -528,6 +835,20 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
         errorDelete,
         errorExport,
         errorPrint,
+        errorCreateLoan,
+        errorReceive,
+
+        resetFilters,
+        isExportExcelOpen,
+        openExportExcel,
+        closeExportExcel,
+
+         isCreateMovementOpen,
+    openCreateMovement,
+    closeCreateMovement,
+    handleCreateMovement,
+    loadingCreateMovement,
+    errorCreateMovement,
       }}
     >
       {children}

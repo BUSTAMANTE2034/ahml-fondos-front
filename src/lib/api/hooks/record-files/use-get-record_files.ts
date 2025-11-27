@@ -1,37 +1,47 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback } from 'react'
 import {
   RecordFile,
   RecordFilePaginatedResponse,
   GetRecordFilesOptions,
-} from "@/lib/api/models/record-file"
-import { apiFetch } from "@/lib/types/client"
-import { ApiError } from "@/lib/types/errors"
+  RecordFileAvailability,
+  RecordFileOrderByParam,
+} from '@/lib/api/models/record-file'
+import { apiFetch } from '@/lib/types/client'
+import { ApiError } from '@/lib/types/errors'
 
 export const useGetRecordFiles = ({
   initialPage = 1,
   initialPerPage = 20,
 
-  // filtros base
-  initialQuery = "",
-  initialFundId = null,
-  initialSectionId = null,
-  initialSeriesId = null,
-  initialLocationId = null,
-  initialDeteriorationStatusId = null,
-  initialAvailabilityStatus = null,
+  // búsqueda global
+  initialQuery = '',
+
+  // filtros directos
+  initialReferenceCode = '',
+  initialPreviousReferenceCode = '',
+  initialFileNumber = '',
+  initialBoxNumber = '',
+
+  // confidencialidad
+  initialSensitive = 'all',
+
+  // filtros por nombre
+  initialFundName = '',
+  initialSectionName = '',
+  initialSeriesName = '',
+  initialLocationName = '',
+  initialDeteriorationName = '',
+  initialTypologyName = '',
+
+  // disponibilidad
+  initialAvailabilityStatus = 'all',
 
   // fechas
-  initialCreatedAfter = null,
-  initialCreatedBefore = null,
   initialFileDateAfter = null,
   initialFileDateBefore = null,
 
-  // tipologías (una o varias)
-  initialTypologyIds = [],
-
   // ordenamiento
   initialOrderBy = null,
-  initialOrderDirection = "desc",
 }: GetRecordFilesOptions = {}) => {
   // =========================================================
   // DATA
@@ -43,8 +53,8 @@ export const useGetRecordFiles = ({
   // =========================================================
   // PAGINATION
   // =========================================================
-  const [currentPage, setCurrentPage] = useState<number>(initialPage)
-  const [pageSize, setPageSize] = useState<number>(initialPerPage)
+  const [currentPage, setCurrentPage] = useState(initialPage)
+  const [pageSize, setPageSize] = useState(initialPerPage)
 
   const [totalPages, setTotalPages] = useState(1)
   const [hasNext, setHasNext] = useState(false)
@@ -58,39 +68,45 @@ export const useGetRecordFiles = ({
   const [queryInput, setQueryInput] = useState(initialQuery)
   const [query, setQuery] = useState(initialQuery)
 
-  const [fund_id, setFundId] = useState<number | null>(initialFundId)
-  const [section_id, setSectionId] = useState<number | null>(initialSectionId)
-  const [series_id, setSeriesId] = useState<number | null>(initialSeriesId)
-  const [location_id, setLocationId] = useState<number | null>(initialLocationId)
-
-  const [deterioration_status_id, setDeteriorationStatusId] = useState<number | null>(
-    initialDeteriorationStatusId
+  // directos
+  const [reference_code, setReferenceCode] = useState(initialReferenceCode)
+  const [previous_reference_code, setPreviousReferenceCode] = useState(
+    initialPreviousReferenceCode
   )
+  const [file_number, setFileNumber] = useState(initialFileNumber)
+  const [box_number, setBoxNumber] = useState(initialBoxNumber)
 
-  const [availability_status, setAvailabilityStatus] = useState<string | null>(
-    initialAvailabilityStatus
+  // confidencialidad
+  const [sensitive, setSensitive] = useState<
+    'all' | 'delicate' | 'not_delicate'
+  >(initialSensitive)
+
+  // por nombre
+  const [fund_name, setFundName] = useState(initialFundName)
+  const [section_name, setSectionName] = useState(initialSectionName)
+  const [series_name, setSeriesName] = useState(initialSeriesName)
+  const [location_name, setLocationName] = useState(initialLocationName)
+  const [deterioration_name, setDeteriorationName] = useState(
+    initialDeteriorationName
   )
+  const [typology_name, setTypologyName] = useState(initialTypologyName)
+
+  // disponibilidad
+  const [availability_status, setAvailabilityStatus] = useState<
+    RecordFileAvailability | 'all'
+  >(initialAvailabilityStatus)
 
   // fechas
-  const [created_after, setCreatedAfter] = useState<string | null>(initialCreatedAfter)
-  const [created_before, setCreatedBefore] = useState<string | null>(initialCreatedBefore)
-  const [file_date_after, setFileDateAfter] = useState<string | null>(
-    initialFileDateAfter
-  )
-  const [file_date_before, setFileDateBefore] = useState<string | null>(
-    initialFileDateBefore
-  )
+  const [file_date_after, setFileDateAfter] = useState(initialFileDateAfter)
+  const [file_date_before, setFileDateBefore] = useState(initialFileDateBefore)
 
-  // tipologías (solo es válido 1 para BE, pero soportamos múltiples)
-  const [typology_ids, setTypologyIds] = useState<number[]>(initialTypologyIds)
-
-  // ordenamiento
-  const [order_by, setOrderBy] = useState<string | null>(initialOrderBy)
-  const [order_direction, setOrderDirection] =
-    useState<"asc" | "desc">(initialOrderDirection)
+  // ordenamiento (incluye los nuevos box_number y file_number)
+  const [order_by, setOrderBy] = useState<RecordFileOrderByParam | null>(
+    initialOrderBy
+  )
 
   // =========================================================
-  // SEARCH DEBOUNCE
+  // DEBOUNCE SEARCH
   // =========================================================
   useEffect(() => {
     const id = setTimeout(() => {
@@ -108,56 +124,54 @@ export const useGetRecordFiles = ({
     setError(null)
 
     const params = new URLSearchParams()
+    params.append('page', String(currentPage))
+    params.append('per_page', String(pageSize))
 
-    params.append("page", String(currentPage))
-    params.append("per_page", String(pageSize))
+    if (query.trim() !== '') params.append('query', query.trim())
 
-    // texto libre
-    if (query.trim() !== "") params.append("query", query.trim())
+    if (reference_code.trim() !== '')
+      params.append('reference_code', reference_code.trim())
 
-    // referencias
-    if (fund_id !== null) params.append("fund_id", String(fund_id))
-    if (section_id !== null) params.append("section_id", String(section_id))
-    if (series_id !== null) params.append("series_id", String(series_id))
-    if (location_id !== null) params.append("location_id", String(location_id))
+    if (previous_reference_code.trim() !== '')
+      params.append('previous_reference_code', previous_reference_code.trim())
 
-    // deterioro
-    if (deterioration_status_id !== null)
-      params.append("deterioration_status_id", String(deterioration_status_id))
+    if (file_number.trim() !== '')
+      params.append('file_number', file_number.trim())
 
-    // disponibilidad
-    if (availability_status)
-      params.append("availability_status", availability_status)
+    if (box_number.trim() !== '') params.append('box_number', box_number.trim())
 
-    // fechas
-    if (created_after) params.append("created_after", created_after)
-    if (created_before) params.append("created_before", created_before)
-    if (file_date_after) params.append("file_date_after", file_date_after)
-    if (file_date_before) params.append("file_date_before", file_date_before)
+    if (sensitive !== 'all') params.append('sensitive', sensitive)
 
-    // tipologías múltiples -> backend SÓLO usa typology_id (1)
-    if (typology_ids.length > 0) {
-      params.append("typology_id", String(typology_ids[0]))
-    }
+    if (fund_name.trim() !== '') params.append('fund_name', fund_name.trim())
+    if (section_name.trim() !== '')
+      params.append('section_name', section_name.trim())
+    if (series_name.trim() !== '')
+      params.append('series_name', series_name.trim())
+    if (location_name.trim() !== '')
+      params.append('location_name', location_name.trim())
+    if (deterioration_name.trim() !== '')
+      params.append('deterioration_name', deterioration_name.trim())
+    if (typology_name.trim() !== '')
+      params.append('typology_name', typology_name.trim())
 
-    // ordenamiento
-    if (order_by) params.append("order_by", order_by)
-    if (order_direction) params.append("order_direction", order_direction)
+    if (availability_status !== 'all')
+      params.append('availability_status', availability_status)
 
-    const url = `/record-files${params.toString() ? `?${params}` : ""}`
+    if (file_date_after) params.append('file_date_after', file_date_after)
+    if (file_date_before) params.append('file_date_before', file_date_before)
+
+    if (order_by) params.append('order_by', order_by)
+
+    const url = `/record-files?${params.toString()}`
 
     try {
       const data = await apiFetch<RecordFilePaginatedResponse>(url, {
-        method: "GET",
-        parse: "json",
+        method: 'GET',
+        parse: 'json',
       } as any)
 
-      if (!data || typeof data !== "object" || !("record_files" in data)) {
-        throw new ApiError("Respuesta inválida del servidor.", 200, data)
-      }
-
-      setRecordFiles(Array.isArray(data.record_files) ? data.record_files : [])
-
+      setRecordFiles(data.record_files ?? [])
+   
       const p = data.pagination
       setTotalPages(p.pages)
       setHasNext(p.has_next)
@@ -165,7 +179,7 @@ export const useGetRecordFiles = ({
       setNextPage(p.next_page)
       setPrevPage(p.prev_page)
     } catch (err: any) {
-      setError(err instanceof ApiError ? err.message : "Error desconocido.")
+      setError(err instanceof ApiError ? err.message : 'Error desconocido.')
     } finally {
       setLoading(false)
     }
@@ -174,161 +188,142 @@ export const useGetRecordFiles = ({
     pageSize,
     query,
 
-    fund_id,
-    section_id,
-    series_id,
-    location_id,
-    deterioration_status_id,
+    reference_code,
+    previous_reference_code,
+    file_number,
+    box_number,
+
+    sensitive,
+
+    fund_name,
+    section_name,
+    series_name,
+    location_name,
+    deterioration_name,
+    typology_name,
+
     availability_status,
 
-    created_after,
-    created_before,
     file_date_after,
     file_date_before,
 
-    typology_ids,
     order_by,
-    order_direction,
   ])
 
-  // =========================================================
-  // AUTO-FETCH
-  // =========================================================
   useEffect(() => {
     fetchRecordFiles()
   }, [fetchRecordFiles])
 
-  // =========================================================
-  // PAGINATION ACTIONS
-  // =========================================================
-  const goNext = () => nextPage !== null && setCurrentPage(nextPage)
-  const goPrev = () => prevPage !== null && setCurrentPage(prevPage)
+  const resetPage = () => setCurrentPage(1)
 
-  // =========================================================
-  // FILTER HELPERS (reset page)
-  // =========================================================
-  const handleSetFundId = (v: number | null) => {
-    setFundId(v)
-    setCurrentPage(1)
-  }
-
-  const handleSetSectionId = (v: number | null) => {
-    setSectionId(v)
-    setCurrentPage(1)
-  }
-
-  const handleSetSeriesId = (v: number | null) => {
-    setSeriesId(v)
-    setCurrentPage(1)
-  }
-
-  const handleSetLocationId = (v: number | null) => {
-    setLocationId(v)
-    setCurrentPage(1)
-  }
-
-  const handleSetDeteriorationStatusId = (v: number | null) => {
-    setDeteriorationStatusId(v)
-    setCurrentPage(1)
-  }
-
-  const handleSetAvailabilityStatus = (v: string | null) => {
-    setAvailabilityStatus(v)
-    setCurrentPage(1)
-  }
-
-  const handleSetCreatedAfter = (v: string | null) => {
-    setCreatedAfter(v)
-    setCurrentPage(1)
-  }
-
-  const handleSetCreatedBefore = (v: string | null) => {
-    setCreatedBefore(v)
-    setCurrentPage(1)
-  }
-
-  const handleSetFileDateAfter = (v: string | null) => {
-    setFileDateAfter(v)
-    setCurrentPage(1)
-  }
-
-  const handleSetFileDateBefore = (v: string | null) => {
-    setFileDateBefore(v)
-    setCurrentPage(1)
-  }
-
-  // tipologías
-  const handleSetTypologies = (arr: number[]) => {
-    setTypologyIds(arr)
-    setCurrentPage(1)
-  }
-
-  // =========================================================
-  // RETURN
-  // =========================================================
   return {
     recordFiles,
     loading,
     error,
 
-    // pagination
     currentPage,
     totalPages,
     hasNext,
     hasPrev,
     nextPage,
     prevPage,
-    goNext,
-    goPrev,
+    goNext: () => nextPage !== null && setCurrentPage(nextPage),
+    goPrev: () => prevPage !== null && setCurrentPage(prevPage),
     setPage: setCurrentPage,
     setPageSize,
 
-    // search
     query,
     queryInput,
     setQuery: setQueryInput,
 
-    // filters
-    fund_id,
-    setFundId: handleSetFundId,
+    reference_code,
+    setReferenceCode: (v: string) => {
+      setReferenceCode(v)
+      resetPage()
+    },
+    previous_reference_code,
+    setPreviousReferenceCode: (v: string) => {
+      setPreviousReferenceCode(v)
+      resetPage()
+    },
 
-    section_id,
-    setSectionId: handleSetSectionId,
+    file_number,
+    setFileNumber: (v: string) => {
+      setFileNumber(v)
+      resetPage()
+    },
 
-    series_id,
-    setSeriesId: handleSetSeriesId,
+    box_number,
+    setBoxNumber: (v: string) => {
+      setBoxNumber(v)
+      resetPage()
+    },
 
-    location_id,
-    setLocationId: handleSetLocationId,
+    sensitive,
+    setSensitive: (v: 'all' | 'delicate' | 'not_delicate') => {
+      setSensitive(v)
+      resetPage()
+    },
 
-    deterioration_status_id,
-    setDeteriorationStatusId: handleSetDeteriorationStatusId,
+    fund_name,
+    setFundName: (v: string) => {
+      setFundName(v)
+      resetPage()
+    },
+
+    section_name,
+    setSectionName: (v: string) => {
+      setSectionName(v)
+      resetPage()
+    },
+
+    series_name,
+    setSeriesName: (v: string) => {
+      setSeriesName(v)
+      resetPage()
+    },
+
+    location_name,
+    setLocationName: (v: string) => {
+      setLocationName(v)
+      resetPage()
+    },
+
+    deterioration_name,
+    setDeteriorationName: (v: string) => {
+      setDeteriorationName(v)
+      resetPage()
+    },
+
+    typology_name,
+    setTypologyName: (v: string) => {
+      setTypologyName(v)
+      resetPage()
+    },
 
     availability_status,
-    setAvailabilityStatus: handleSetAvailabilityStatus,
-
-    // fechas
-    created_after,
-    created_before,
-    setCreatedAfter: handleSetCreatedAfter,
-    setCreatedBefore: handleSetCreatedBefore,
+    setAvailabilityStatus: (v: RecordFileAvailability | 'all') => {
+      setAvailabilityStatus(v)
+      resetPage()
+    },
 
     file_date_after,
     file_date_before,
-    setFileDateAfter: handleSetFileDateAfter,
-    setFileDateBefore: handleSetFileDateBefore,
+    setFileDateAfter: (v: string | null) => {
+      setFileDateAfter(v)
+      resetPage()
+    },
+    setFileDateBefore: (v: string | null) => {
+      setFileDateBefore(v)
+      resetPage()
+    },
 
-    // tipologías
-    typology_ids,
-    setTypologyIds: handleSetTypologies,
-
-    // order
     order_by,
-    setOrderBy,
-    order_direction,
-    setOrderDirection,
+    setOrderBy: (v: RecordFileOrderByParam | null) => {
+      setOrderBy(v)
+      resetPage()
+    },
 
-    // manual refetch
     refetch: fetchRecordFiles,
   }
 }
