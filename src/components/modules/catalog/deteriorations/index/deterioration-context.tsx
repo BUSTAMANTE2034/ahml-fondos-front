@@ -195,7 +195,6 @@ export const DeteriorationsProvider = ({ children }: { children: ReactNode }) =>
   const handleCreate = async (data: CreateDeterioration) => {
     try {
       await createDeterioration(data)
-      await refetch()
 
       toastSuccess({
         id: 301,
@@ -204,6 +203,7 @@ export const DeteriorationsProvider = ({ children }: { children: ReactNode }) =>
       })
 
       closeCreate()
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
       if (msg) {
@@ -239,7 +239,6 @@ export const DeteriorationsProvider = ({ children }: { children: ReactNode }) =>
 
     try {
       await updateDeterioration(selected.id, payload)
-      await refetch()
 
       toastSuccess({
         id: 303,
@@ -248,6 +247,7 @@ export const DeteriorationsProvider = ({ children }: { children: ReactNode }) =>
       })
 
       closeEdit()
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
       if (msg) {
@@ -279,7 +279,6 @@ export const DeteriorationsProvider = ({ children }: { children: ReactNode }) =>
 
     try {
       await updateDeterioration(selected.id, { is_active: active })
-      await refetch()
 
       toastSuccess({
         id: 305,
@@ -292,6 +291,7 @@ export const DeteriorationsProvider = ({ children }: { children: ReactNode }) =>
       setSelected(null)
       setEnableOpen(false)
       setDisableOpen(false)
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
 
@@ -324,7 +324,6 @@ export const DeteriorationsProvider = ({ children }: { children: ReactNode }) =>
 
     try {
       await deleteDeterioration(selected.id)
-      await refetch()
 
       toastSuccess({
         id: 307,
@@ -333,6 +332,7 @@ export const DeteriorationsProvider = ({ children }: { children: ReactNode }) =>
       })
 
       closeDelete()
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
 

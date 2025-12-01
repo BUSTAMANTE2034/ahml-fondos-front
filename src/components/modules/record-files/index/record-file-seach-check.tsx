@@ -13,7 +13,13 @@ interface AsyncCheckSearchSelectProps {
   placeholder?: string
   selectedIds: number[]
   onChange: (ids: number[]) => void
-  searchFn: (query: string) => Promise<ResultItem[]>
+
+  // NUEVO — fuera viene todo
+  results: ResultItem[]
+  loading: boolean
+  searchError: string | null
+  onQueryChange: (q: string) => void
+
   error?: string
 }
 
@@ -22,77 +28,57 @@ export const AsyncCheckSearchSelect = ({
   placeholder,
   selectedIds,
   onChange,
-  searchFn,
-  error,
-}: AsyncCheckSearchSelectProps) => {
-  const [query, setQuery] = useState('')
-  const [debounced, setDebounced] = useState('')
-  const [results, setResults] = useState<ResultItem[]>([])
-  const [showList, setShowList] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [searchError, setSearchError] = useState<string | null>(null)
 
-  // 🟦 NUEVO: Diccionario id → label
+  // nuevos props
+  results,
+  loading,
+  searchError,
+  onQueryChange,
+
+  error
+}: AsyncCheckSearchSelectProps) => {
+
+  const [query, setQuery] = useState('')
+  const [showList, setShowList] = useState(false)
+
+  // Diccionario persistente id → label
   const [selectedMap, setSelectedMap] = useState<Record<number, string>>({})
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Mantener las labels aunque cambie el query
+  // Mantiene labels aunque cambie el query
   useEffect(() => {
-    // integridad simple
     const map = { ...selectedMap }
     selectedIds.forEach((id) => {
-      const existing = results.find((r) => r.id === id)
-      if (existing) map[id] = existing.label
+      const found = results.find((r) => r.id === id)
+      if (found) map[id] = found.label
     })
     setSelectedMap(map)
-  }, [results])
+  }, [results, selectedIds])
 
-  // debounce
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(query), 500)
-    return () => clearTimeout(id)
-  }, [query])
+  // Cuando escribes → notifica al padre
+  const handleInput = (value: string) => {
+    setQuery(value)
+    onQueryChange(value)
 
-  // search
-  useEffect(() => {
-    const load = async () => {
-      if (!debounced.trim()) {
-        setResults([])
-        setShowList(false)
-        return
-      }
-
-      setLoading(true)
-      setSearchError(null)
-
-      try {
-        const items = await searchFn(debounced)
-        setResults(items)
-        setShowList(true)
-      } catch (err) {
-        setResults([])
-        setSearchError('Error al buscar')
-        setShowList(true)
-      }
-
-      setLoading(false)
+    if (!value.trim()) {
+      setShowList(false)
+    } else {
+      setShowList(true)
     }
+  }
 
-    load()
-  }, [debounced, searchFn])
-
-  // Toggle
+  // Seleccionar
   const toggleCheck = (id: number, label: string) => {
     if (selectedIds.includes(id)) {
       onChange(selectedIds.filter((x) => x !== id))
     } else {
-      // Guardar label para siempre
       setSelectedMap((prev) => ({ ...prev, [id]: label }))
       onChange([...selectedIds, id])
     }
   }
 
+  // Remover chip
   const removeChip = (id: number) => {
     onChange(selectedIds.filter((x) => x !== id))
   }
@@ -110,14 +96,14 @@ export const AsyncCheckSearchSelect = ({
           )}
           placeholder={placeholder}
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => handleInput(e.target.value)}
         />
 
         {query && (
           <IconButton
             onClick={() => {
               setQuery('')
-              setDebounced('')
+              onQueryChange('')
               setShowList(false)
             }}
             className="absolute! right-1 top-1/3 -translate-y-1/2"
@@ -128,36 +114,44 @@ export const AsyncCheckSearchSelect = ({
       </div>
 
       {/* LISTA */}
-      <div
-        className={classNames(
-          'transition-all duration-150 overflow-auto bg-white shadow-md border border-dark-gray rounded-b-xl w-full z-50 max-h-60',
-          { hidden: !showList || loading }
-        )}
-      >
-        {searchError && (
-          <div className="p-2 text-xs text-red">{searchError}</div>
-        )}
+      {showList && (
+        <div className="bg-white absolute top-full left-0 w-full shadow-md border border-dark-gray rounded-b-xl max-h-60 overflow-auto z-50">
 
-        {!loading && !searchError && results.length === 0 && (
-          <div className="p-2 text-xs text-gray-500">Sin resultados</div>
-        )}
+          {/* LOADING */}
+          {loading && (
+            <div className="p-2 text-xs text-gray-600">Buscando…</div>
+          )}
 
-        {results.map((item) => (
-          <label
-            key={item.id}
-            className="flex items-center gap-2 p-2 text-xs cursor-pointer hover:bg-gray-200"
-          >
-            <input
-              type="checkbox"
-              checked={selectedIds.includes(item.id)}
-              onChange={() => toggleCheck(item.id, item.label)}
-            />
-            {item.label}
-          </label>
-        ))}
-      </div>
+          {/* ERROR */}
+          {!loading && searchError && (
+            <div className="p-2 text-xs text-red">{searchError}</div>
+          )}
 
-      {/* LABELS PERSISTENTES */}
+          {/* SIN RESULTADOS */}
+          {!loading && !searchError && results.length === 0 && query.trim() && (
+            <div className="p-2 text-xs text-gray-500">Sin resultados</div>
+          )}
+
+          {/* RESULTADOS */}
+          {!loading &&
+            !searchError &&
+            results.map((item) => (
+              <label
+                key={item.id}
+                className="flex items-center gap-2 p-2 text-xs cursor-pointer hover:bg-gray-200"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(item.id)}
+                  onChange={() => toggleCheck(item.id, item.label)}
+                />
+                {item.label}
+              </label>
+            ))}
+        </div>
+      )}
+
+      {/* CHIPS */}
       {selectedIds.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
           {selectedIds.map((id) => (

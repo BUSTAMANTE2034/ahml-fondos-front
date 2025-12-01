@@ -195,7 +195,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
   const handleCreate = async (data: CreateLocation) => {
     try {
       await createLocation(data)
-      await refetch()
+     
 
       toastSuccess({
         id: 301,
@@ -204,6 +204,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
       })
 
       closeCreate()
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
       if (msg) {
@@ -239,7 +240,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       await updateLocation(selected.id, payload)
-      await refetch()
+     
 
       toastSuccess({
         id: 303,
@@ -248,6 +249,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
       })
 
       closeEdit()
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
       if (msg) {
@@ -279,7 +281,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       await updateLocation(selected.id, { is_active: active })
-      await refetch()
+      
 
       toastSuccess({
         id: 305,
@@ -292,6 +294,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
       setSelected(null)
       setEnableOpen(false)
       setDisableOpen(false)
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
 
@@ -324,7 +327,6 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       await deleteLocation(selected.id)
-      await refetch()
 
       toastSuccess({
         id: 307,
@@ -333,6 +335,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
       })
 
       closeDelete()
+      await refetch()
     } catch (err) {
       const msg = getStandarMessageError(err)
 

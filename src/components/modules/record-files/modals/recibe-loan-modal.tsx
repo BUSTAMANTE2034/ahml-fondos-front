@@ -1,63 +1,66 @@
 import Modal from '@ui/modal'
 import Loader from '@ui/loader'
-import { useFunds } from '../index/record-file-context.js'
+import { useRecordFiles } from '../index/record-file-context'
 
-const EnableFundModal = () => {
-  const { 
-    isEnableOpen, 
-    closeEnable, 
-    handleEnable,
-    selected, 
-    loadingUpdate 
-  } = useFunds()
+const ReceiveLoanModal = () => {
+  const {
+    isReceiveOpen,
+    closeReceive,
+    handleReceive,
+    selected,
+    loadingReceive,
+  } = useRecordFiles()
 
-  if (!isEnableOpen || !selected) return null
+  if (!isReceiveOpen || !selected) return null
 
   const onSubmit = async () => {
-    await handleEnable(true)
+    await handleReceive()
   }
 
   return (
-    <Modal visible onClose={closeEnable}>
+    <Modal visible onClose={closeReceive}>
       <div className="flex flex-col gap-4 px-2 md:px-4">
 
         {/* HEADER */}
         <div className="text-center flex flex-col gap-2">
           <h2 className="text-xl md:text-2xl font-bold text-blue-600">
-            Habilitar Fondo
+            Marcar como devuelto
           </h2>
+
           <p className="text-sm">
-            ¿Deseas habilitar nuevamente el fondo{' '}
-            <strong>"{selected.name}"</strong> ({selected.acronym})?
+            ¿Deseas marcar como devuelto el préstamo del expediente{" "}
+            <strong>{selected.reference_code}</strong>?
           </p>
+
+         
         </div>
 
         {/* LOADING */}
-        {loadingUpdate && (
+        {loadingReceive && (
           <div className="flex items-center justify-center mx-auto gap-4">
             <span className="text-blue-600 font-medium text-lg">
-              Habilitando...
+              Procesando...
             </span>
             <Loader size={20} />
           </div>
         )}
 
         {/* BUTTONS */}
-        {!loadingUpdate && (
+        {!loadingReceive && (
           <div className="flex justify-end gap-4 pt-4">
             <button
               type="button"
-              onClick={closeEnable}
+              onClick={closeReceive}
               className="cancel"
             >
               <span>Cancelar</span>
             </button>
 
-            <button 
-              onClick={onSubmit} 
+            <button
+              onClick={onSubmit}
               className="create"
             >
-              <span>Habilitar</span>
+              <span>Confirmar devolución</span>
             </button>
           </div>
         )}
@@ -66,4 +69,4 @@ const EnableFundModal = () => {
   )
 }
 
-export default EnableFundModal
+export default ReceiveLoanModal

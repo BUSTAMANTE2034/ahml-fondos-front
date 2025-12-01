@@ -22,27 +22,31 @@ const SidebarMenu = () => {
   const { user } = useAuth()
   return (
     <div className="h-full w-full flex flex-col  px-2 overflow-y-auto scroll-gray">
+      {(user?.role === 'admin' || user?.role === 'manager') && (
+        <div className="flex flex-col gap-1 mb-6">
+          <h2 className="py-2 font-semibold text-xl text-gray-4">Usuarios</h2>
+
+          {user?.role !== 'admin' ? (<></>
+            
+          ):(<Option to={`/${user.role}/${user.id}/managers`} label="Gestores">
+              <img src={GestoresIcon} alt="Gestores" />
+            </Option>)}
+
+          <Option
+            to={`/${user.role}/${user.id}/archivists`}
+            label="Archivistas"
+          >
+            <img src={ArchivistsIcon} alt="Archivistas" />
+          </Option>
+
+          <Option to={`/${user.role}/${user.id}/visitors`} label="Visitantes">
+            <img src={VisitorsIcon} alt="Visitantes" />
+          </Option>
+        </div>
+      )}
+
       <div className="flex flex-col gap-1 mb-6">
-        <h2 className=" py-2 font-semibold text-xl text-gray-4">
-          Usuarios
-        </h2>
-        <Option to={`/${user?.role}/${user?.id}/managers`} label="Gestores">
-          <img src={GestoresIcon} alt="Gestores" />
-        </Option>
-        <Option
-          to={`/${user?.role}/${user?.id}/archivists`}
-          label="Archivistas"
-        >
-          <img src={ArchivistsIcon} alt="Archivistas" />
-        </Option>
-        <Option to={`/${user?.role}/${user?.id}/visitors`} label="Visitantes">
-          <img src={VisitorsIcon} alt="Visitantes" />
-        </Option>
-      </div>
-      <div className="flex flex-col gap-1 mb-6">
-        <h2 className=" py-2 font-semibold text-xl text-gray-4">
-          Gestión
-        </h2>
+        <h2 className=" py-2 font-semibold text-xl text-gray-4">Gestión</h2>
         <Option
           to={`/${user?.role}/${user?.id}/record-files`}
           label="Expedientes"
@@ -56,10 +60,8 @@ const SidebarMenu = () => {
           <img src={MovementsIcon} alt="Movimientos" />
         </Option>
       </div>
-      <div className="flex flex-col gap-1 mb-6">
-        <h2 className=" py-2 font-semibold text-xl text-gray-4">
-          Catálogo
-        </h2>
+      {(user?.role === 'admin' || user?.role === 'manager') && (<div className="flex flex-col gap-1 mb-6">
+        <h2 className=" py-2 font-semibold text-xl text-gray-4">Catálogo</h2>
         <Option
           to={`/${user?.role}/${user?.id}/catalog-keys`}
           label="Clave de catálogo"
@@ -87,7 +89,8 @@ const SidebarMenu = () => {
         <Option to={`/${user?.role}/${user?.id}/locations`} label="Ubicaciones">
           <img src={LocationsIcon} alt="Ubicaciones" />
         </Option>
-      </div>
+      </div>)}
+      
     </div>
   )
 }

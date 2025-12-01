@@ -5,10 +5,12 @@ import { FormInput } from '@/components/forms/input'
 import Loader from '@ui/loader'
 import { useArchivists } from '../index/archivist-context'
 import { UpdateUser } from '@models/user'
+import { useAuth } from '@/components/contexts'
 
 const UpdateArchivistModal = () => {
   const { isEditOpen, closeEdit, selected, handleUpdate, loadingUpdate } =
     useArchivists()
+  const{user}=useAuth()
 
   const {
     register,
@@ -100,7 +102,8 @@ const UpdateArchivistModal = () => {
                 {...register('role')}
               >
                 <option value="archivist">Archivista</option>
-                <option value="manager">Gestor</option>
+                {user?.role === 'admin' && (<option value="manager">Gestor</option>)}
+                
                 <option value="visitor">Visitante</option>
               </select>
             </div>

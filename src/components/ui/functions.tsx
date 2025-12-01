@@ -66,3 +66,66 @@ export const addOneDay = (date: string | null | undefined) => {
   d.setDate(d.getDate() + 1)
   return d.toISOString().slice(0, 10)  // YYYY-MM-DD
 }
+
+export const formatInputDate = (iso: string): string => {
+  const d = new Date(iso)
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, "0")
+  const day = String(d.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+/**
+ * Convierte un string tipo "carta,oficio,media_carta"
+ * a un texto legible en español: "Carta, Oficio y Media carta".
+ */
+export function getReadableDocumentSizes(value?: string | null): string {
+  if (!value || value.trim() === "") return "—";
+
+  const items = value
+    .split(",")
+    .map((item) =>
+      item
+        .trim()
+        .replace(/_/g, " ")              // media_carta → media carta
+        .toLowerCase()
+    )
+    .filter(Boolean);
+
+  if (items.length === 0) return "—";
+
+  // Capitalizar cada uno
+  const capitalized = items.map(
+    (t) => t.charAt(0).toUpperCase() + t.slice(1)
+  );
+
+  // Si es solo uno
+  if (capitalized.length === 1) return capitalized[0];
+
+  // Si son dos → "Carta y Oficio"
+  if (capitalized.length === 2)
+    return `${capitalized[0]} y ${capitalized[1]}`;
+
+  // Si son más → "Carta, Oficio y Media carta"
+  return (
+    capitalized.slice(0, -1).join(", ") +
+    " y " +
+    capitalized[capitalized.length - 1]
+  );
+}
+
+export function parseDocumentSizesToList(value?: string | null): string[] {
+  if (!value || value.trim() === "") return [];
+
+  return value
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
+}
+export const DOCUMENT_SIZES = [
+  { id: "carta", label: "Carta" },
+  { id: "oficio", label: "Oficio" },
+  { id: "legal", label: "Legal" },
+  { id: "media_carta", label: "Media carta" },
+  { id: "doble_carta", label: "Doble carta" }
+];

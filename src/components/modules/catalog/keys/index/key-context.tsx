@@ -220,7 +220,6 @@ export const KeysProvider = ({ children }: { children: ReactNode }) => {
   const handleCreate = async (data: CreateCatalog_Key) => {
     try {
       await createCatalogKey(data)
-      await getKeys()
 
       toastSuccess({
         id: 102,
@@ -229,6 +228,7 @@ export const KeysProvider = ({ children }: { children: ReactNode }) => {
       })
 
       closeCreate()
+      await getKeys()
     } catch (err) {
       const msg = getStandarMessageError(err)
       if (msg) {
@@ -264,7 +264,6 @@ export const KeysProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       await updateCatalogKey(selected.id, payload)
-      await getKeys()
 
       toastSuccess({
         id: 104,
@@ -273,6 +272,7 @@ export const KeysProvider = ({ children }: { children: ReactNode }) => {
       })
 
       closeEdit()
+      await getKeys()
     } catch (err) {
       const msg = getStandarMessageError(err)
       if (msg) {
@@ -300,7 +300,6 @@ export const KeysProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       await updateCatalogKey(selected.id, { is_active: active })
-      await getKeys()
 
       toastSuccess({
         id: 108,
@@ -311,6 +310,7 @@ export const KeysProvider = ({ children }: { children: ReactNode }) => {
       setSelected(null)
       setIsEnableOpen(false)
       setIsDisableOpen(false)
+      await getKeys()
     } catch (err) {
       const msg = getStandarMessageError(err)
 
@@ -339,7 +339,6 @@ export const KeysProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       await deleteCatalogKey(selected.id)
-      await getKeys()
 
       toastSuccess({
         id: 106,
@@ -348,6 +347,7 @@ export const KeysProvider = ({ children }: { children: ReactNode }) => {
       })
 
       closeDelete()
+      await getKeys()
     } catch (err) {
       const msg = getStandarMessageError(err)
 

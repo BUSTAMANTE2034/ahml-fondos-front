@@ -1,10 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-} from 'react'
-import { useRecoverPassword } from "@hooks/auth/use-recover-password"
+import React, { createContext, useContext, useState, ReactNode } from 'react'
+import { useRecoverPassword } from '@hooks/auth/use-recover-password'
 
 import { User, CreateUser, UpdateUser } from '@models/user'
 import {
@@ -78,10 +73,10 @@ interface ContextValue {
   handleDelete: () => Promise<void>
 
   // Recover password
-isRecoverOpen: boolean
-openRecover: (u: User) => void
-closeRecover: () => void
-handleRecoverPassword: (id: number) => Promise<void>
+  isRecoverOpen: boolean
+  openRecover: (u: User) => void
+  closeRecover: () => void
+  handleRecoverPassword: (id: number) => Promise<void>
 
   // Show
   isShowOpen: boolean
@@ -93,14 +88,14 @@ handleRecoverPassword: (id: number) => Promise<void>
   loadingCreate: boolean
   loadingUpdate: boolean
   loadingDelete: boolean
-  loadingRecover:boolean
+  loadingRecover: boolean
 
   // Error (por si quieres usarlos en UI)
   errorGet: string | null
   errorCreate: string | null
   errorUpdate: string | null
   errorDelete: string | null
-  errorRP:string|null
+  errorRP: string | null
 }
 
 const ManagersContext = createContext<ContextValue | null>(null)
@@ -166,11 +161,11 @@ export const ManagersProvider = ({ children }: { children: ReactNode }) => {
   } = useDeleteUser()
 
   const {
-  recoverPassword,
-  loading: loadingRecover,
-  error: errorRP,
-  message: messageRP,
-} = useRecoverPassword()
+    recoverPassword,
+    loading: loadingRecover,
+    error: errorRP,
+    message: messageRP,
+  } = useRecoverPassword()
 
   // Modales y selección
   const [isCreateOpen, setCreateOpen] = useState(false)
@@ -181,7 +176,6 @@ export const ManagersProvider = ({ children }: { children: ReactNode }) => {
   const [isShowOpen, setIsShowOpen] = useState(false)
   const [selected, setSelected] = useState<User | null>(null)
   const [isRecoverOpen, setRecoverOpen] = useState(false)
-
 
   // =========================
   // FUNCIONES (open / close)
@@ -248,13 +242,13 @@ export const ManagersProvider = ({ children }: { children: ReactNode }) => {
   const handleCreate = async (data: CreateUser) => {
     try {
       await createManager(data)
-      await getUsers()
       toastSuccess({
         id: 102,
         title: '¡Éxito!',
         message: 'Gestor creado correctamente',
       })
       closeCreate()
+      await getUsers()
     } catch (err) {
       const standardMessage = getStandarMessageError(err)
       if (standardMessage) {
@@ -267,7 +261,7 @@ export const ManagersProvider = ({ children }: { children: ReactNode }) => {
 
       if (err instanceof ApiError) {
         const backendMsg = getApiMessage(err)
-        toastError({ id: 103, title: 'Error', message: backendMsg})
+        toastError({ id: 103, title: 'Error', message: backendMsg })
         return
       }
 
@@ -282,21 +276,21 @@ export const ManagersProvider = ({ children }: { children: ReactNode }) => {
   // Actualizar Manager
   const handleUpdate = async (data: UpdateUser) => {
     if (!selected) return
-const payload: UpdateUser = Object.fromEntries(
-    Object.entries(data).filter(([key, value]) => {
-      // No incluir campos vacíos ni strings vacíos
-      return value !== "" && value !== null && value !== undefined
-    })
-  ) as UpdateUser
+    const payload: UpdateUser = Object.fromEntries(
+      Object.entries(data).filter(([key, value]) => {
+        // No incluir campos vacíos ni strings vacíos
+        return value !== '' && value !== null && value !== undefined
+      })
+    ) as UpdateUser
     try {
       await updateManager(selected.id, payload)
-      await getUsers()
       toastSuccess({
         id: 104,
         title: '¡Éxito!',
         message: 'Gestor actualizado correctamente',
       })
       closeEdit()
+      await getUsers()
     } catch (err) {
       const standardMessage = getStandarMessageError(err)
       if (standardMessage) {
@@ -309,7 +303,7 @@ const payload: UpdateUser = Object.fromEntries(
 
       if (err instanceof ApiError) {
         const backendMsg = getApiMessage(err)
-        toastError({ id: 105, title: 'Error', message: backendMsg})
+        toastError({ id: 105, title: 'Error', message: backendMsg })
         return
       }
 
@@ -323,7 +317,6 @@ const payload: UpdateUser = Object.fromEntries(
 
     try {
       await updateManager(selected.id, { is_active } as Partial<UpdateUser>)
-      await getUsers()
       toastSuccess({
         id: 108,
         title: '¡Éxito!',
@@ -334,8 +327,9 @@ const payload: UpdateUser = Object.fromEntries(
       setSelected(null)
       setIsEnableOpen(false)
       setIsDisableOpen(false)
+      await getUsers()
     } catch (err) {
-     const standardMessage = getStandarMessageError(err)
+      const standardMessage = getStandarMessageError(err)
       if (standardMessage) {
         if (standardMessage === 'Sesión expirada.') {
           await logout()
@@ -346,7 +340,7 @@ const payload: UpdateUser = Object.fromEntries(
 
       if (err instanceof ApiError) {
         const backendMsg = getApiMessage(err)
-        toastError({ id: 109, title: 'Error', message: backendMsg})
+        toastError({ id: 109, title: 'Error', message: backendMsg })
         return
       }
       toastError({ id: 109, title: 'Error', message: 'Error inesperado.' })
@@ -359,13 +353,13 @@ const payload: UpdateUser = Object.fromEntries(
 
     try {
       await deleteManager(selected.id)
-      await getUsers()
       toastSuccess({
         id: 106,
         title: '¡Éxito!',
         message: 'Gestor eliminado correctamente',
       })
       closeDelete()
+      await getUsers()
     } catch (err) {
       const standardMessage = getStandarMessageError(err)
       if (standardMessage) {
@@ -378,7 +372,7 @@ const payload: UpdateUser = Object.fromEntries(
 
       if (err instanceof ApiError) {
         const backendMsg = getApiMessage(err)
-        toastError({ id: 107, title: 'Error', message: backendMsg})
+        toastError({ id: 107, title: 'Error', message: backendMsg })
         return
       }
       toastError({
@@ -389,57 +383,54 @@ const payload: UpdateUser = Object.fromEntries(
     }
   }
   const openRecover = (u: User) => {
-  setSelected(u)
-  setRecoverOpen(true)
-}
+    setSelected(u)
+    setRecoverOpen(true)
+  }
 
-const closeRecover = () => {
-  setSelected(null)
-  setRecoverOpen(false)
-}
-
+  const closeRecover = () => {
+    setSelected(null)
+    setRecoverOpen(false)
+  }
 
   const handleRecoverPassword = async (user_id: number) => {
-  try {
-    const ok = await recoverPassword({user_id})
-    await getUsers()
+    try {
+      const ok = await recoverPassword({ user_id })
 
-    if (ok) {
-      toastSuccess({
-        id: 110,
-        title: "¡Contraseña regenerada!",
-        message: "Se envió la contraseña temporal al correo del usuario."
-      })
-    }
+      if (ok) {
+        toastSuccess({
+          id: 110,
+          title: '¡Contraseña regenerada!',
+          message: 'Se envió la contraseña temporal al correo del usuario.',
+        })
+      }
 
-    closeRecover()
+      closeRecover()
+      await getUsers()
+    } catch (err) {
+      const standardMessage = getStandarMessageError(err)
+      if (standardMessage) {
+        if (standardMessage === 'Sesión expirada.') await logout()
+        toastError({ id: 111, title: 'Error', message: standardMessage })
+        return
+      }
 
-  } catch (err) {
-    const standardMessage = getStandarMessageError(err)
-    if (standardMessage) {
-      if (standardMessage === "Sesión expirada.") await logout()
-      toastError({ id: 111, title: "Error", message: standardMessage })
-      return
-    }
+      if (err instanceof ApiError) {
+        toastError({
+          id: 111,
+          title: 'Error',
+          message: getApiMessage(err),
+        })
+        return
+      }
 
-    if (err instanceof ApiError) {
       toastError({
         id: 111,
-        title: "Error",
-        message: getApiMessage(err)
+        title: 'Error',
+        message: 'Error inesperado al recuperar contraseña',
       })
-      return
+    } finally {
     }
-
-    toastError({
-      id: 111,
-      title: "Error",
-      message: "Error inesperado al recuperar contraseña"
-    })
-
-  } finally {
   }
-}
 
   return (
     <ManagersContext.Provider

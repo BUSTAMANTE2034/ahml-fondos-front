@@ -17,6 +17,11 @@ const LoginComponent = () => {
   const handleLoginSubmit = async (data: PostLogin) => {
     try {
       const u = await authUser(data)
+      
+if (u.first_login) {
+  navigate("/first-login", { replace: true });
+  return;
+}
 
       switch (u.role) {
         case 'admin':

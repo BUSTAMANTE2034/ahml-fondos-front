@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { ToastProvider } from '@contexts/toastContext'
 import AppRoutes from '@/routes'
 import { AuthProvider } from '@/components/contexts/authContext'
+import { ChangePasswordProvider } from "@/components/contexts/changePasswordContext";
 
 const Root = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -18,7 +19,8 @@ const Root = () => {
     <>
       <ToastProvider>
         <AuthProvider>
-          <AppRoutes />
+          <ChangePasswordProvider><AppRoutes /></ChangePasswordProvider>
+          
         </AuthProvider>
       </ToastProvider>
       {isLoading && (

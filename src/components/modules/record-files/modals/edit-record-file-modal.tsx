@@ -1,6 +1,11 @@
-import { useEffect, useState } from 'react'
+// --------------------------------------------------------------
+//  UpdateRecordFileModal — versión corregida y alineada con Create
+// --------------------------------------------------------------
+
 import Modal from '@ui/modal'
-import { useForm } from 'react-hook-form'
+import { useEffect, useState } from 'react'
+import { useForm, Controller } from 'react-hook-form'
+
 import { FormInput } from '@/components/forms/input'
 import TextArea from '@/components/forms/text-area'
 import FormCheckbox from '@/components/forms/checkbox'
@@ -21,12 +26,13 @@ import {
   useSearchTypologies,
 } from '@hooks/record-files'
 
-import { Fund } from '@/lib/api/models/fund'
-import { Section } from '@/lib/api/models/section'
-import { Series } from '@/lib/api/models/series'
-import { Location } from '@/lib/api/models/location'
-import { Deterioration } from '@/lib/api/models/deterioration'
-import { Typology } from '@/lib/api/models/typology'
+import TextInput from '@/components/forms/text'
+import {
+  DOCUMENT_SIZES,
+  parseDocumentSizesToList,
+} from '@/components/ui/functions'
+
+import { StaticCheckSearchSelect } from '../index/static-check-select'
 
 const UpdateRecordFileModal = () => {
   const { isEditOpen, closeEdit, selected, handleUpdate, loadingUpdate } =
@@ -36,14 +42,15 @@ const UpdateRecordFileModal = () => {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors },
     reset,
     setValue,
   } = useForm<UpdateRecordFile>()
 
-  // ===============================
-  // QUERIES PARA ASYNC SELECT
-  // ===============================
+  // -----------------------------------------
+  // QUERIES PARA SELECTS
+  // -----------------------------------------
   const [fundQuery, setFundQuery] = useState('')
   const [sectionQuery, setSectionQuery] = useState('')
   const [seriesQuery, setSeriesQuery] = useState('')
@@ -59,45 +66,114 @@ const UpdateRecordFileModal = () => {
     useSearchDeteriorations(deteriorationQuery)
   const { results: typologyResults } = useSearchTypologies(typologyQuery)
 
-  // ===============================
-  // PRE-CARGA DE DATOS
-  // ===============================
+  // -----------------------------------------
+  // REFERENCIA ANTERIOR
+  // -----------------------------------------
+  const [prevFund, setPrevFund] = useState('')
+  const [prevSection, setPrevSection] = useState('')
+  const [prevSeries, setPrevSeries] = useState('')
+  const [prevBox, setPrevBox] = useState('')
+  const [prevExp, setPrevExp] = useState('')
+
+  const previousReferenceCode = [
+    prevFund,
+    prevSection,
+    prevSeries,
+    prevBox ? `C.${prevBox}` : '',
+    prevExp ? `Exp.${prevExp}` : '',
+  ]
+    .filter(Boolean)
+    .join('-')
+
   useEffect(() => {
-    if (selected) {
-      reset({
-        subject: selected.subject,
-        file_number: selected.file_number,
-        box_number: selected.box_number,
-        page_count: selected.page_count,
-        file_date: selected.file_date,
-        last_fund_date: selected.last_fund_date,
-        last_preservation_date: selected.last_preservation_date,
-        sensitive_data: selected.sensitive_data,
-        comments: selected.comments,
-        availability_status: selected.availability_status,
+    setValue('previous_reference_code', previousReferenceCode)
+  }, [previousReferenceCode, setValue])
 
-        fund_id: selected.fund_id,
-        section_id: selected.section_id,
-        series_id: selected.series_id,
-        location_id: selected.location_id,
-        deterioration_status_id: selected.deterioration_status_id,
+  // -----------------------------------------
+  // REGISTROS OBLIGATORIOS (igual que en Create)
+  // -----------------------------------------
+  useEffect(() => {
+    register('fund_id', { required: 'Selecciona un fondo.' })
+    register('section_id', { required: 'Selecciona una sección.' })
+    register('series_id', { required: 'Selecciona una serie.' })
+    register('location_id', { required: 'Selecciona una ubicación.' })
 
-        typology_ids: selected.typologies?.map((t) => t.id) || [],
-      })
+    register('typology_ids', {
+      required: 'Selecciona al menos una tipología.',
+    })
+
+    register('document_sizes', {
+      required: 'Selecciona al menos un tamaño.',
+    })
+
+    register('previous_reference_code', {
+      required: 'Debes generar una referencia anterior.',
+    })
+  }, [register])
+
+  // -----------------------------------------
+  // PRECARGA DE DATOS
+  // -----------------------------------------
+  useEffect(() => {
+    if (!selected) return
+
+    reset({
+      subject: selected.subject,
+      file_number: selected.file_number,
+      box_number: selected.box_number,
+      page_count: selected.page_count,
+      file_date: selected.file_date,
+
+      sensitive_data: selected.sensitive_data,
+      comments: selected.comments,
+
+      fund_id: selected.fund_id,
+      section_id: selected.section_id,
+      series_id: selected.series_id,
+      location_id: selected.location_id,
+
+      deterioration_status_id: selected.deterioration_status_id,
+      typology_ids: selected.typologies?.map((t) => t.id) || [],
+
+      previous_reference_code: selected.previous_reference_code || '',
+      document_sizes: selected.document_sizes ?? '',
+    })
+
+    // precargar referencia anterior
+    if (selected.previous_reference_code) {
+      const raw = selected.previous_reference_code.split('-')
+
+      setPrevFund(raw[0] || '')
+      setPrevSection(raw[1] || '')
+      setPrevSeries(raw[2] || '')
+
+      const box = raw.find((x) => x.startsWith('C.'))
+      const exp = raw.find((x) => x.startsWith('Exp.'))
+
+      setPrevBox(box ? box.replace('C.', '') : '')
+      setPrevExp(exp ? exp.replace('Exp.', '') : '')
     }
-  }, [selected, reset])
+  }, [selected, reset, setValue])
 
-  // ===============================
+  // -----------------------------------------
   // SUBMIT
-  // ===============================
+  // -----------------------------------------
   const onSubmit = async (data: UpdateRecordFile) => {
-    await handleUpdate({ ...data })
+    await handleUpdate({
+      ...data,
+    })
   }
 
   if (!isEditOpen || !selected) return null
 
   return (
-    <Modal visible onClose={closeEdit} showCloseButton={true} closeBackdrop={false}>
+    <Modal
+      visible
+      onClose={closeEdit}
+      showCloseButton
+      closeBackdrop={false}
+      big
+    >
       <div className="flex flex-col gap-4 px-2 md:px-4">
 
         {/* HEADER */}
@@ -108,12 +184,10 @@ const UpdateRecordFileModal = () => {
           <p className="text-sm">Modifica los datos del expediente.</p>
         </div>
 
-        {/* FORM */}
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-4">
 
-          {/* GRID GENERAL */}
+          {/* ================= PRIMERA FILA ================= */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-
             <FormInput
               name="file_number"
               type="number"
@@ -150,180 +224,235 @@ const UpdateRecordFileModal = () => {
               rules={{ required: 'Campo obligatorio' }}
             />
 
-            <FormCheckbox
+            <Controller
               name="sensitive_data"
-              label="Información sensible"
-              register={register}
-              error={errors?.sensitive_data?.message}
+              control={control}
+              defaultValue={false}
+              render={({ field }) => (
+                <FormCheckbox
+                  label="Información sensible"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  error={errors?.sensitive_data?.message}
+                />
+              )}
             />
 
             {/* DETERIORO */}
             <AsyncSearchSelect
               label="Deterioro"
-              placeholder="Buscar deterioro..."
-              value={selected.deterioration_status_id}
+              placeholder="Buscar deterioro…"
+              value={watch('deterioration_status_id')??null}
               initialLabel={selected.deterioration_status?.name}
-              error={errors.deterioration_status_id?.message}
-              searchFn={async (q) => {
-                setDeteriorationQuery(q)
-                if (!q.trim()) return []
-                return deteriorationResults.map((d: Deterioration) => ({
-                  id: d.id,
-                  label: d.name,
-                }))
-              }}
               onChange={(id) =>
                 setValue('deterioration_status_id', id, {
                   shouldValidate: true,
                 })
               }
+              onQueryChange={setDeteriorationQuery}
+              results={deteriorationResults.map((d) => ({
+                id: d.id,
+                label: d.name,
+              }))}
+              loading={false}
+              searchError={null}
+              error={errors.deterioration_status_id?.message}
             />
-            <input type="hidden" {...register('deterioration_status_id')} />
           </div>
 
-          {/* 2da fila: Fondo / Sección */}
+          {/* ================= FONDO / SECCIÓN ================= */}
           <div className="grid grid-cols-2 gap-4">
-
             <AsyncSearchSelect
               label="Fondo"
-              placeholder="Buscar fondo..."
-              value={selected.fund_id}
-              initialLabel={
-                selected.fund ? `${selected.fund.acronym} - ${selected.fund.name}` : ''
-              }
-              error={errors.fund_id?.message}
-              searchFn={async (q) => {
-                setFundQuery(q)
-                if (!q.trim()) return []
-                return fundResults.map((f: Fund) => ({
-                  id: f.id,
-                  label: `${f.acronym} - ${f.name}`,
-                }))
-              }}
+              placeholder="Buscar fondo…"
+              value={watch('fund_id')??null}
+              initialLabel={`${selected.fund?.acronym} - ${selected.fund?.name}`}
               onChange={(id) => setValue('fund_id', id, { shouldValidate: true })}
+              onQueryChange={setFundQuery}
+              results={fundResults.map((f) => ({
+                id: f.id,
+                label: `${f.acronym} - ${f.name}`,
+              }))}
+              loading={false}
+              searchError={null}
+              error={errors.fund_id?.message}
             />
-            <input type="hidden" {...register('fund_id')} />
 
             <AsyncSearchSelect
               label="Sección"
-              placeholder="Buscar sección..."
-              value={selected.section_id}
-              initialLabel={
-                selected.section ? `${selected.section.acronym} - ${selected.section.name}` : ''
+              placeholder="Buscar sección…"
+              value={watch('section_id')??null}
+              initialLabel={`${selected.section?.acronym} - ${selected.section?.name}`}
+              onChange={(id) =>
+                setValue('section_id', id, { shouldValidate: true })
               }
+              onQueryChange={setSectionQuery}
+              results={sectionResults.map((s) => ({
+                id: s.id,
+                label: `${s.acronym} - ${s.name}`,
+              }))}
+              loading={false}
+              searchError={null}
               error={errors.section_id?.message}
-              searchFn={async (q) => {
-                setSectionQuery(q)
-                if (!q.trim()) return []
-                return sectionResults.map((s: Section) => ({
-                  id: s.id,
-                  label: `${s.acronym} - ${s.name}`,
-                }))
-              }}
-              onChange={(id) => setValue('section_id', id, { shouldValidate: true })}
             />
-            <input type="hidden" {...register('section_id')} />
           </div>
 
-          {/* 3ra fila: Serie / Ubicación */}
+          {/* ================= SERIE / UBICACIÓN ================= */}
           <div className="grid grid-cols-2 gap-4">
-
             <AsyncSearchSelect
               label="Serie"
-              placeholder="Buscar serie..."
-              value={selected.series_id}
-              initialLabel={
-                selected.series ? `${selected.series.acronym} - ${selected.series.name}` : ''
+              placeholder="Buscar serie…"
+              value={watch('series_id')??null}
+              initialLabel={`${selected.series?.acronym} - ${selected.series?.name}`}
+              onChange={(id) =>
+                setValue('series_id', id, { shouldValidate: true })
               }
+              onQueryChange={setSeriesQuery}
+              results={seriesResults.map((s) => ({
+                id: s.id,
+                label: `${s.acronym} - ${s.name}`,
+              }))}
+              loading={false}
+              searchError={null}
               error={errors.series_id?.message}
-              searchFn={async (q) => {
-                setSeriesQuery(q)
-                if (!q.trim()) return []
-                return seriesResults.map((s: Series) => ({
-                  id: s.id,
-                  label: `${s.acronym} - ${s.name}`,
-                }))
-              }}
-              onChange={(id) => setValue('series_id', id, { shouldValidate: true })}
             />
-            <input type="hidden" {...register('series_id')} />
 
             <AsyncSearchSelect
               label="Ubicación"
-              placeholder="Buscar ubicación..."
-              value={selected.location_id}
+              placeholder="Buscar ubicación…"
+              value={watch('location_id')??null}
               initialLabel={selected.location?.name}
+              onChange={(id) =>
+                setValue('location_id', id, { shouldValidate: true })
+              }
+              onQueryChange={setLocationQuery}
+              results={locationResults.map((l) => ({
+                id: l.id,
+                label: l.name,
+              }))}
+              loading={false}
+              searchError={null}
               error={errors.location_id?.message}
-              searchFn={async (q) => {
-                setLocationQuery(q)
-                if (!q.trim()) return []
-                return locationResults.map((l: Location) => ({
-                  id: l.id,
-                  label: l.name,
-                }))
-              }}
-              onChange={(id) => setValue('location_id', id, { shouldValidate: true })}
             />
-            <input type="hidden" {...register('location_id')} />
           </div>
 
-          {/* SUBJECT */}
+          {/* ASUNTO */}
           <TextArea
             label="Asunto"
             placeholder="Escribe un asunto breve..."
             maxLength={1500}
-            defaultValue={selected.subject}
-            {...register('subject', {
-              required: 'Campo obligatorio',
-              maxLength: {
-                value: 1500,
-                message: 'Máximo 1500 caracteres',
-              },
-            })}
-            error={errors?.subject?.message}
+            {...register('subject', { required: 'Campo obligatorio' })}
+            error={errors.subject?.message}
           />
 
-          {/* TYPOLOGÍAS + COMMENTS */}
+          {/* TIPOLOGÍAS Y TAMAÑOS */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             <AsyncCheckSearchSelect
               label="Tipologías"
-              placeholder="Buscar tipo documental..."
-              selectedIds={watch('typology_ids') || []}
+              placeholder="Buscar tipo..."
+              selectedIds={watch('typology_ids') ?? []}
               onChange={(ids) =>
                 setValue('typology_ids', ids, { shouldValidate: true })
               }
-              searchFn={async (q) => {
-                setTypologyQuery(q)
-                if (!q.trim()) return []
-                return typologyResults.map((t: Typology) => ({
-                  id: t.id,
-                  label: t.name,
-                }))
-              }}
+              onQueryChange={setTypologyQuery}
+              results={typologyResults.map((t) => ({
+                id: t.id,
+                label: t.name,
+              }))}
+              loading={false}
+              searchError={null}
               error={errors.typology_ids?.message}
             />
 
-            <FormInput
-              name="comments"
-              label="Comentarios"
-              placeholder="Escribe tus observaciones (opcional)"
-              register={register}
-              errors={errors}
-              rules={{
-                maxLength: {
-                  value: 100,
-                  message: 'Máximo 100 caracteres',
-                },
-              }}
-            />
+            <StaticCheckSearchSelect
+  label="Tamaños del documento"
+  options={DOCUMENT_SIZES}
+  selectedIds={watch('document_sizes')?.split(',') || []}
+  onChange={(ids) => {
+    setValue('document_sizes', ids.join(','), { shouldValidate: true })
+  }}
+  error={errors.document_sizes?.message}
+/>
+
           </div>
 
-          {/* BUTTONS */}
+          {/* COMENTARIOS */}
+          <FormInput
+            name="comments"
+            label="Comentarios"
+            placeholder="Observaciones (opcional)"
+            register={register}
+            errors={errors}
+          />
+
+          {/* ================= REFERENCIA ANTERIOR ================= */}
+          <div className="border border-dark-gray2 rounded-3xl p-4 mt-2 space-y-4 bg-main-gray text-center">
+            <h3 className="text-lg font-semibold text-blue-600">
+              Referencia anterior
+            </h3>
+
+            <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+              <TextInput
+                className="text-center border-dark-gray2 border rounded-3xl bg-white font-medium text-blue-600"
+                label="Fondo"
+                value={prevFund}
+                onChange={(e) => setPrevFund(e.target.value)}
+                toUpper
+              />
+
+              <TextInput
+                className="text-center border-dark-gray2 border rounded-3xl bg-white font-medium text-blue-600"
+                label="Sección"
+                value={prevSection}
+                onChange={(e) => setPrevSection(e.target.value)}
+                toUpper
+              />
+
+              <TextInput
+                className="text-center border-dark-gray2 border rounded-3xl bg-white font-medium text-blue-600"
+                label="Serie"
+                value={prevSeries}
+                onChange={(e) => setPrevSeries(e.target.value)}
+                toUpper
+              />
+
+              <TextInput
+                className="text-center border-dark-gray2 border rounded-3xl bg-white font-medium text-blue-600"
+                label="Caja"
+                type="number"
+                value={prevBox}
+                onChange={(e) => setPrevBox(e.target.value)}
+              />
+
+              <TextInput
+                className="text-center border-dark-gray2 border rounded-3xl bg-white font-medium text-blue-600"
+                label="Exp."
+                type="number"
+                value={prevExp}
+                onChange={(e) => setPrevExp(e.target.value)}
+              />
+            </div>
+
+            <div className="px-3 py-1 border border-blue-600 rounded-3xl bg-white">
+              <p className="text-sm text-gray-700">Código generado:</p>
+              <p className="font-bold text-red text-base">
+                {previousReferenceCode || '—'}
+              </p>
+            </div>
+          </div>
+
+          {errors.previous_reference_code && (
+            <p className="text-red-600 text-xs">
+              Debes generar una referencia anterior antes de guardar.
+            </p>
+          )}
+
+          {/* BOTONES */}
           {loadingUpdate ? (
-            <div className="flex items-center justify-center mx-auto gap-4">
+            <div className="flex justify-center items-center gap-4">
               <span className="text-blue-600 font-medium text-lg">
-                Guardando cambios...
+                Guardando cambios…
               </span>
               <Loader size={20} />
             </div>
@@ -333,16 +462,11 @@ const UpdateRecordFileModal = () => {
                 <span>Cancelar</span>
               </button>
 
-              <button
-                type="submit"
-                className={`create ${loadingUpdate ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={loadingUpdate}
-              >
+              <button type="submit" className="create">
                 <span>Guardar cambios</span>
               </button>
             </div>
           )}
-
         </form>
       </div>
     </Modal>

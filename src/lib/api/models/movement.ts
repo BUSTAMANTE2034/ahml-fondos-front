@@ -1,9 +1,15 @@
+// ======================================
+// Tipos de estado permitidos PARA MOVIMIENTOS
+// (los del record_file, sin on_loan)
+// ======================================
 export type MovementStatus =
-  | "archive"
-  | "review"
-  | "preservation"
-  | "restoration"
+  | "available"
+  | "under_review"
+  | "unavailable"
 
+// ======================================
+// Modelo completo de un movimiento
+// ======================================
 export interface MovementHistory {
   id: number
   record_file_id: number
@@ -15,11 +21,11 @@ export interface MovementHistory {
   moved_at: string
   description: string | null
 
-  // anidado
+  // ---- Expediente ligado ----
   record_file: {
     id: number
     reference_code: string
-    availability_status: string
+    availability_status: MovementStatus | "on_loan"  // por si viene desde Loans
     last_preservation_date: string | null
     last_fund_date: string | null
     deterioration: {
@@ -29,6 +35,7 @@ export interface MovementHistory {
     } | null
   } | null
 
+  // ---- Usuario que movió ----
   moved_by_user: {
     id: number
     first_name: string
@@ -41,19 +48,26 @@ export interface MovementHistory {
   deleted_at?: string | null
 }
 
+// ======================================
+// Respuesta individual
+// ======================================
 export interface MovementHistoryResponse {
   movement?: MovementHistory
   message: string
 }
 
+// ======================================
+// Crear movimiento
+// ======================================
 export interface CreateMovementHistory {
   record_file_id: number
   destination_status: MovementStatus
-  origin_status?: MovementStatus | null
-  description?: string
-  moved_at?: string
+  description: string
 }
 
+// ======================================
+// Actualizar movimiento
+// ======================================
 export interface UpdateMovementHistory {
   origin_status?: MovementStatus | null
   destination_status?: MovementStatus | null
@@ -61,15 +75,17 @@ export interface UpdateMovementHistory {
   moved_at?: string | null
 }
 
+// ======================================
+// Opciones para GET paginado
+// ======================================
 export interface GetMovementsOptions {
   initialPage?: number
   initialPerPage?: number
-  initialRecordFileId?: number | null
-  initialUserId?: number | null
-  initialOriginStatus?: MovementStatus | null
-  initialDestinationStatus?: MovementStatus | null
 }
 
+// ======================================
+// Respuesta paginada
+// ======================================
 export interface MovementsPaginatedResponse {
   message: string
   movements: MovementHistory[]
