@@ -58,6 +58,34 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }
 
+  // 🔹 Detectar estado de conexión (offline / online)
+useEffect(() => {
+  const handleOffline = () => {
+    toastError({
+      id: 200,
+      title: 'Sin conexión',
+      message: 'Revisa tu conexión a internet.',
+    })
+  }
+
+  const handleOnline = () => {
+    toastWarning({
+      id: 201,
+      title: 'Conexión restaurada',
+      message: 'Has recuperado la conexión.',
+    })
+  }
+
+  window.addEventListener('offline', handleOffline)
+  window.addEventListener('online', handleOnline)
+
+  return () => {
+    window.removeEventListener('offline', handleOffline)
+    window.removeEventListener('online', handleOnline)
+  }
+}, [toastError, toastWarning])
+
+
   // 🔹 Carga y verificación inicial del usuario
   useEffect(() => {
     const initAuth = async () => {

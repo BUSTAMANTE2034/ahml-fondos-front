@@ -9,8 +9,7 @@ import CreateRecordFileModal from '../modals/create-record-file-modal'
 import UpdateRecordFileModal from '../modals/edit-record-file-modal'
 import DeleteRecordFileModal from '../modals/delete-record-file-modal'
 import ShowRecordFileModal from '../modals/show-record-file-modal'
-import EnableRecordFileModal from '../modals/enable-record-file-modal'
-import DisableRecordFileModal from '../modals/disable-record-file-modal'
+
 import GetRecordFileCoverModal from '../modals/get-record-file-cover-modal'
 import CreateLoanModal from '../modals/create-loan-modal'
 import ReceiveLoanModal from '../modals/recibe-loan-modal'
@@ -110,11 +109,6 @@ const Table = () => {
       <CreateLoanModal/>
       <ReceiveLoanModal/>
       <CreateMovementModal/>
-      {/* 
-      
-      <EnableRecordFileModal/>
-      <DisableRecordFileModal/>
-      */}
       <ShowRecordFileModal />
     </Card>
   )

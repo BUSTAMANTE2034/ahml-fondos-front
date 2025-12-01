@@ -6,9 +6,10 @@ import { adminRoutes,managerRoutes,archivistRoutes,visitorRoutes } from './route
 import ProtectedRoute from '@components/security/protectedRoute'
 import AutoHome from '@components/security/authHome'
 import LoginGate from '@/components/security/loginGate'
-
+import FirstLoginPage from '@/pages/recover'
 const AppRoutes = () => {
   return (
+    
     <Routes>
       {/* <Route path="/" element={<Navigate replace to={'login'} />} />
       <Route path="/login" element={<RLogin />} /> */}
@@ -20,8 +21,10 @@ const AppRoutes = () => {
       <LoginView />
     </LoginGate>
   } />
+  <Route path="/first-login" element={<FirstLoginPage />} />
       <Route path="/logout" element={<LogoutView/>} />
       <Route path="*" element={<R404 />} />
+      
 
       {/**RUTAS PRIVADAS
        * Administradores /admin
@@ -39,7 +42,7 @@ const AppRoutes = () => {
       </Route>
       <Route element={<ProtectedRoute allowedRoles={['manager']} />}>
         <Route path="/manager/:id">
-          <Route index element={<Navigate replace to="record-files" />} />
+          <Route index element={<Navigate replace to="archivists" />} />
           {managerRoutes.map(({ path, element }) => (
             <Route key={path} path={path} element={element} />
           ))}

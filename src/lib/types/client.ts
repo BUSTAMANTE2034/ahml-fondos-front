@@ -40,13 +40,58 @@ export async function apiFetch<T = unknown>(
     finalBody = typeof body === 'string' ? body : JSON.stringify(body)
   }
 
-  const res = await fetch(`${BASE}${path}`, {
-    credentials: 'include',
-    headers: finalHeaders,
-    ...rest,
-    body: finalBody,
-  })
+  let res: Response
 
+  // -------------------------------------------------------------
+  //  TRY / CATCH PARA DETECTAR ERRORES DE RED (NO HAY RESPUESTA)
+  // -------------------------------------------------------------
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      credentials: 'include',
+      headers: finalHeaders,
+      ...rest,
+      body: finalBody,
+    })
+    
+  } catch (err: any) {
+    const offline = !navigator.onLine
+
+    // ------------------------------------------
+    // 🔥 1) Sin conexión a internet
+    // ------------------------------------------
+    if (offline) {
+      window.dispatchEvent(new Event('offline'))
+
+      throw new ApiError(
+        'No hay conexión a internet.',
+        0,
+        null
+      )
+    }
+
+    // ------------------------------------------
+    // 🔥 2) Servidor caído / no responde
+    // fetch lanza TypeError cuando NO hay respuesta HTTP
+    // ------------------------------------------
+    if (err instanceof TypeError) {
+      window.dispatchEvent(new Event('server-down'))
+
+      throw new ApiError(
+        'El servidor no está disponible. Inténtalo más tarde.',
+        0,
+        null
+      )
+    }
+
+    // ------------------------------------------
+    // Otros errores raros
+    // ------------------------------------------
+    throw err
+  }
+
+  // -------------------------------------------------------------
+  //  AQUI YA HAY RESPUESTA HTTP (status code)
+  // -------------------------------------------------------------
   const ct = res.headers.get('content-type') || ''
 
   const parseAuto = async () => {
@@ -70,15 +115,18 @@ export async function apiFetch<T = unknown>(
       ? await res.blob()
       : await parseAuto()
 
-  // Si el backend responde 401, dispara el handler global
+  // ------------------------------------------
+  // 🔐 3) Manejo global de 401
+  // ------------------------------------------
   if (res.status === 401 && !skipAuthHandling && unauthorizedHandler) {
     try {
       void unauthorizedHandler()
-    } catch {
-      // por seguridad, ignoramos errores del handler
-    }
+    } catch {}
   }
 
+  // ------------------------------------------
+  // ⚠️ 4) Errores HTTP normales (400, 500, etc.)
+  // ------------------------------------------
   if (!res.ok) {
     const message =
       data && typeof data === 'object' && 'message' in (data as any)

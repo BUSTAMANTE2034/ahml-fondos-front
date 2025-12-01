@@ -17,15 +17,22 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     )
   }
 
-
-  if (!isAuthenticated) {
+  // Usuario no logueado → Login
+  if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />
+  // ⭐ EXCEPCIÓN: permitir regresar al login
+  if (user.first_login && window.location.pathname === "/login") {
+    return <Outlet />;
   }
 
+  // 🔥 Bloqueo global, excepto login
+  if (user.first_login && window.location.pathname !== "/first-login") {
+    return <Navigate to="/first-login" replace />
+  }
+
+  // Validación de roles
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to={`/${user.role}/${user.id}`} replace />
   }

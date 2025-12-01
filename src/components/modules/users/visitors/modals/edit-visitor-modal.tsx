@@ -5,10 +5,12 @@ import { FormInput } from '@/components/forms/input'
 import Loader from '@ui/loader'
 import { useVisitors } from '../index/visitor-context'
 import { UpdateUser } from '@models/user'
+import { useAuth } from '@/components/contexts'
 
 const UpdateVisitorModal = () => {
   const { isEditOpen, closeEdit, selected, handleUpdate, loadingUpdate } =
     useVisitors()
+  const{user}=useAuth()
 
   const {
     register,
@@ -99,7 +101,8 @@ const UpdateVisitorModal = () => {
                 // disabled
                 {...register('role')}
               ><option value="visitor">Visitante</option>
-                <option value="manager">Gestor</option>
+                {user?.role === 'admin' && (<option value="manager">Gestor</option>)}
+                
                 <option value="archivist">Archivista</option>
                 
               </select>
