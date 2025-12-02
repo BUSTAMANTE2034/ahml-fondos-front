@@ -46,7 +46,7 @@ const RecordFilesRow = ({ item: recordFile }: Props) => {
       'bg-yellow-200  hover:bg-yellow-100 '
     } ${
         recordFile.availability_status === 'under_review' &&
-        'bg-orange-400  hover:bg-orange-300 '
+        'bg-orange-400  hover:bg-orange-300 text-white'
       } ${
         recordFile.availability_status === 'unavailable' &&
         'bg-red-600  hover:bg-red-500  text-white'
@@ -78,7 +78,7 @@ const RecordFilesRow = ({ item: recordFile }: Props) => {
         {recordFile.location?.name}
       </span>
       <span className="flex items-center ml-auto">
-        <MenuDesplegable
+        <MenuDesplegable className='text-black'
           trigger={
             <img
               src={Menu}

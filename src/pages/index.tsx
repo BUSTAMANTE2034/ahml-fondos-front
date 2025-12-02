@@ -33,7 +33,7 @@ const Root = () => {
 }
 
 createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
+  <BrowserRouter basename="/fondos">
     <StrictMode>
       <Root />
     </StrictMode>
