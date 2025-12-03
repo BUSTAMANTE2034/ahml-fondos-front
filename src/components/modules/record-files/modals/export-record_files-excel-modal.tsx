@@ -97,13 +97,35 @@ const ExportRecordFilesExcelModal = () => {
   const [fFileNumber, setFFileNumber] = useState(file_number)
   const [fBoxNumber, setFBoxNumber] = useState(box_number)
 
-  const [fFundName, setFFundName] = useState(fund_name)
-  const [fSectionName, setFSectionName] = useState(section_name)
-  const [fSeriesName, setFSeriesName] = useState(series_name)
-  const [fLocationName, setFLocationName] = useState(location_name)
-  const [fDeteriorationName, setFDeteriorationName] =
-    useState(deterioration_name)
-  const [fTypologyName, setFTypologyName] = useState(typology_name)
+  // FONDO
+  const [fFundId, setFFundId] = useState<number | null>(null)
+  const [fFundName, setFFundName] = useState<string>('')
+  const [fFundQuery, setFFundQuery] = useState<string>('')
+
+  // SECCIÓN
+  const [fSectionId, setFSectionId] = useState<number | null>(null)
+  const [fSectionName, setFSectionName] = useState<string>('')
+  const [fSectionQuery, setFSectionQuery] = useState<string>('')
+
+  // SERIE
+  const [fSeriesId, setFSeriesId] = useState<number | null>(null)
+  const [fSeriesName, setFSeriesName] = useState<string>('')
+  const [fSeriesQuery, setFSeriesQuery] = useState<string>('')
+
+  // UBICACIÓN
+  const [fLocationId, setFLocationId] = useState<number | null>(null)
+  const [fLocationName, setFLocationName] = useState<string>('')
+  const [fLocationQuery, setFLocationQuery] = useState<string>('')
+
+  // DETERIORO
+  const [fDeteriorationId, setFDeteriorationId] = useState<number | null>(null)
+  const [fDeteriorationName, setFDeteriorationName] = useState<string>('')
+  const [fDeteriorationQuery, setFDeteriorationQuery] = useState<string>('')
+
+  // TIPOLOGÍA
+  const [fTypologyId, setFTypologyId] = useState<number | null>(null)
+  const [fTypologyName, setFTypologyName] = useState<string>('')
+  const [fTypologyQuery, setFTypologyQuery] = useState<string>('')
 
   const [fSensitive, setFSensitive] = useState(sensitive)
   const [fAvail, setFAvail] = useState(availability_status)
@@ -116,15 +138,17 @@ const ExportRecordFilesExcelModal = () => {
   const applyOrder = (field: OrderField, dir: OrderDir) => {
     setFOrderBy(`${field}_${dir}`)
   }
-  const clearFilters = () => {
+ const clearFilters = () => {
   setPerPage('50')
 
+  // filtros directos
   setFQuery('')
   setFReferenceCode('')
   setFPrevReferenceCode('')
   setFFileNumber('')
   setFBoxNumber('')
 
+  // relaciones: NOMBRES
   setFFundName('')
   setFSectionName('')
   setFSeriesName('')
@@ -132,9 +156,25 @@ const ExportRecordFilesExcelModal = () => {
   setFDeteriorationName('')
   setFTypologyName('')
 
+  // relaciones: IDs
+  setFFundId(null)
+  setFSectionId(null)
+  setFSeriesId(null)
+  setFLocationId(null)
+  setFDeteriorationId(null)
+  setFTypologyId(null)
+
+  // relaciones: QUERIES
+  setFFundQuery('')
+  setFSectionQuery('')
+  setFSeriesQuery('')
+  setFLocationQuery('')
+  setFDeteriorationQuery('')
+  setFTypologyQuery('')
+
+  // otros filtros
   setFSensitive('all')
   setFAvail('all')
-
   setFFileAfter(null)
   setFFileBefore(null)
 
@@ -283,18 +323,33 @@ const ExportRecordFilesExcelModal = () => {
             <AsyncSearchSelect
               label="Fondo"
               placeholder="Buscar fondo..."
-              value={null}
-              onChange={() => {}}
-              onQueryChange={setFFundName}
+              value={fFundId}
+              onChange={(id) => {
+                setFFundId(id)
+                const selected = fundResults.find((f) => f.id === id)
+                setFFundName(selected?.name ?? '')
+              }}
+              onQueryChange={(q) => {
+                setFFundQuery(q)
+                setFFundName(q) // mantiene coherencia al escribir
+              }}
               results={fundResults.map((f) => ({ id: f.id, label: f.name }))}
               loading={fundLoading}
             />
+
             <AsyncSearchSelect
               label="Sección"
               placeholder="Buscar sección..."
-              value={null}
-              onChange={() => {}}
-              onQueryChange={setFSectionName}
+              value={fSectionId}
+              onChange={(id) => {
+                setFSectionId(id)
+                const selected = sectionResults.find((s) => s.id === id)
+                setFSectionName(selected?.name ?? '')
+              }}
+              onQueryChange={(q) => {
+                setFSectionQuery(q)
+                setFSectionName(q)
+              }}
               results={sectionResults.map((s) => ({ id: s.id, label: s.name }))}
               loading={sectionLoading}
             />
@@ -303,9 +358,16 @@ const ExportRecordFilesExcelModal = () => {
             <AsyncSearchSelect
               label="Serie"
               placeholder="Buscar serie..."
-              value={null}
-              onChange={() => {}}
-              onQueryChange={setFSeriesName}
+              value={fSeriesId}
+              onChange={(id) => {
+                setFSeriesId(id)
+                const selected = seriesResults.find((s) => s.id === id)
+                setFSeriesName(selected?.name ?? '')
+              }}
+              onQueryChange={(q) => {
+                setFSeriesQuery(q)
+                setFSeriesName(q)
+              }}
               results={seriesResults.map((s) => ({ id: s.id, label: s.name }))}
               loading={seriesLoading}
             />
@@ -313,9 +375,16 @@ const ExportRecordFilesExcelModal = () => {
             <AsyncSearchSelect
               label="Ubicación"
               placeholder="Buscar ubicación..."
-              value={null}
-              onChange={() => {}}
-              onQueryChange={setFLocationName}
+              value={fLocationId}
+              onChange={(id) => {
+                setFLocationId(id)
+                const selected = locationResults.find((l) => l.id === id)
+                setFLocationName(selected?.name ?? '')
+              }}
+              onQueryChange={(q) => {
+                setFLocationQuery(q)
+                setFLocationName(q)
+              }}
               results={locationResults.map((l) => ({
                 id: l.id,
                 label: l.name,
@@ -327,21 +396,36 @@ const ExportRecordFilesExcelModal = () => {
             <AsyncSearchSelect
               label="Deterioro"
               placeholder="Buscar deterioro..."
-              value={null}
-              onChange={() => {}}
-              onQueryChange={setFDeteriorationName}
+              value={fDeteriorationId}
+              onChange={(id) => {
+                setFDeteriorationId(id)
+                const selected = deteriorationResults.find((d) => d.id === id)
+                setFDeteriorationName(selected?.name ?? '')
+              }}
+              onQueryChange={(q) => {
+                setFDeteriorationQuery(q)
+                setFDeteriorationName(q)
+              }}
               results={deteriorationResults.map((d) => ({
                 id: d.id,
                 label: d.name,
               }))}
               loading={deteriorationLoading}
             />
+
             <AsyncSearchSelect
               label="Tipología"
               placeholder="Buscar tipología..."
-              value={null}
-              onChange={() => {}}
-              onQueryChange={setFTypologyName}
+              value={fTypologyId}
+              onChange={(id) => {
+                setFTypologyId(id)
+                const selected = typologyResults.find((t) => t.id === id)
+                setFTypologyName(selected?.name ?? '')
+              }}
+              onQueryChange={(q) => {
+                setFTypologyQuery(q)
+                setFTypologyName(q)
+              }}
               results={typologyResults.map((t) => ({
                 id: t.id,
                 label: t.name,
@@ -452,23 +536,22 @@ const ExportRecordFilesExcelModal = () => {
           </div>
         ) : (
           <div className="flex justify-between items-center pt-3">
-  <button
-    className="text-xs font-medium border border-dark2-gray rounded-3xl px-3 py-1 bg-gray-1 hover:text-blue-800 cursor-pointer"
-    onClick={clearFilters}
-  >
-    Limpiar filtros
-  </button>
+            <button
+              className="text-xs font-medium border border-dark2-gray rounded-3xl px-3 py-1 bg-gray-1 hover:text-blue-800 cursor-pointer"
+              onClick={clearFilters}
+            >
+              Limpiar filtros
+            </button>
 
-  <div className="flex gap-4">
-    <button className="cancel" onClick={closeExportExcel}>
-      <span>Cancelar</span>
-    </button>
-    <button className="create" onClick={handleExport}>
-      <span>Exportar</span>
-    </button>
-  </div>
-</div>
-
+            <div className="flex gap-4">
+              <button className="cancel" onClick={closeExportExcel}>
+                <span>Cancelar</span>
+              </button>
+              <button className="create" onClick={handleExport}>
+                <span>Exportar</span>
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </Modal>
