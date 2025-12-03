@@ -15,7 +15,8 @@ import {
  * - No usa paginación, filtros ni fechas
  * - Debounce de 500ms
  */
-export const useSearchSections = (query: string) => {
+export const useSearchSections = (query: string,
+  is_active: boolean | null = null) => {
   const [debounced, setDebounced] = useState(query)
   const [results, setResults] = useState<Section[]>([])
   const [loading, setLoading] = useState(false)
@@ -46,7 +47,9 @@ export const useSearchSections = (query: string) => {
       const params = new URLSearchParams()
       params.append("query", debounced)
       params.append("per_page", "10") // <= límite igual que catalog-keys & funds
-      params.append('is_active', String(true))
+        if (is_active !== null) {
+        params.append("is_active", String(is_active))
+      }
 
       const url = `/sections?${params.toString()}`
 

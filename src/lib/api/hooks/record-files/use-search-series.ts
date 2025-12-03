@@ -15,7 +15,8 @@ import {
  * - per_page fijo en 10
  * - No incluye filtros por fechas ni is_active
  */
-export const useSearchSeries = (query: string) => {
+export const useSearchSeries = (query: string,
+  is_active: boolean | null = null) => {
   const [debounced, setDebounced] = useState(query)
   const [results, setResults] = useState<Series[]>([])
   const [loading, setLoading] = useState(false)
@@ -46,7 +47,9 @@ export const useSearchSeries = (query: string) => {
       const params = new URLSearchParams()
       params.append("query", debounced)
       params.append("per_page", "10") // <= fijo, como tus otras búsquedas
-      params.append('is_active', String(true))
+        if (is_active !== null) {
+        params.append("is_active", String(is_active))
+      }
 
       const url = `/series?${params.toString()}`
 

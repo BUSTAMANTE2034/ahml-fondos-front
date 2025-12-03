@@ -16,7 +16,8 @@ import {
  * - Sin filtros extra
  * - Con debounce de 500ms
  */
-export const useSearchFunds = (query: string) => {
+export const useSearchFunds = (query: string,
+  is_active: boolean | null = null) => {
   const [debounced, setDebounced] = useState(query)
   const [results, setResults] = useState<Fund[]>([])
   const [loading, setLoading] = useState(false)
@@ -48,7 +49,9 @@ export const useSearchFunds = (query: string) => {
       params.append("query", debounced)
       params.append("query", debounced)
       params.append("per_page", "10") // <= igual que catalog-keys
-      params.append('is_active', String(true))
+        if (is_active !== null) {
+        params.append("is_active", String(is_active))
+      }
       const url = `/funds?${params.toString()}`
 
       try {

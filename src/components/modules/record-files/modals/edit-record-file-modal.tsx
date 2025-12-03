@@ -58,13 +58,13 @@ const UpdateRecordFileModal = () => {
   const [deteriorationQuery, setDeteriorationQuery] = useState('')
   const [typologyQuery, setTypologyQuery] = useState('')
 
-  const { results: fundResults } = useSearchFunds(fundQuery)
-  const { results: sectionResults } = useSearchSections(sectionQuery)
-  const { results: seriesResults } = useSearchSeries(seriesQuery)
-  const { results: locationResults } = useSearchLocations(locationQuery)
+  const { results: fundResults } = useSearchFunds(fundQuery, true)
+  const { results: sectionResults } = useSearchSections(sectionQuery, true)
+  const { results: seriesResults } = useSearchSeries(seriesQuery, true)
+  const { results: locationResults } = useSearchLocations(locationQuery, true)
   const { results: deteriorationResults } =
-    useSearchDeteriorations(deteriorationQuery)
-  const { results: typologyResults } = useSearchTypologies(typologyQuery)
+    useSearchDeteriorations(deteriorationQuery, true)
+  const { results: typologyResults } = useSearchTypologies(typologyQuery, true)
 
   // -----------------------------------------
   // REFERENCIA ANTERIOR

@@ -16,7 +16,8 @@ import {
  * - per_page fijo en 10
  * - Sin paginación real ni parámetros adicionales
  */
-export const useSearchTypologies = (query: string) => {
+export const useSearchTypologies = (query: string,
+  is_active: boolean | null = null) => {
   const [debounced, setDebounced] = useState(query)
   const [results, setResults] = useState<Typology[]>([])
   const [loading, setLoading] = useState(false)
@@ -47,7 +48,9 @@ export const useSearchTypologies = (query: string) => {
       const params = new URLSearchParams()
       params.append("query", debounced)
       params.append("per_page", "10") // como en los otros search hooks
-      params.append('is_active', String(true))
+        if (is_active !== null) {
+        params.append("is_active", String(is_active))
+      }
 
       const url = `/typologies?${params.toString()}`
 

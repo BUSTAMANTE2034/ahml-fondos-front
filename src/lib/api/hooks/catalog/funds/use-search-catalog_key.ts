@@ -36,6 +36,7 @@ export const useSearchCatalogKeys = (query: string) => {
 
       // ⭐ Aquí enviamos SIEMPRE entity_type=fund
       params.append("entity_type", "fund")
+      params.append("is_active", "true")
 
       const url = `/catalog-keys?${params.toString()}`
 

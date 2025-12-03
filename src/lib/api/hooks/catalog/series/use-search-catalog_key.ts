@@ -33,6 +33,7 @@ export const useSearchCatalogKeys = (query: string) => {
       const params = new URLSearchParams()
       params.append("query", debounced)
       params.append("per_page", "10")
+      params.append("is_active", "true")
 
       // ⭐ Aquí enviamos SIEMPRE entity_type=fund
       params.append("entity_type", "series")

@@ -16,7 +16,8 @@ import {
  * - per_page fijo en 10
  * - Sin paginación ni filtros
  */
-export const useSearchDeteriorations = (query: string) => {
+export const useSearchDeteriorations = (query: string,
+  is_active: boolean | null = null) => {
   const [debounced, setDebounced] = useState(query)
   const [results, setResults] = useState<Deterioration[]>([])
   const [loading, setLoading] = useState(false)
@@ -47,7 +48,9 @@ export const useSearchDeteriorations = (query: string) => {
       const params = new URLSearchParams()
       params.append("query", debounced)
       params.append("per_page", "10") // <= igual que los otros hooks search
-      params.append('is_active', String(true))
+        if (is_active !== null) {
+        params.append("is_active", String(is_active))
+      }
       const url = `/deteriorations?${params.toString()}`
 
       try {

@@ -54,26 +54,26 @@ const CreateRecordFileModal = () => {
   // HOOKS (fetch)
   // -----------------------------------------
   const { results: fundResults, loading: fundLoading, error: fundError } =
-    useSearchFunds(fundQuery)
+    useSearchFunds(fundQuery,true)
   const { results: sectionResults, loading: sectionLoading, error: sectionError } =
-    useSearchSections(sectionQuery)
+    useSearchSections(sectionQuery,true)
   const { results: seriesResults, loading: seriesLoading, error: seriesError } =
-    useSearchSeries(seriesQuery)
+    useSearchSeries(seriesQuery,true)
   const {
     results: locationResults,
     loading: locationLoading,
     error: locationError,
-  } = useSearchLocations(locationQuery)
+  } = useSearchLocations(locationQuery,true)
   const {
     results: deteriorationResults,
     loading: deteriorationLoading,
     error: deteriorationError,
-  } = useSearchDeteriorations(deteriorationQuery)
+  } = useSearchDeteriorations(deteriorationQuery,true)
   const {
     results: typologyResults,
     loading: typologyLoading,
     error: typologyError,
-  } = useSearchTypologies(typologyQuery)
+  } = useSearchTypologies(typologyQuery,true)
 
   // -----------------------------------------
   // GENERACIÓN DE CÓDIGO ANTERIOR

@@ -15,7 +15,8 @@ import {
  * - debounce de 500ms
  * - sin paginación, sin filtros de is_active
  */
-export const useSearchLocations = (query: string) => {
+export const useSearchLocations = (query: string,
+  is_active: boolean | null = null) => {
   const [debounced, setDebounced] = useState(query)
   const [results, setResults] = useState<Location[]>([])
   const [loading, setLoading] = useState(false)
@@ -46,7 +47,9 @@ export const useSearchLocations = (query: string) => {
       const params = new URLSearchParams()
       params.append("query", debounced)
       params.append("per_page", "10") // mismo estilo siempre
-      params.append('is_active', String(true))
+        if (is_active !== null) {
+        params.append("is_active", String(is_active))
+      }
 
       const url = `/locations?${params.toString()}`
 
