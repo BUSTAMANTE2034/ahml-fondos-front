@@ -46,8 +46,9 @@ export const useSearchFunds = (query: string) => {
 
       const params = new URLSearchParams()
       params.append("query", debounced)
+      params.append("query", debounced)
       params.append("per_page", "10") // <= igual que catalog-keys
-
+      params.append('is_active', String(true))
       const url = `/funds?${params.toString()}`
 
       try {

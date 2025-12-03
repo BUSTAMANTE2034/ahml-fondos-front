@@ -47,6 +47,7 @@ export const useSearchTypologies = (query: string) => {
       const params = new URLSearchParams()
       params.append("query", debounced)
       params.append("per_page", "10") // como en los otros search hooks
+      params.append('is_active', String(true))
 
       const url = `/typologies?${params.toString()}`
 

@@ -46,6 +46,7 @@ export const useSearchLocations = (query: string) => {
       const params = new URLSearchParams()
       params.append("query", debounced)
       params.append("per_page", "10") // mismo estilo siempre
+      params.append('is_active', String(true))
 
       const url = `/locations?${params.toString()}`
 

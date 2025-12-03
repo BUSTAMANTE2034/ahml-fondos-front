@@ -60,7 +60,7 @@ const SidebarMenu = () => {
           <img src={MovementsIcon} alt="Movimientos" />
         </Option>
       </div>
-      {(user?.role === 'admin' || user?.role === 'manager') && (<div className="flex flex-col gap-1 mb-6">
+      {(user?.role === 'admin' || user?.role === 'manager'|| user?.role === 'archivist') && (<div className="flex flex-col gap-1 mb-6">
         <h2 className=" py-2 font-semibold text-xl text-gray-4">Catálogo</h2>
         <Option
           to={`/${user?.role}/${user?.id}/catalog-keys`}

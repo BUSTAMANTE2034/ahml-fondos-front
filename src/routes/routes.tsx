@@ -48,6 +48,13 @@ const archivistRoutes = [
   { path: 'record-files', element: <RecordFilesView /> },
   { path: 'movements', element: <MovementsView /> },
   { path: 'loans', element: <LoansView /> },
+  { path: 'catalog-keys', element: <CatalogKeysView /> },
+  { path: 'funds', element: <FundsView /> },
+  { path: 'sections', element: <SectionsView /> },
+  { path: 'series', element: <SeriesView /> },
+  { path: 'locations', element: <LocationsView /> },
+  { path: 'deteriorations', element: <DeteriorationsView /> },
+  { path: 'typologies', element: <TypologiesView /> },
 ]
 const visitorRoutes = [{ path: 'record-files', element: <RecordFilesView /> }]
 

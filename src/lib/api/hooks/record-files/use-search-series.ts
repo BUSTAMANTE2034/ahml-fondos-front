@@ -46,6 +46,7 @@ export const useSearchSeries = (query: string) => {
       const params = new URLSearchParams()
       params.append("query", debounced)
       params.append("per_page", "10") // <= fijo, como tus otras búsquedas
+      params.append('is_active', String(true))
 
       const url = `/series?${params.toString()}`
 

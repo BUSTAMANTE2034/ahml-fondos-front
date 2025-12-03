@@ -46,6 +46,7 @@ export const useSearchSections = (query: string) => {
       const params = new URLSearchParams()
       params.append("query", debounced)
       params.append("per_page", "10") // <= límite igual que catalog-keys & funds
+      params.append('is_active', String(true))
 
       const url = `/sections?${params.toString()}`
 
