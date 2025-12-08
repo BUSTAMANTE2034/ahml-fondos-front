@@ -82,6 +82,7 @@ const UpdateManagerModal = () => {
           <div className="w-full grid grid-cols-2 gap-4">
             <FormInput
               name="employee_id"
+              type='number'
               label="Número de empleado"
               placeholder="Número de empleado"
               register={register}

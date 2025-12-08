@@ -68,6 +68,7 @@ const CreateManagerModal = () => {
           <div className="w-full grid grid-cols-2 gap-4 justify-between">
             <FormInput
               name="employee_id"
+              type='number'
               label="Número de empleado"
               placeholder="Ingresa el número de empleado"
               register={register}
