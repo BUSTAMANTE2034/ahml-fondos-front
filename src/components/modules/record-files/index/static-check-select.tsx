@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import classNames from "classnames";
 import X from "@icons/close.svg";
 import { IconButton } from "@/components/ui/iconButton";
@@ -28,26 +28,6 @@ export const StaticCheckSearchSelect = ({
   const [query, setQuery] = useState("");
   const [showList, setShowList] = useState(false);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // 🔥 Cierra el dropdown cuando se da clic fuera
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setShowList(false);
-
-        // limpiar si no hay texto
-        if (!query.trim()) setQuery("");
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [query]);
-
   const filtered =
     query.trim().length === 0
       ? options
@@ -63,10 +43,8 @@ export const StaticCheckSearchSelect = ({
     }
   };
 
-  const showClearButton = query.trim() !== "" || showList;
-
   return (
-    <div className="flex flex-col mb-3 relative" ref={containerRef}>
+    <div className="flex flex-col mb-3 relative">
       {label && (
         <label className="font-bold text-xs md:text-sm mb-1">{label}</label>
       )}
@@ -84,8 +62,8 @@ export const StaticCheckSearchSelect = ({
           onChange={(e) => setQuery(e.target.value)}
         />
 
-        {/* X para limpiar */}
-        {showClearButton && (
+        {/* BOTÓN X */}
+        {(query || showList) && (
           <IconButton
             onClick={() => {
               setQuery("");
@@ -93,41 +71,43 @@ export const StaticCheckSearchSelect = ({
             }}
             className="absolute! right-1 top-1/2 -translate-y-1/2 z-20"
           >
-            <img src={X} className="h-4 w-4 opacity-60 hover:opacity-90" />
+            <img
+              src={X}
+              className="h-4 w-4 opacity-60 hover:opacity-90"
+            />
           </IconButton>
         )}
       </div>
 
-      {/* LISTA */}
-      {showList && (
-        <div
-          className="
-            absolute left-0 top-[calc(100%+2px)]
-            transition-all duration-150 
-            overflow-y-auto 
-            bg-white shadow-md border border-dark-gray 
-            rounded-b-xl w-full z-50 max-h-60
-          "
-        >
-          {filtered.length === 0 && (
-            <div className="p-2 text-xs text-gray-500">Sin resultados</div>
-          )}
+      {/* LISTA FLOTANTE (NO EMPUJA EL CONTENIDO) */}
+      <div
+        className={classNames(
+          `
+          absolute left-0 top-[calc(100%+2px)]
+          bg-white shadow-md border border-dark-gray rounded-b-xl
+          w-full max-h-60 overflow-auto z-50
+        `,
+          { hidden: !showList }
+        )}
+      >
+        {filtered.length === 0 && (
+          <div className="p-2 text-xs text-gray-500">Sin resultados</div>
+        )}
 
-          {filtered.map((opt) => (
-            <label
-              key={opt.id}
-              className="flex items-center gap-2 p-2 text-xs cursor-pointer hover:bg-gray-200"
-            >
-              <input
-                type="checkbox"
-                checked={selectedIds.includes(opt.id)}
-                onChange={() => toggle(opt.id)}
-              />
-              {opt.label}
-            </label>
-          ))}
-        </div>
-      )}
+        {filtered.map((opt) => (
+          <label
+            key={opt.id}
+            className="flex items-center gap-2 p-2 text-xs cursor-pointer hover:bg-gray-200"
+          >
+            <input
+              type="checkbox"
+              checked={selectedIds.includes(opt.id)}
+              onChange={() => toggle(opt.id)}
+            />
+            {opt.label}
+          </label>
+        ))}
+      </div>
 
       {/* CHIPS */}
       {selectedIds.length > 0 && (
@@ -139,7 +119,10 @@ export const StaticCheckSearchSelect = ({
             >
               {options.find((o) => o.id === id)?.label || id}
 
-              <button onClick={() => toggle(id)}>
+              <button
+                onClick={() => toggle(id)}
+                className="flex items-center justify-center"
+              >
                 <img
                   src={X}
                   className="w-5 h-5 cursor-pointer rounded-full hover:bg-blue-200 active:bg-blue-300 p-1"

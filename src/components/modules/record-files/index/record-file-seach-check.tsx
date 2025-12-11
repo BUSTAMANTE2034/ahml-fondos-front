@@ -43,11 +43,11 @@ export const AsyncCheckSearchSelect = ({
   const [selectedMap, setSelectedMap] = useState<Record<number, string>>({})
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Mostrar la X igual que en el otro Select
+  // Mostrar X si hay búsqueda o lista abierta o selección activa
   const showClearButton =
-    query.trim() !== '' || showList || selectedIds.length > 0
+    query.trim() !== '' || showList
 
-  // Inicializar labels
+  // Cargar labels iniciales + labels desde resultados
   useEffect(() => {
     const map: Record<number, string> = { ...selectedMap }
 
@@ -56,15 +56,13 @@ export const AsyncCheckSearchSelect = ({
     })
 
     results.forEach((r) => {
-      if (selectedIds.includes(r.id)) {
-        map[r.id] = r.label
-      }
+      if (selectedIds.includes(r.id)) map[r.id] = r.label
     })
 
     setSelectedMap(map)
   }, [initialSelected, results, selectedIds])
 
-  // Cerrar al hacer clic fuera
+  // Cerrar al dar clic fuera
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -73,8 +71,8 @@ export const AsyncCheckSearchSelect = ({
       ) {
         setShowList(false)
 
-        // limpiar si usuario no seleccionó nada
-        if (query.trim() && selectedIds.length === 0) {
+        // limpia solo búsqueda si no hay texto permanente
+        if (query.trim() !== '') {
           setQuery('')
           onQueryChange('')
         }
@@ -84,16 +82,16 @@ export const AsyncCheckSearchSelect = ({
     document.addEventListener('mousedown', handleClickOutside)
     return () =>
       document.removeEventListener('mousedown', handleClickOutside)
-  }, [query, selectedIds])
+  }, [query])
 
-  // Buscar cuando escribes
+  // Entrada del usuario
   const handleInput = (value: string) => {
     setQuery(value)
     onQueryChange(value)
     setShowList(true)
   }
 
-  // Seleccionar o deseleccionar
+  // Seleccionar/deseleccionar
   const toggleCheck = (id: number, label: string) => {
     if (selectedIds.includes(id)) {
       onChange(selectedIds.filter((x) => x !== id))
@@ -109,14 +107,16 @@ export const AsyncCheckSearchSelect = ({
   }
 
   return (
-    <div className="flex flex-col mb-3 relative" ref={containerRef}>
-      {label && <label className="font-bold text-xs md:text-sm">{label}</label>}
+    <div className="flex flex-col mb-3" ref={containerRef}>
+      {label && (
+        <label className="font-bold text-xs md:text-sm">{label}</label>
+      )}
 
       {/* INPUT */}
       <div className="relative">
         <input
           className={classNames(
-            'border-b border-dark-gray2 text-[10px] md:text-xs py-1 w-full pr-5 focus:outline-none',
+            'border-b border-dark-gray2 text-[10px] md:text-xs py-1 w-full pr-6 focus:outline-none',
             { 'border-red': !!error }
           )}
           placeholder={placeholder}
@@ -128,61 +128,63 @@ export const AsyncCheckSearchSelect = ({
           }}
         />
 
+        {/* X PARA LIMPIAR SOLO LA BUSQUEDA */}
         {showClearButton && (
           <IconButton
             onClick={() => {
               setQuery('')
               onQueryChange('')
-              setShowList(false)
-              onChange([]) // limpiar selección también
+              setShowList(false) // solo cerrar, NO borrar selecciones
             }}
             className="absolute! right-1 top-1/2 -translate-y-1/2"
-            tooltip="Limpiar"
+            tooltip="Limpiar búsqueda"
           >
             <img src={X} className="h-4 w-4" />
           </IconButton>
         )}
+
+        {/* DROPDOWN (flotante anclado al input) */}
+        {!loading && showList && (
+          <div
+            className="
+              absolute left-0 top-[calc(100%+2px)]
+              w-full bg-white shadow-lg border border-dark-gray
+              rounded-b-xl z-50 max-h-60 overflow-y-auto scroll-t
+            "
+          >
+            {searchError && (
+              <div className="p-2 text-xs text-red">{searchError}</div>
+            )}
+
+            {!searchError &&
+              results.length === 0 &&
+              query.trim() !== '' && (
+                <div className="p-2 text-xs text-gray-500">Sin resultados</div>
+              )}
+
+            {results.map((item) => (
+              <label
+                key={item.id}
+                className="flex items-center gap-2 p-2 text-xs cursor-pointer hover:bg-gray-200"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(item.id)}
+                  onChange={() => toggleCheck(item.id, item.label)}
+                />
+                {item.label}
+              </label>
+            ))}
+          </div>
+        )}
+
+        {/* LOADING */}
+        {loading && (
+          <div className="absolute left-0 top-[calc(100%+2px)] bg-white w-full p-2 text-xs shadow z-50">
+            Buscando…
+          </div>
+        )}
       </div>
-
-      {/* DROPDOWN flotante */}
-      {!loading && showList && (
-        <div
-          className="
-            absolute left-0 top-[calc(100%+2px)]
-            w-full bg-white shadow-lg border border-dark-gray
-            rounded-b-xl z-50 max-h-60 overflow-y-auto scroll-t
-          "
-        >
-          {searchError && (
-            <div className="p-2 text-xs text-red">{searchError}</div>
-          )}
-
-          {!searchError && results.length === 0 && query.trim() !== '' && (
-            <div className="p-2 text-xs text-gray-500">Sin resultados</div>
-          )}
-
-          {results.map((item) => (
-            <label
-              key={item.id}
-              className="flex items-center gap-2 p-2 text-xs cursor-pointer hover:bg-gray-200"
-            >
-              <input
-                type="checkbox"
-                checked={selectedIds.includes(item.id)}
-                onChange={() => toggleCheck(item.id, item.label)}
-              />
-              {item.label}
-            </label>
-          ))}
-        </div>
-      )}
-
-      {/* LOADING */}
-      {loading && (
-        <div className="absolute left-0 top-[calc(100%+2px)] bg-white w-full p-2 text-xs shadow z-50">
-          Buscando…
-        </div>
-      )}
 
       {/* CHIPS */}
       {selectedIds.length > 0 && (
