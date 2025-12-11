@@ -57,10 +57,10 @@ const Table = () => {
         <span className="hidden md:block">Fondo</span>
         <span className="hidden md:block">Sección</span>
         <span className="hidden md:block">Serie</span>
-        <span className="hidden lg:block">Delicado</span>
+        <span className="hidden lg:block">Estado</span>
         <span>Estatus</span>
         <span>Fecha</span>
-        <span className="hidden lg:block">Ubicación</span>
+        <span className="hidden lg:block">Lugar</span>
         <span></span>
 
         {/* FILA DE FILTROS */}

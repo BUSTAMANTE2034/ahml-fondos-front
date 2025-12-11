@@ -33,11 +33,11 @@ const DeleteLocationModal = () => {
         {/* HEADER */}
         <div className="text-center gap-2 flex flex-col">
           <h2 className="text-xl md:text-2xl font-bold text-blue-600">
-            Eliminar Ubicación
+            Eliminar Lugar
           </h2>
 
           <p className="text-sm">
-            Estás a punto de eliminar la ubicación{' '}
+            Estás a punto de eliminar el lugar{' '}
             <strong>"{selected.name}"</strong>.<br />
             Para confirmar, escribe <strong>"{REQUIRED}"</strong>.
           </p>

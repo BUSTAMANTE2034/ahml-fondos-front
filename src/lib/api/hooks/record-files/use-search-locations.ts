@@ -7,7 +7,7 @@ import {
 } from "@/lib/api/models/location"
 
 /**
- * Búsqueda ligera de ubicaciones (Locations) por query.
+ * Búsqueda ligera de lugares (Locations) por query.
  * Ideal para selects, autocompletados y búsqueda rápida.
  *
  * - Solo usa `query`
@@ -15,7 +15,7 @@ import {
  * - debounce de 500ms
  * - sin paginación, sin filtros de is_active
  */
-export const useSearchLocations = (query: string,
+export const useSearchLocations = (query: string | undefined,
   is_active: boolean | null = null) => {
   const [debounced, setDebounced] = useState(query)
   const [results, setResults] = useState<Location[]>([])
@@ -26,7 +26,7 @@ export const useSearchLocations = (query: string,
   // DEBOUNCE
   // --------------------------------------------------------
   useEffect(() => {
-    const id = setTimeout(() => setDebounced(query), 500)
+    const id = setTimeout(() => setDebounced(query ?? ""), 500)
     return () => clearTimeout(id)
   }, [query])
 
@@ -36,17 +36,19 @@ export const useSearchLocations = (query: string,
   useEffect(() => {
     const fetchData = async () => {
       // si el query está vacío → limpiar resultados
-      if (!debounced.trim()) {
+      /*if (!(debounced ?? "").trim()) {
         setResults([])
         return
-      }
+      }*/
+
 
       setLoading(true)
       setError(null)
 
       const params = new URLSearchParams()
-      params.append("query", debounced)
-      params.append("per_page", "10") // mismo estilo siempre
+      params.append("query", debounced ?? "")
+
+      params.append("per_page", "15") // mismo estilo siempre
         if (is_active !== null) {
         params.append("is_active", String(is_active))
       }
@@ -62,9 +64,9 @@ export const useSearchLocations = (query: string,
         setResults(data.locations ?? [])
       } catch (err: any) {
         if (err instanceof ApiError) {
-          setError(err.message || "Error al buscar ubicaciones.")
+          setError(err.message || "Error al buscar lugares.")
         } else {
-          setError("Error inesperado al buscar ubicaciones.")
+          setError("Error inesperado al buscar lugares.")
         }
       } finally {
         setLoading(false)

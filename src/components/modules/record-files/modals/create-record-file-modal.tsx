@@ -5,7 +5,7 @@ import { useRecordFiles } from '../index/record-file-context'
 import Loader from '@ui/loader'
 import { CreateRecordFile } from '@/lib/api/models/record-file'
 import FormCheckbox from '@/components/forms/checkbox'
-import { DOCUMENT_SIZES } from '@/components/ui/functions'
+import { DOCUMENT_SIZES, isDateBeforeOrToday } from '@/components/ui/functions'
 
 import { AsyncSearchSelect } from '../index/record-file-seach-select'
 
@@ -43,37 +43,54 @@ const CreateRecordFileModal = () => {
   // -----------------------------------------
   // QUERIES PARA SELECTS
   // -----------------------------------------
-  const [fundQuery, setFundQuery] = useState('')
-  const [sectionQuery, setSectionQuery] = useState('')
-  const [seriesQuery, setSeriesQuery] = useState('')
-  const [locationQuery, setLocationQuery] = useState('')
-  const [deteriorationQuery, setDeteriorationQuery] = useState('')
-  const [typologyQuery, setTypologyQuery] = useState('')
+  const [fundQuery, setFundQuery] = useState<string | undefined>(undefined)
+  const [sectionQuery, setSectionQuery] = useState<string | undefined>(
+    undefined
+  )
+  const [seriesQuery, setSeriesQuery] = useState<string | undefined>(undefined)
+  const [locationQuery, setLocationQuery] = useState<string | undefined>(
+    undefined
+  )
+  const [deteriorationQuery, setDeteriorationQuery] = useState<
+    string | undefined
+  >(undefined)
+  const [typologyQuery, setTypologyQuery] = useState<string | undefined>(
+    undefined
+  )
 
   // -----------------------------------------
   // HOOKS (fetch)
   // -----------------------------------------
-  const { results: fundResults, loading: fundLoading, error: fundError } =
-    useSearchFunds(fundQuery,true)
-  const { results: sectionResults, loading: sectionLoading, error: sectionError } =
-    useSearchSections(sectionQuery,true)
-  const { results: seriesResults, loading: seriesLoading, error: seriesError } =
-    useSearchSeries(seriesQuery,true)
+  const {
+    results: fundResults,
+    loading: fundLoading,
+    error: fundError,
+  } = useSearchFunds(fundQuery, true)
+  const {
+    results: sectionResults,
+    loading: sectionLoading,
+    error: sectionError,
+  } = useSearchSections(sectionQuery, true)
+  const {
+    results: seriesResults,
+    loading: seriesLoading,
+    error: seriesError,
+  } = useSearchSeries(seriesQuery, true)
   const {
     results: locationResults,
     loading: locationLoading,
     error: locationError,
-  } = useSearchLocations(locationQuery,true)
+  } = useSearchLocations(locationQuery, true)
   const {
     results: deteriorationResults,
     loading: deteriorationLoading,
     error: deteriorationError,
-  } = useSearchDeteriorations(deteriorationQuery,true)
+  } = useSearchDeteriorations(deteriorationQuery, true)
   const {
     results: typologyResults,
     loading: typologyLoading,
     error: typologyError,
-  } = useSearchTypologies(typologyQuery,true)
+  } = useSearchTypologies(typologyQuery, true)
 
   // -----------------------------------------
   // GENERACIÓN DE CÓDIGO ANTERIOR
@@ -98,7 +115,6 @@ const CreateRecordFileModal = () => {
     setValue('previous_reference_code', previousReferenceCode)
   }, [previousReferenceCode, setValue])
 
-
   // -----------------------------------------
   // REGISTROS CORRECTOS (sin hidden inputs)
   // -----------------------------------------
@@ -121,6 +137,14 @@ const CreateRecordFileModal = () => {
     })
   }, [register])
 
+  const resetReference = () => {
+    setPrevFund('')
+    setPrevSection('')
+    setPrevSeries('')
+    setPrevBox('')
+    setPrevExp('')
+  }
+
   // -----------------------------------------
   // SUBMIT
   // -----------------------------------------
@@ -128,6 +152,7 @@ const CreateRecordFileModal = () => {
     try {
       await handleCreate(data)
       reset()
+      resetReference()
     } catch {}
   }
 
@@ -136,13 +161,16 @@ const CreateRecordFileModal = () => {
   return (
     <Modal
       visible
-      onClose={closeCreate}
+      onClose={() => {
+        reset()
+        resetReference()
+        closeCreate()
+      }}
       showCloseButton
       closeBackdrop={false}
       big
     >
       <div className="flex flex-col gap-4 px-2 md:px-4">
-
         {/* HEADER */}
         <div className="text-center gap-2 flex flex-col">
           <h2 className="text-xl md:text-2xl font-bold text-blue-600">
@@ -154,14 +182,14 @@ const CreateRecordFileModal = () => {
         </div>
 
         {/* FORM */}
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-4">
-
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col space-y-4"
+        >
           {/* CAMPOS BÁSICOS */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 items-center">
-
             <FormInput
               name="file_number"
-              type="number"
               label="Número de expediente"
               register={register}
               errors={errors}
@@ -170,7 +198,6 @@ const CreateRecordFileModal = () => {
 
             <FormInput
               name="box_number"
-              type="number"
               label="No.Caja"
               register={register}
               errors={errors}
@@ -192,7 +219,15 @@ const CreateRecordFileModal = () => {
               label="Fecha del expediente"
               register={register}
               errors={errors}
-              rules={{ required: 'Campo obligatorio' }}
+              max={new Date().toISOString().split('T')[0]} // <-- OK
+              rules={{
+                required: 'Campo obligatorio',
+                validate: {
+                  notFuture: (value) =>
+                    (value && isDateBeforeOrToday(String(value))) ||
+                    'La fecha no puede ser mayor a hoy.',
+                },
+              }}
             />
 
             <Controller
@@ -213,9 +248,11 @@ const CreateRecordFileModal = () => {
             <AsyncSearchSelect
               label="Deterioro"
               placeholder="Buscar deterioro…"
-              value={watch('deterioration_status_id')??null}
+              value={watch('deterioration_status_id') ?? null}
               onChange={(id) =>
-                setValue('deterioration_status_id', id, { shouldValidate: true })
+                setValue('deterioration_status_id', id, {
+                  shouldValidate: true,
+                })
               }
               onQueryChange={setDeteriorationQuery}
               results={deteriorationResults.map((d) => ({
@@ -233,12 +270,14 @@ const CreateRecordFileModal = () => {
             <AsyncSearchSelect
               label="Fondo"
               placeholder="Buscar fondo…"
-              value={watch('fund_id')??null}
-              onChange={(id) => setValue('fund_id', id, { shouldValidate: true })}
+              value={watch('fund_id') ?? null}
+              onChange={(id) =>
+                setValue('fund_id', id, { shouldValidate: true })
+              }
               onQueryChange={setFundQuery}
               results={fundResults.map((f) => ({
                 id: f.id,
-                label: `${f.acronym} - ${f.name}`,
+                label: `${f.acronym} — ${f.name}  (${f.start_date} → ${f.end_date})`,
               }))}
               loading={fundLoading}
               searchError={fundError}
@@ -248,14 +287,15 @@ const CreateRecordFileModal = () => {
             <AsyncSearchSelect
               label="Sección"
               placeholder="Buscar sección…"
-              value={watch('section_id')??null}
+              value={watch('section_id') ?? null}
               onChange={(id) =>
                 setValue('section_id', id, { shouldValidate: true })
               }
               onQueryChange={setSectionQuery}
               results={sectionResults.map((s) => ({
                 id: s.id,
-                label: `${s.acronym} - ${s.name}`,
+                                label: `${s.acronym} — ${s.name}  (${s.start_date} → ${s.end_date})`,
+
               }))}
               loading={sectionLoading}
               searchError={sectionError}
@@ -268,14 +308,15 @@ const CreateRecordFileModal = () => {
             <AsyncSearchSelect
               label="Serie"
               placeholder="Buscar serie…"
-              value={watch('series_id')??null}
+              value={watch('series_id') ?? null}
               onChange={(id) =>
                 setValue('series_id', id, { shouldValidate: true })
               }
               onQueryChange={setSeriesQuery}
               results={seriesResults.map((s) => ({
                 id: s.id,
-                label: `${s.acronym} - ${s.name}`,
+                                label: `${s.acronym} — ${s.name}  (${s.start_date} → ${s.end_date})`,
+
               }))}
               loading={seriesLoading}
               searchError={seriesError}
@@ -283,9 +324,9 @@ const CreateRecordFileModal = () => {
             />
 
             <AsyncSearchSelect
-              label="Ubicación"
+              label="Lugar"
               placeholder="Buscar ubicación…"
-              value={watch('location_id')??null}
+              value={watch('location_id') ?? null}
               onChange={(id) =>
                 setValue('location_id', id, { shouldValidate: true })
               }
@@ -314,7 +355,6 @@ const CreateRecordFileModal = () => {
 
           {/* TIPOLOGÍAS Y TAMAÑOS */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
             {/* TIPOS */}
             <AsyncCheckSearchSelect
               label="Tipologías"

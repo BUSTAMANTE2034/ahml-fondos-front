@@ -129,3 +129,16 @@ export const DOCUMENT_SIZES = [
   { id: "media_carta", label: "Media carta" },
   { id: "doble_carta", label: "Doble carta" }
 ];
+
+
+export function isDateBeforeOrToday(dateString: string): boolean {
+  if (!dateString) return false;
+
+  const inputDate = new Date(dateString);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  inputDate.setHours(0, 0, 0, 0);
+
+  return inputDate <= today;
+}

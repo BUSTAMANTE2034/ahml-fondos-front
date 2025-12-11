@@ -16,7 +16,7 @@ import {
  * - Sin filtros extra
  * - Con debounce de 500ms
  */
-export const useSearchFunds = (query: string,
+export const useSearchFunds = (query: string | undefined,
   is_active: boolean | null = null) => {
   const [debounced, setDebounced] = useState(query)
   const [results, setResults] = useState<Fund[]>([])
@@ -27,7 +27,7 @@ export const useSearchFunds = (query: string,
   //  DEBOUNCE (idéntico a useSearchCatalogKeys)
   // -------------------------------------------------------
   useEffect(() => {
-    const id = setTimeout(() => setDebounced(query), 500)
+    const id = setTimeout(() => setDebounced(query ?? ""), 500)
     return () => clearTimeout(id)
   }, [query])
 
@@ -37,18 +37,18 @@ export const useSearchFunds = (query: string,
   useEffect(() => {
     const fetchData = async () => {
       // si está vacío, limpiar
-      if (!debounced.trim()) {
+      /*if (!(debounced ?? "").trim()) {
         setResults([])
         return
-      }
+      }*/
 
       setLoading(true)
       setError(null)
 
       const params = new URLSearchParams()
-      params.append("query", debounced)
-      params.append("query", debounced)
-      params.append("per_page", "10") // <= igual que catalog-keys
+      params.append("query", debounced ?? "")
+
+      params.append("per_page", "15") // <= igual que catalog-keys
         if (is_active !== null) {
         params.append("is_active", String(is_active))
       }

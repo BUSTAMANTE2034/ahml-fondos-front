@@ -74,12 +74,12 @@ const UpdateSectionModal = () => {
 
             <FormInput
               name="acronym"
-              label="Acrónimo"
+              label="Sigla"
               toUpper={true}
-              placeholder="Ingrese el acrónimo"
+              placeholder="Ingrese la sigla"
               register={register}
               errors={errors}
-              rules={{ required: "Acrónimo obligatorio" }}
+              rules={{ required: "Sigla obligatorio" }}
             />
           </div>
 

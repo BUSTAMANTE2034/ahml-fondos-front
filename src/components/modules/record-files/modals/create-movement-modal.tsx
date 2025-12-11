@@ -90,7 +90,7 @@ const CreateMovementModal = () => {
           <div className="flex flex-col text-xs mt-2">
             <span className="font-semibold">Estado actual:</span>
             <span className="font-medium text-blue-600">
-              {rf.availability_status}
+              {getAvailabilityLabel(rf.availability_status)}
             </span>
           </div>
         </div>

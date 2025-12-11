@@ -16,7 +16,7 @@ import {
  * - per_page fijo en 10
  * - Sin paginación ni filtros
  */
-export const useSearchDeteriorations = (query: string,
+export const useSearchDeteriorations = (query: string | undefined,
   is_active: boolean | null = null) => {
   const [debounced, setDebounced] = useState(query)
   const [results, setResults] = useState<Deterioration[]>([])
@@ -27,7 +27,7 @@ export const useSearchDeteriorations = (query: string,
   // DEBOUNCE (igual a todos los otros search hooks)
   // -------------------------------------------------------
   useEffect(() => {
-    const id = setTimeout(() => setDebounced(query), 500)
+    const id = setTimeout(() => setDebounced(query ?? ""), 500)
     return () => clearTimeout(id)
   }, [query])
 
@@ -37,17 +37,19 @@ export const useSearchDeteriorations = (query: string,
   useEffect(() => {
     const fetchData = async () => {
       // si no hay texto, limpia resultados
-      if (!debounced.trim()) {
+      /*if (!(debounced ?? "").trim()) {
         setResults([])
         return
-      }
+      }*/
+
 
       setLoading(true)
       setError(null)
 
       const params = new URLSearchParams()
-      params.append("query", debounced)
-      params.append("per_page", "10") // <= igual que los otros hooks search
+      params.append("query", debounced ?? "")
+
+      params.append("per_page", "15") // <= igual que los otros hooks search
         if (is_active !== null) {
         params.append("is_active", String(is_active))
       }

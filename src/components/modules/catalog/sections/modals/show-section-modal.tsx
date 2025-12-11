@@ -26,7 +26,7 @@ const ShowSectionModal = () => {
           </p>
 
           <p>
-            <span className="font-bold">Acrónimo: </span>
+            <span className="font-bold">Sigla: </span>
             {selected.acronym ?? '—'}
           </p>
 

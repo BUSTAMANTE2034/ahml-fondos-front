@@ -53,7 +53,7 @@ const SidebarMenu = () => {
         >
           <img src={RecordFilesIcon} alt="Expedientes" />
         </Option>
-        <Option to={`/${user?.role}/${user?.id}/loans`} label="Prestamos">
+        <Option to={`/${user?.role}/${user?.id}/loans`} label="Préstamos">
           <img src={LoansIcon} alt="Préstamos" />
         </Option>
         <Option to={`/${user?.role}/${user?.id}/movements`} label="Movimientos">
@@ -64,7 +64,7 @@ const SidebarMenu = () => {
         <h2 className=" py-2 font-semibold text-xl text-gray-4">Catálogo</h2>
         <Option
           to={`/${user?.role}/${user?.id}/catalog-keys`}
-          label="Clave de catálogo"
+          label="Catálogo de claves"
         >
           <img src={KeysIcon} alt="Clave de catálogo" />
         </Option>
@@ -86,8 +86,8 @@ const SidebarMenu = () => {
         >
           <img src={DeteriorationsIcon} alt="Deterioros" />
         </Option>
-        <Option to={`/${user?.role}/${user?.id}/locations`} label="Ubicaciones">
-          <img src={LocationsIcon} alt="Ubicaciones" />
+        <Option to={`/${user?.role}/${user?.id}/locations`} label="Lugares">
+          <img src={LocationsIcon} alt="Lugares" />
         </Option>
       </div>)}
       

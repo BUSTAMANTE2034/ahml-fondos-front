@@ -15,7 +15,7 @@ import {
  * - No usa paginación, filtros ni fechas
  * - Debounce de 500ms
  */
-export const useSearchSections = (query: string,
+export const useSearchSections = (query: string | undefined,
   is_active: boolean | null = null) => {
   const [debounced, setDebounced] = useState(query)
   const [results, setResults] = useState<Section[]>([])
@@ -26,7 +26,7 @@ export const useSearchSections = (query: string,
   //  DEBOUNCE
   // -------------------------------------------------------
   useEffect(() => {
-    const id = setTimeout(() => setDebounced(query), 500)
+    const id = setTimeout(() => setDebounced(query ?? ""), 500)
     return () => clearTimeout(id)
   }, [query])
 
@@ -36,17 +36,19 @@ export const useSearchSections = (query: string,
   useEffect(() => {
     const fetchData = async () => {
       // Si está vacío, limpiar resultados
-      if (!debounced.trim()) {
+      /*if (!(debounced ?? "").trim()) {
         setResults([])
         return
-      }
+      }*/
+
 
       setLoading(true)
       setError(null)
 
       const params = new URLSearchParams()
-      params.append("query", debounced)
-      params.append("per_page", "10") // <= límite igual que catalog-keys & funds
+      params.append("query", debounced ?? "")
+
+      params.append("per_page", "15") // <= límite igual que catalog-keys & funds
         if (is_active !== null) {
         params.append("is_active", String(is_active))
       }

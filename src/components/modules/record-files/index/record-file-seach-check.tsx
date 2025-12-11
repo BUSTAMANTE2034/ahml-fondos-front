@@ -21,6 +21,7 @@ interface AsyncCheckSearchSelectProps {
   onQueryChange: (q: string) => void
 
   error?: string
+  initialSelected?: { id: number; label: string }[]
 }
 
 export const AsyncCheckSearchSelect = ({
@@ -35,7 +36,7 @@ export const AsyncCheckSearchSelect = ({
   searchError,
   onQueryChange,
 
-  error
+  error,initialSelected
 }: AsyncCheckSearchSelectProps) => {
 
   const [query, setQuery] = useState('')
@@ -45,16 +46,37 @@ export const AsyncCheckSearchSelect = ({
   const [selectedMap, setSelectedMap] = useState<Record<number, string>>({})
 
   const inputRef = useRef<HTMLInputElement>(null)
+// Cargar labels iniciales (modal de edición)
+useEffect(() => {
+  const map: Record<number, string> = { ...selectedMap };
+
+  // 1. Cargar labels iniciales desde modal edición
+  if (initialSelected) {
+    initialSelected.forEach((item) => {
+      map[item.id] = item.label;
+    });
+  }
+
+  // 2. Cargar labels desde resultados de búsqueda
+  results.forEach((r) => {
+    if (selectedIds.includes(r.id)) {
+      map[r.id] = r.label;
+    }
+  });
+
+  setSelectedMap(map);
+}, [initialSelected, results, selectedIds]);
+
 
   // Mantiene labels aunque cambie el query
-  useEffect(() => {
-    const map = { ...selectedMap }
-    selectedIds.forEach((id) => {
-      const found = results.find((r) => r.id === id)
-      if (found) map[id] = found.label
-    })
-    setSelectedMap(map)
-  }, [results, selectedIds])
+  // useEffect(() => {
+  //   const map = { ...selectedMap }
+  //   selectedIds.forEach((id) => {
+  //     const found = results.find((r) => r.id === id)
+  //     if (found) map[id] = found.label
+  //   })
+  //   setSelectedMap(map)
+  // }, [results, selectedIds])
 
   // Cuando escribes → notifica al padre
   const handleInput = (value: string) => {

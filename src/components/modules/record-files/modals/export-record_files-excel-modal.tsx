@@ -373,7 +373,7 @@ const ExportRecordFilesExcelModal = () => {
             />
 
             <AsyncSearchSelect
-              label="Ubicación"
+              label="Lugar"
               placeholder="Buscar ubicación..."
               value={fLocationId}
               onChange={(id) => {

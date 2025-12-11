@@ -32,7 +32,7 @@ const navigate = useNavigate();
       <CardHeader>
         <div className="flex flex-row gap-8 items-center w-full mb-4 md:mb-0 flex-1">
           <h2 className="text-2xl font-bold text-blue-600 dark:text-main-green flex flex-1 justify-start w-full">
-            Prestamos
+            Préstamos
           </h2>
 
           <LoanFilter />
@@ -49,9 +49,9 @@ const navigate = useNavigate();
       <div className="grid grid-cols-[0.6fr_0.6fr_0.6fr_0.2fr]  md:grid-cols-[0.6fr_0.6fr_0.4fr_0.6fr_0.4fr_0.2fr] px-2  w-full items-center   border-b-2   border-main-blue font-semibold text-sm md:text-base text-left">
         {/* THEAD */}
         <span className="hidden lg:block">Expediente</span>
-        <span className="">Presto</span> 
+        <span className="">Prestó</span> 
         <span className=''>Fecha Prestamo</span>
-        <span className='hidden lg:block'>Recibio</span>
+        <span className='hidden lg:block'>Recibió</span>
        
         <span className=''>Fecha Recibido</span>
         <span></span>
@@ -75,7 +75,7 @@ const navigate = useNavigate();
           </div>
         ) : (
           <div className="text-center text-dark2-gray py-8 flex items-start justify-center w-full h-full">
-            No hay prestamos para mostrar.
+            No hay préstamos para mostrar.
           </div>
         )}
       </CardBody>

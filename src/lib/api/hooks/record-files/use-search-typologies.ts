@@ -16,7 +16,7 @@ import {
  * - per_page fijo en 10
  * - Sin paginación real ni parámetros adicionales
  */
-export const useSearchTypologies = (query: string,
+export const useSearchTypologies = (query: string | undefined,
   is_active: boolean | null = null) => {
   const [debounced, setDebounced] = useState(query)
   const [results, setResults] = useState<Typology[]>([])
@@ -27,7 +27,7 @@ export const useSearchTypologies = (query: string,
   // DEBOUNCE
   // --------------------------------------------------------
   useEffect(() => {
-    const id = setTimeout(() => setDebounced(query), 500)
+    const id = setTimeout(() => setDebounced(query ?? ""), 500)
     return () => clearTimeout(id)
   }, [query])
 
@@ -37,17 +37,19 @@ export const useSearchTypologies = (query: string,
   useEffect(() => {
     const fetchData = async () => {
       // Si query vacío → limpiar
-      if (!debounced.trim()) {
+      /*if (!(debounced ?? "").trim()) {
         setResults([])
         return
-      }
+      }*/
+
 
       setLoading(true)
       setError(null)
 
       const params = new URLSearchParams()
-      params.append("query", debounced)
-      params.append("per_page", "10") // como en los otros search hooks
+      params.append("query", debounced ?? "")
+
+      params.append("per_page", "15") // como en los otros search hooks
         if (is_active !== null) {
         params.append("is_active", String(is_active))
       }

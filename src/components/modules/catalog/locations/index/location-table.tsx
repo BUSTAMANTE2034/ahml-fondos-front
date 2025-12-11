@@ -24,7 +24,7 @@ const Table = () => {
       <CardHeader>
         <div className="flex flex-row gap-8 items-center w-full mb-4 md:mb-0 flex-1">
           <h2 className="text-2xl font-bold text-blue-600 dark:text-main-green flex flex-1 justify-start w-full">
-            Ubicaciones
+            Lugares
           </h2>
 
           <LocationFilter />
@@ -64,7 +64,7 @@ const Table = () => {
           </div>
         ) : (
           <div className="text-center text-dark2-gray py-8 flex items-start justify-center w-full h-full">
-            No hay ubicaciones para mostrar.
+            No hay lugares para mostrar.
           </div>
         )}
       </CardBody>

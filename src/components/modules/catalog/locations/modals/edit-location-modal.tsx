@@ -40,10 +40,10 @@ const UpdateLocationModal = () => {
         {/* HEADER */}
         <div className="text-center gap-2 flex flex-col">
           <h2 className=" text-xl md:text-2xl font-bold text-blue-600">
-            Editar Ubicación
+            Editar Lugar
           </h2>
           <p className="text-sm">
-            Modifica los datos de la ubicación seleccionada.
+            Modifica los datos de el lugar seleccionada.
           </p>
         </div>
 
@@ -55,7 +55,7 @@ const UpdateLocationModal = () => {
 
             <FormInput
               name="name"
-              label="Nombre de la Ubicación"
+              label="Nombre de la Lugar"
               placeholder="Ingrese el nombre"
               register={register}
               errors={errors}

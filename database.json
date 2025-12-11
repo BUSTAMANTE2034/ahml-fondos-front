@@ -104,12 +104,12 @@
     "deleted_at": "Fecha de eliminación o baja lógica del registro ."
   },
   "location": {
-    "id": "Identificador único de la ubicación física.",
+    "id": "Identificador único de el lugar física.",
     "name": "Nombre del área, edificio o sección donde se encuentra el expediente (por ejemplo, Archivo, Aguas, Abastos).",
-    "created_at": "Fecha de creación o habilitación de la ubicación.",
-    "updated_at": "Fecha de última modificación o actualización de la ubicación.",
+    "created_at": "Fecha de creación o habilitación de el lugar.",
+    "updated_at": "Fecha de última modificación o actualización de el lugar.",
     "deleted_at": "Fecha de eliminación o baja lógica del registro. .",
-    "user_id": "Identificador del usuario que registró o actualizó la ubicación."
+    "user_id": "Identificador del usuario que registró o actualizó el lugar."
   },
 
   "deterioration": {

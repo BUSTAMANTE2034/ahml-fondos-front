@@ -42,7 +42,7 @@ const Table = () => {
         {/* THEAD */}
         <span className="hidden lg:block">Clave</span>
         <span className="">Nombre</span>
-        <span className='hidden lg:block'>Acrónimo</span>
+        <span className='hidden lg:block'>Sigla</span>
         <span className=''>Fecha Inicio</span>
         <span className=''>Fecha Fin</span>
         <span></span>

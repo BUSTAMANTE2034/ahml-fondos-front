@@ -29,6 +29,7 @@ import {
 import TextInput from '@/components/forms/text'
 import {
   DOCUMENT_SIZES,
+  isDateBeforeOrToday,
   parseDocumentSizesToList,
 } from '@/components/ui/functions'
 
@@ -62,8 +63,10 @@ const UpdateRecordFileModal = () => {
   const { results: sectionResults } = useSearchSections(sectionQuery, true)
   const { results: seriesResults } = useSearchSeries(seriesQuery, true)
   const { results: locationResults } = useSearchLocations(locationQuery, true)
-  const { results: deteriorationResults } =
-    useSearchDeteriorations(deteriorationQuery, true)
+  const { results: deteriorationResults } = useSearchDeteriorations(
+    deteriorationQuery,
+    true
+  )
   const { results: typologyResults } = useSearchTypologies(typologyQuery, true)
 
   // -----------------------------------------
@@ -175,7 +178,6 @@ const UpdateRecordFileModal = () => {
       big
     >
       <div className="flex flex-col gap-4 px-2 md:px-4">
-
         {/* HEADER */}
         <div className="text-center gap-2 flex flex-col">
           <h2 className="text-xl md:text-2xl font-bold text-blue-600">
@@ -184,13 +186,14 @@ const UpdateRecordFileModal = () => {
           <p className="text-sm">Modifica los datos del expediente.</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-4">
-
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col space-y-4"
+        >
           {/* ================= PRIMERA FILA ================= */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <FormInput
               name="file_number"
-              type="number"
               label="Número de expediente"
               register={register}
               errors={errors}
@@ -199,7 +202,6 @@ const UpdateRecordFileModal = () => {
 
             <FormInput
               name="box_number"
-              type="number"
               label="No.Caja"
               register={register}
               errors={errors}
@@ -221,7 +223,15 @@ const UpdateRecordFileModal = () => {
               label="Fecha del expediente"
               register={register}
               errors={errors}
-              rules={{ required: 'Campo obligatorio' }}
+              max={new Date().toISOString().split('T')[0]} // evita fechas futuras desde el input
+              rules={{
+                required: 'Campo obligatorio',
+                validate: {
+                  notFuture: (value) =>
+                    (value && isDateBeforeOrToday(String(value))) ||
+                    'La fecha no puede ser mayor a hoy.',
+                },
+              }}
             />
 
             <Controller
@@ -242,7 +252,7 @@ const UpdateRecordFileModal = () => {
             <AsyncSearchSelect
               label="Deterioro"
               placeholder="Buscar deterioro…"
-              value={watch('deterioration_status_id')??null}
+              value={watch('deterioration_status_id') ?? null}
               initialLabel={selected.deterioration_status?.name}
               onChange={(id) =>
                 setValue('deterioration_status_id', id, {
@@ -265,13 +275,15 @@ const UpdateRecordFileModal = () => {
             <AsyncSearchSelect
               label="Fondo"
               placeholder="Buscar fondo…"
-              value={watch('fund_id')??null}
+              value={watch('fund_id') ?? null}
               initialLabel={`${selected.fund?.acronym} - ${selected.fund?.name}`}
-              onChange={(id) => setValue('fund_id', id, { shouldValidate: true })}
+              onChange={(id) =>
+                setValue('fund_id', id, { shouldValidate: true })
+              }
               onQueryChange={setFundQuery}
               results={fundResults.map((f) => ({
                 id: f.id,
-                label: `${f.acronym} - ${f.name}`,
+                label: `${f.acronym} — ${f.name}  (${f.start_date} → ${f.end_date})`,
               }))}
               loading={false}
               searchError={null}
@@ -281,7 +293,7 @@ const UpdateRecordFileModal = () => {
             <AsyncSearchSelect
               label="Sección"
               placeholder="Buscar sección…"
-              value={watch('section_id')??null}
+              value={watch('section_id') ?? null}
               initialLabel={`${selected.section?.acronym} - ${selected.section?.name}`}
               onChange={(id) =>
                 setValue('section_id', id, { shouldValidate: true })
@@ -289,7 +301,7 @@ const UpdateRecordFileModal = () => {
               onQueryChange={setSectionQuery}
               results={sectionResults.map((s) => ({
                 id: s.id,
-                label: `${s.acronym} - ${s.name}`,
+                label: `${s.acronym} — ${s.name}  (${s.start_date} → ${s.end_date})`,
               }))}
               loading={false}
               searchError={null}
@@ -302,7 +314,7 @@ const UpdateRecordFileModal = () => {
             <AsyncSearchSelect
               label="Serie"
               placeholder="Buscar serie…"
-              value={watch('series_id')??null}
+              value={watch('series_id') ?? null}
               initialLabel={`${selected.series?.acronym} - ${selected.series?.name}`}
               onChange={(id) =>
                 setValue('series_id', id, { shouldValidate: true })
@@ -310,7 +322,7 @@ const UpdateRecordFileModal = () => {
               onQueryChange={setSeriesQuery}
               results={seriesResults.map((s) => ({
                 id: s.id,
-                label: `${s.acronym} - ${s.name}`,
+               label: `${s.acronym} — ${s.name}  (${s.start_date} → ${s.end_date})`,
               }))}
               loading={false}
               searchError={null}
@@ -318,9 +330,9 @@ const UpdateRecordFileModal = () => {
             />
 
             <AsyncSearchSelect
-              label="Ubicación"
+              label="Lugar"
               placeholder="Buscar ubicación…"
-              value={watch('location_id')??null}
+              value={watch('location_id') ?? null}
               initialLabel={selected.location?.name}
               onChange={(id) =>
                 setValue('location_id', id, { shouldValidate: true })
@@ -347,7 +359,6 @@ const UpdateRecordFileModal = () => {
 
           {/* TIPOLOGÍAS Y TAMAÑOS */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
             <AsyncCheckSearchSelect
               label="Tipologías"
               placeholder="Buscar tipo..."
@@ -363,18 +374,25 @@ const UpdateRecordFileModal = () => {
               loading={false}
               searchError={null}
               error={errors.typology_ids?.message}
+              initialSelected={
+    selected.typologies?.map((t) => ({
+      id: t.id,
+      label: t.name,
+    })) || []
+  }
             />
 
             <StaticCheckSearchSelect
-  label="Tamaños del documento"
-  options={DOCUMENT_SIZES}
-  selectedIds={watch('document_sizes')?.split(',') || []}
-  onChange={(ids) => {
-    setValue('document_sizes', ids.join(','), { shouldValidate: true })
-  }}
-  error={errors.document_sizes?.message}
-/>
-
+              label="Tamaños del documento"
+              options={DOCUMENT_SIZES}
+              selectedIds={watch('document_sizes')?.split(',') || []}
+              onChange={(ids) => {
+                setValue('document_sizes', ids.join(','), {
+                  shouldValidate: true,
+                })
+              }}
+              error={errors.document_sizes?.message}
+            />
           </div>
 
           {/* COMENTARIOS */}

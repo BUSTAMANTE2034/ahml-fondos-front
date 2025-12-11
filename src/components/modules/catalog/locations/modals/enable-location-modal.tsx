@@ -24,11 +24,11 @@ const EnableLocationModal = () => {
         {/* HEADER */}
         <div className="text-center flex flex-col gap-2">
           <h2 className="text-xl md:text-2xl font-bold text-blue-600">
-            Habilitar Ubicación
+            Habilitar Lugar
           </h2>
 
           <p className="text-sm">
-            ¿Deseas habilitar nuevamente la ubicación{' '}
+            ¿Deseas habilitar nuevamente el lugar{' '}
             <strong>"{selected.name}"</strong>?
           </p>
         </div>

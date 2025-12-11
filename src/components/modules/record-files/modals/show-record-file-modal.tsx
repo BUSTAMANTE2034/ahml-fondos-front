@@ -122,7 +122,7 @@ const ShowRecordFileModal = () => {
           </p>
 
           <p>
-            <span className="font-semibold">Ubicación: </span>
+            <span className="font-semibold">Lugar: </span>
             {selected.location ? selected.location.name : '—'}
           </p>
 

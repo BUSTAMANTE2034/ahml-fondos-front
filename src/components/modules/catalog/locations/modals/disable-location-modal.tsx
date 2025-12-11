@@ -24,10 +24,10 @@ const DisableLocationModal = () => {
         {/* HEADER */}
         <div className="text-center flex flex-col gap-2">
           <h2 className="text-xl md:text-2xl font-bold text-blue-600">
-            Deshabilitar Ubicación
+            Deshabilitar Lugar
           </h2>
           <p className="text-sm">
-            ¿Deseas deshabilitar la ubicación{' '}
+            ¿Deseas deshabilitar el lugar{' '}
             <strong>"{selected.name}"</strong>?
           </p>
         </div>
