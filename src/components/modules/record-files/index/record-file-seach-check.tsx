@@ -14,7 +14,6 @@ interface AsyncCheckSearchSelectProps {
   selectedIds: number[]
   onChange: (ids: number[]) => void
 
-  // NUEVO — fuera viene todo
   results: ResultItem[]
   loading: boolean
   searchError: string | null
@@ -30,67 +29,71 @@ export const AsyncCheckSearchSelect = ({
   selectedIds,
   onChange,
 
-  // nuevos props
   results,
   loading,
   searchError,
   onQueryChange,
 
-  error,initialSelected
+  error,
+  initialSelected
 }: AsyncCheckSearchSelectProps) => {
 
   const [query, setQuery] = useState('')
   const [showList, setShowList] = useState(false)
-
-  // Diccionario persistente id → label
   const [selectedMap, setSelectedMap] = useState<Record<number, string>>({})
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const inputRef = useRef<HTMLInputElement>(null)
-// Cargar labels iniciales (modal de edición)
-useEffect(() => {
-  const map: Record<number, string> = { ...selectedMap };
+  // Mostrar la X igual que en el otro Select
+  const showClearButton =
+    query.trim() !== '' || showList || selectedIds.length > 0
 
-  // 1. Cargar labels iniciales desde modal edición
-  if (initialSelected) {
-    initialSelected.forEach((item) => {
-      map[item.id] = item.label;
-    });
-  }
+  // Inicializar labels
+  useEffect(() => {
+    const map: Record<number, string> = { ...selectedMap }
 
-  // 2. Cargar labels desde resultados de búsqueda
-  results.forEach((r) => {
-    if (selectedIds.includes(r.id)) {
-      map[r.id] = r.label;
+    initialSelected?.forEach((item) => {
+      map[item.id] = item.label
+    })
+
+    results.forEach((r) => {
+      if (selectedIds.includes(r.id)) {
+        map[r.id] = r.label
+      }
+    })
+
+    setSelectedMap(map)
+  }, [initialSelected, results, selectedIds])
+
+  // Cerrar al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setShowList(false)
+
+        // limpiar si usuario no seleccionó nada
+        if (query.trim() && selectedIds.length === 0) {
+          setQuery('')
+          onQueryChange('')
+        }
+      }
     }
-  });
 
-  setSelectedMap(map);
-}, [initialSelected, results, selectedIds]);
+    document.addEventListener('mousedown', handleClickOutside)
+    return () =>
+      document.removeEventListener('mousedown', handleClickOutside)
+  }, [query, selectedIds])
 
-
-  // Mantiene labels aunque cambie el query
-  // useEffect(() => {
-  //   const map = { ...selectedMap }
-  //   selectedIds.forEach((id) => {
-  //     const found = results.find((r) => r.id === id)
-  //     if (found) map[id] = found.label
-  //   })
-  //   setSelectedMap(map)
-  // }, [results, selectedIds])
-
-  // Cuando escribes → notifica al padre
+  // Buscar cuando escribes
   const handleInput = (value: string) => {
     setQuery(value)
     onQueryChange(value)
-
-    if (!value.trim()) {
-      setShowList(false)
-    } else {
-      setShowList(true)
-    }
+    setShowList(true)
   }
 
-  // Seleccionar
+  // Seleccionar o deseleccionar
   const toggleCheck = (id: number, label: string) => {
     if (selectedIds.includes(id)) {
       onChange(selectedIds.filter((x) => x !== id))
@@ -106,12 +109,12 @@ useEffect(() => {
   }
 
   return (
-    <div className="flex flex-col mb-3 relative">
+    <div className="flex flex-col mb-3 relative" ref={containerRef}>
       {label && <label className="font-bold text-xs md:text-sm">{label}</label>}
 
+      {/* INPUT */}
       <div className="relative">
         <input
-          ref={inputRef}
           className={classNames(
             'border-b border-dark-gray2 text-[10px] md:text-xs py-1 w-full pr-5 focus:outline-none',
             { 'border-red': !!error }
@@ -119,57 +122,65 @@ useEffect(() => {
           placeholder={placeholder}
           value={query}
           onChange={(e) => handleInput(e.target.value)}
+          onFocus={() => {
+            if (!query.trim()) onQueryChange('')
+            setShowList(true)
+          }}
         />
 
-        {query && (
+        {showClearButton && (
           <IconButton
             onClick={() => {
               setQuery('')
               onQueryChange('')
               setShowList(false)
+              onChange([]) // limpiar selección también
             }}
-            className="absolute! right-1 top-1/3 -translate-y-1/2"
+            className="absolute! right-1 top-1/2 -translate-y-1/2"
+            tooltip="Limpiar"
           >
             <img src={X} className="h-4 w-4" />
           </IconButton>
         )}
       </div>
 
-      {/* LISTA */}
-      {showList && (
-        <div className="bg-white absolute top-full left-0 w-full shadow-md border border-dark-gray rounded-b-xl max-h-60 overflow-auto z-50">
-
-          {/* LOADING */}
-          {loading && (
-            <div className="p-2 text-xs text-gray-600">Buscando…</div>
-          )}
-
-          {/* ERROR */}
-          {!loading && searchError && (
+      {/* DROPDOWN flotante */}
+      {!loading && showList && (
+        <div
+          className="
+            absolute left-0 top-[calc(100%+2px)]
+            w-full bg-white shadow-lg border border-dark-gray
+            rounded-b-xl z-50 max-h-60 overflow-y-auto scroll-t
+          "
+        >
+          {searchError && (
             <div className="p-2 text-xs text-red">{searchError}</div>
           )}
 
-          {/* SIN RESULTADOS */}
-          {!loading && !searchError && results.length === 0 && query.trim() && (
+          {!searchError && results.length === 0 && query.trim() !== '' && (
             <div className="p-2 text-xs text-gray-500">Sin resultados</div>
           )}
 
-          {/* RESULTADOS */}
-          {!loading &&
-            !searchError &&
-            results.map((item) => (
-              <label
-                key={item.id}
-                className="flex items-center gap-2 p-2 text-xs cursor-pointer hover:bg-gray-200"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedIds.includes(item.id)}
-                  onChange={() => toggleCheck(item.id, item.label)}
-                />
-                {item.label}
-              </label>
-            ))}
+          {results.map((item) => (
+            <label
+              key={item.id}
+              className="flex items-center gap-2 p-2 text-xs cursor-pointer hover:bg-gray-200"
+            >
+              <input
+                type="checkbox"
+                checked={selectedIds.includes(item.id)}
+                onChange={() => toggleCheck(item.id, item.label)}
+              />
+              {item.label}
+            </label>
+          ))}
+        </div>
+      )}
+
+      {/* LOADING */}
+      {loading && (
+        <div className="absolute left-0 top-[calc(100%+2px)] bg-white w-full p-2 text-xs shadow z-50">
+          Buscando…
         </div>
       )}
 
