@@ -14,6 +14,7 @@ import GetRecordFileCoverModal from '../modals/get-record-file-cover-modal'
 import CreateLoanModal from '../modals/create-loan-modal'
 import ReceiveLoanModal from '../modals/recibe-loan-modal'
 import CreateMovementModal from '../modals/create-movement-modal'
+import ReorderRecordFilesModal from '../modals/reorder-record-file-modal'
 import {
   RecordFileFilter,
   RecordFileFilterRow,
@@ -21,7 +22,7 @@ import {
 } from './filters'
 import ExportRecordFilesExcelModal from '../modals/export-record_files-excel-modal'
 const Table = () => {
-  const { recordFiles, loadingGet, errorGet, openCreate,openExportExcel } = useRecordFiles()
+  const { recordFiles, loadingGet, errorGet, openCreate,openExportExcel,openReorder } = useRecordFiles()
 
   return (
     <Card>
@@ -60,7 +61,7 @@ const Table = () => {
         <span className="hidden lg:block">Estado</span>
         <span>Estatus</span>
         <span>Fecha</span>
-        <span className="hidden lg:block">Lugar</span>
+        <span className="hidden lg:block">Localidad</span>
         <span></span>
 
         {/* FILA DE FILTROS */}
@@ -95,7 +96,10 @@ const Table = () => {
       </CardBody>
       {!loadingGet && !errorGet && recordFiles.length > 0 && (
         <div className="flex  flex-row items-center w-full justify-between">
-          <span></span> <RecordFilesPaginator />
+          <button onClick={openReorder} className="create text-sm! w-20!  font-semibold! h-8 ">
+            <span className='text-sm!'>Ordenar</span>
+          </button> <RecordFilesPaginator />
+          
           <button onClick={openExportExcel} className="create text-sm! w-20!  font-semibold! h-8 ">
             <span className='text-sm!'>Exportar</span>
           </button>
@@ -110,6 +114,7 @@ const Table = () => {
       <ReceiveLoanModal/>
       <CreateMovementModal/>
       <ShowRecordFileModal />
+      <ReorderRecordFilesModal />
     </Card>
   )
 }

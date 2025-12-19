@@ -86,8 +86,8 @@ const SidebarMenu = () => {
         >
           <img src={DeteriorationsIcon} alt="Deterioros" />
         </Option>
-        <Option to={`/${user?.role}/${user?.id}/locations`} label="Lugares">
-          <img src={LocationsIcon} alt="Lugares" />
+        <Option to={`/${user?.role}/${user?.id}/locations`} label="Localidades">
+          <img src={LocationsIcon} alt="Localidades" />
         </Option>
       </div>)}
       

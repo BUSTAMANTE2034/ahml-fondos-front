@@ -13,15 +13,15 @@ const ShowLocationModal = () => {
         {/* HEADER */}
         <div className="text-center flex flex-col gap-2">
           <h2 className="text-xl md:text-2xl font-bold text-blue-600">
-            Información de la Lugar
+            Información de la Localidad
           </h2>
-          <p className="text-sm">Detalles de el lugar seleccionada</p>
+          <p className="text-sm">Detalles de la localidad seleccionada</p>
         </div>
 
         {/* CONTENIDO */}
         <div className="flex flex-col gap-3 text-sm">
           <p>
-            <span className="font-bold">Nombre de la Lugar: </span>
+            <span className="font-bold">Nombre de la Localidad: </span>
             {selected.name}
           </p>
 

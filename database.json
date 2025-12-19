@@ -27,7 +27,7 @@
     "fund_id": "Identificador del fondo asociado al expediente (fund.id).",
     "section_id": "Identificador de la sección asociada al expediente (section.id).",
     "series_id": "Identificador de la serie asociada al expediente (series.id).",
-    "location_id": "Identificador del lugar físico donde se encuentra almacenado el expediente.",
+    "location_id": "Identificador dla localidad físico donde se encuentra almacenado el expediente.",
 
     "box_number": "Número de caja física donde está archivado el expediente.",
     "page_count": "Cantidad total de páginas o folios que componen el expediente.",
@@ -104,12 +104,12 @@
     "deleted_at": "Fecha de eliminación o baja lógica del registro ."
   },
   "location": {
-    "id": "Identificador único de el lugar física.",
+    "id": "Identificador único de la localidad física.",
     "name": "Nombre del área, edificio o sección donde se encuentra el expediente (por ejemplo, Archivo, Aguas, Abastos).",
-    "created_at": "Fecha de creación o habilitación de el lugar.",
-    "updated_at": "Fecha de última modificación o actualización de el lugar.",
+    "created_at": "Fecha de creación o habilitación de la localidad.",
+    "updated_at": "Fecha de última modificación o actualización de la localidad.",
     "deleted_at": "Fecha de eliminación o baja lógica del registro. .",
-    "user_id": "Identificador del usuario que registró o actualizó el lugar."
+    "user_id": "Identificador del usuario que registró o actualizó la localidad."
   },
 
   "deterioration": {

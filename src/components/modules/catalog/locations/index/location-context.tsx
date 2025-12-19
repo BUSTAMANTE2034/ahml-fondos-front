@@ -199,7 +199,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
 
       toastSuccess({
         id: 301,
-        title: 'Lugar creado',
+        title: 'Localidad creado',
         message: 'El lugar fue creada correctamente.',
       })
 
@@ -244,7 +244,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
 
       toastSuccess({
         id: 303,
-        title: 'Lugar actualizada',
+        title: 'Localidad actualizada',
         message: 'El lugar fue actualizada correctamente.',
       })
 
@@ -285,7 +285,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
 
       toastSuccess({
         id: 305,
-        title: active ? 'Lugar habilitada' : 'Lugar deshabilitada',
+        title: active ? 'Localidad habilitada' : 'Localidad deshabilitada',
         message: active
           ? 'El lugar está ahora activa.'
           : 'El lugar ha sido deshabilitada.',
@@ -330,7 +330,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
 
       toastSuccess({
         id: 307,
-        title: 'Lugar eliminado',
+        title: 'Localidad eliminado',
         message: 'El lugar fue eliminada correctamente.',
       })
 

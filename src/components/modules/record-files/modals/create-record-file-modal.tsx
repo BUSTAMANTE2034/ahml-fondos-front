@@ -188,17 +188,18 @@ const CreateRecordFileModal = () => {
         >
           {/* CAMPOS BÁSICOS */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 items-center">
-            <FormInput
+            {/* <FormInput
               name="file_number"
               label="Número de expediente"
               register={register}
               errors={errors}
               rules={{ required: 'Campo obligatorio' }}
-            />
+            /> */}
 
             <FormInput
               name="box_number"
               label="No.Caja"
+              toUpper
               register={register}
               errors={errors}
               rules={{ required: 'Campo obligatorio' }}
@@ -324,7 +325,7 @@ const CreateRecordFileModal = () => {
             />
 
             <AsyncSearchSelect
-              label="Lugar"
+              label="Localidad"
               placeholder="Buscar ubicación…"
               value={watch('location_id') ?? null}
               onChange={(id) =>
@@ -434,7 +435,7 @@ const CreateRecordFileModal = () => {
               <TextInput
                 className="text-center border-dark-gray2 border rounded-3xl bg-white font-medium text-blue-600"
                 label="No.Caja"
-                type="number"
+                toUpper
                 value={prevBox}
                 onChange={(e) => setPrevBox(e.target.value)}
               />
@@ -442,7 +443,7 @@ const CreateRecordFileModal = () => {
               <TextInput
                 className="text-center border-dark-gray2 border rounded-3xl bg-white font-medium text-blue-600"
                 label="No.Exp"
-                type="number"
+                toUpper
                 value={prevExp}
                 onChange={(e) => setPrevExp(e.target.value)}
               />

@@ -11,7 +11,7 @@ import { ApiError } from '@/lib/types/errors'
 
 export const useGetRecordFiles = ({
   initialPage = 1,
-  initialPerPage = 20,
+  initialPerPage = 25,
 
   // búsqueda global
   initialQuery = '',

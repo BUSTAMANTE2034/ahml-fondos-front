@@ -98,20 +98,18 @@ const ExportRecordFilesExcelModal = () => {
   const [fBoxNumber, setFBoxNumber] = useState(box_number)
 
   // FONDO
+  // ===============================
+  // FONDO
   const [fFundId, setFFundId] = useState<number | null>(null)
-  const [fFundName, setFFundName] = useState<string>('')
-  const [fFundQuery, setFFundQuery] = useState<string>('')
+  const [fFundQuery, setFFundQuery] = useState('')
 
   // SECCIÓN
   const [fSectionId, setFSectionId] = useState<number | null>(null)
-  const [fSectionName, setFSectionName] = useState<string>('')
-  const [fSectionQuery, setFSectionQuery] = useState<string>('')
+  const [fSectionQuery, setFSectionQuery] = useState('')
 
   // SERIE
   const [fSeriesId, setFSeriesId] = useState<number | null>(null)
-  const [fSeriesName, setFSeriesName] = useState<string>('')
-  const [fSeriesQuery, setFSeriesQuery] = useState<string>('')
-
+  const [fSeriesQuery, setFSeriesQuery] = useState('')
   // UBICACIÓN
   const [fLocationId, setFLocationId] = useState<number | null>(null)
   const [fLocationName, setFLocationName] = useState<string>('')
@@ -138,59 +136,64 @@ const ExportRecordFilesExcelModal = () => {
   const applyOrder = (field: OrderField, dir: OrderDir) => {
     setFOrderBy(`${field}_${dir}`)
   }
- const clearFilters = () => {
-  setPerPage('50')
+  const clearFilters = () => {
+    setPerPage('50')
 
-  // filtros directos
-  setFQuery('')
-  setFReferenceCode('')
-  setFPrevReferenceCode('')
-  setFFileNumber('')
-  setFBoxNumber('')
+    // filtros directos
+    setFQuery('')
+    setFReferenceCode('')
+    setFPrevReferenceCode('')
+    setFFileNumber('')
+    setFBoxNumber('')
 
-  // relaciones: NOMBRES
-  setFFundName('')
-  setFSectionName('')
-  setFSeriesName('')
-  setFLocationName('')
-  setFDeteriorationName('')
-  setFTypologyName('')
+    // relaciones: NOMBRES
+    setFFundId(null)
+    setFSectionId(null)
+    setFSeriesId(null)
 
-  // relaciones: IDs
-  setFFundId(null)
-  setFSectionId(null)
-  setFSeriesId(null)
-  setFLocationId(null)
-  setFDeteriorationId(null)
-  setFTypologyId(null)
+    setFFundQuery('')
+    setFSectionQuery('')
+    setFSeriesQuery('')
+    setFLocationName('')
+    setFDeteriorationName('')
+    setFTypologyName('')
 
-  // relaciones: QUERIES
-  setFFundQuery('')
-  setFSectionQuery('')
-  setFSeriesQuery('')
-  setFLocationQuery('')
-  setFDeteriorationQuery('')
-  setFTypologyQuery('')
+    // relaciones: IDs
+    setFFundId(null)
+    setFSectionId(null)
+    setFSeriesId(null)
+    setFLocationId(null)
+    setFDeteriorationId(null)
+    setFTypologyId(null)
 
-  // otros filtros
-  setFSensitive('all')
-  setFAvail('all')
-  setFFileAfter(null)
-  setFFileBefore(null)
+    // relaciones: QUERIES
+    setFFundQuery('')
+    setFSectionQuery('')
+    setFSeriesQuery('')
+    setFLocationQuery('')
+    setFDeteriorationQuery('')
+    setFTypologyQuery('')
 
-  setFOrderBy(null)
-}
+    // otros filtros
+    setFSensitive('all')
+    setFAvail('all')
+    setFFileAfter(null)
+    setFFileBefore(null)
 
+    setFOrderBy(null)
+  }
 
   // ---------------------------------------------------------
   // HOOKS
   // ---------------------------------------------------------
   const { results: fundResults, loading: fundLoading } =
-    useSearchFunds(fFundName)
+    useSearchFunds(fFundQuery)
+
   const { results: sectionResults, loading: sectionLoading } =
-    useSearchSections(fSectionName)
+    useSearchSections(fSectionQuery)
+
   const { results: seriesResults, loading: seriesLoading } =
-    useSearchSeries(fSeriesName)
+    useSearchSeries(fSeriesQuery)
   const { results: locationResults, loading: locationLoading } =
     useSearchLocations(fLocationName)
   const { results: deteriorationResults, loading: deteriorationLoading } =
@@ -213,9 +216,9 @@ const ExportRecordFilesExcelModal = () => {
       file_number: fFileNumber,
       box_number: fBoxNumber,
 
-      fund_name: fFundName,
-      section_name: fSectionName,
-      series_name: fSeriesName,
+      fund_id: fFundId ?? undefined,
+      section_id: fSectionId ?? undefined,
+      series_id: fSeriesId ?? undefined,
       location_name: fLocationName,
       deterioration_name: fDeteriorationName,
       typology_name: fTypologyName,
@@ -234,7 +237,13 @@ const ExportRecordFilesExcelModal = () => {
   // UI
   // ---------------------------------------------------------
   return (
-    <Modal visible onClose={closeExportExcel} showCloseButton>
+    <Modal
+      visible
+      onClose={closeExportExcel}
+      showCloseButton
+      closeBackdrop={false}
+      big={true}
+    >
       <div className="flex flex-col gap-6 px-4 md:px-6 pb-6">
         {/* HEADER */}
         <div className="text-center">
@@ -303,14 +312,8 @@ const ExportRecordFilesExcelModal = () => {
               label="No. expediente"
               value={fFileNumber}
               setter={setFFileNumber}
-              type="number"
             />
-            <Input
-              label="No. caja"
-              value={fBoxNumber}
-              setter={setFBoxNumber}
-              type="number"
-            />
+            <Input label="No. caja" value={fBoxNumber} setter={setFBoxNumber} />
           </div>
         </section>
 
@@ -322,58 +325,45 @@ const ExportRecordFilesExcelModal = () => {
           <div className="grid grid-cols-2 gap-1 w-full ">
             <AsyncSearchSelect
               label="Fondo"
-              placeholder="Buscar fondo..."
+              placeholder="Buscar fondo…"
               value={fFundId}
-              onChange={(id) => {
-                setFFundId(id)
-                const selected = fundResults.find((f) => f.id === id)
-                setFFundName(selected?.name ?? '')
-              }}
-              onQueryChange={(q) => {
-                setFFundQuery(q)
-                setFFundName(q) // mantiene coherencia al escribir
-              }}
-              results={fundResults.map((f) => ({ id: f.id, label: f.name }))}
+              onChange={setFFundId}
+              onQueryChange={setFFundQuery}
+              results={fundResults.map((f) => ({
+                id: f.id,
+                label: `${f.acronym} — ${f.name} (${f.start_date} → ${f.end_date})`,
+              }))}
               loading={fundLoading}
             />
 
             <AsyncSearchSelect
               label="Sección"
-              placeholder="Buscar sección..."
+              placeholder="Buscar sección…"
               value={fSectionId}
-              onChange={(id) => {
-                setFSectionId(id)
-                const selected = sectionResults.find((s) => s.id === id)
-                setFSectionName(selected?.name ?? '')
-              }}
-              onQueryChange={(q) => {
-                setFSectionQuery(q)
-                setFSectionName(q)
-              }}
-              results={sectionResults.map((s) => ({ id: s.id, label: s.name }))}
+              onChange={setFSectionId}
+              onQueryChange={setFSectionQuery}
+              results={sectionResults.map((s) => ({
+                id: s.id,
+                label: `${s.acronym} — ${s.name} (${s.start_date} → ${s.end_date})`,
+              }))}
               loading={sectionLoading}
             />
           </div>
           <div className="grid grid-cols-2 gap-1 w-full ">
             <AsyncSearchSelect
               label="Serie"
-              placeholder="Buscar serie..."
+              placeholder="Buscar serie…"
               value={fSeriesId}
-              onChange={(id) => {
-                setFSeriesId(id)
-                const selected = seriesResults.find((s) => s.id === id)
-                setFSeriesName(selected?.name ?? '')
-              }}
-              onQueryChange={(q) => {
-                setFSeriesQuery(q)
-                setFSeriesName(q)
-              }}
-              results={seriesResults.map((s) => ({ id: s.id, label: s.name }))}
+              onChange={setFSeriesId}
+              onQueryChange={setFSeriesQuery}
+              results={seriesResults.map((s) => ({
+                id: s.id,
+                label: `${s.acronym} — ${s.name} (${s.start_date} → ${s.end_date})`,
+              }))}
               loading={seriesLoading}
             />
-
             <AsyncSearchSelect
-              label="Lugar"
+              label="Localidad"
               placeholder="Buscar ubicación..."
               value={fLocationId}
               onChange={(id) => {

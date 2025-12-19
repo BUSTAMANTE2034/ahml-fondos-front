@@ -7,8 +7,7 @@ import {
   RecordFileAvailability,
   RecordFileOrderByParam,
 } from '@models/record-file'
-import { useCreateMovement } from "@hooks/movements"
-
+import { useCreateMovement } from '@hooks/movements'
 
 import {
   useGetRecordFiles,
@@ -17,6 +16,7 @@ import {
   useDeleteRecordFile,
   useExportRecordFilesPDF,
   usePrintCoverPage,
+  useReorderRecordFiles,
 } from '@hooks/record-files'
 
 import { useCreateLoan, useReceiveLoanRecord } from '@hooks/loans'
@@ -58,7 +58,7 @@ interface ContextValue {
   setReferenceCode: (v: string) => void
 
   previous_reference_code: string
-setPreviousReferenceCode: (v: string) => void
+  setPreviousReferenceCode: (v: string) => void
 
   file_number: string
   setFileNumber: (v: string) => void
@@ -162,8 +162,10 @@ setPreviousReferenceCode: (v: string) => void
   loadingPrint: boolean
   loadingCreateLoan: boolean
   loadingReceive: boolean
-loadingCreateMovement: boolean
-errorCreateMovement: string | null
+  loadingCreateMovement: boolean
+  loadingReorder: boolean
+  errorCreateMovement: string | null
+
   // errors
   errorGet: string | null
   errorCreate: string | null
@@ -173,22 +175,33 @@ errorCreateMovement: string | null
   errorPrint: string | null
   errorCreateLoan: string | null
   errorReceive: string | null
+  errorReorder: string | null
 
   resetFilters: () => void
 
-  
   //CREATE
   isCreateLoanOpen: boolean
   openCreateLoan: (u: RecordFile) => void
   closeCreateLoan: () => void
   handleCreateLoan: (data: CreateLoan) => Promise<void>
 
-   //CREATE MOVEMENT
-   isCreateMovementOpen: boolean
+  //REORDER
+  isReorderOpen: boolean
+  openReorder: () => void
+  closeReorder: () => void
+  handleReorderAll: () => Promise<void>
+  handleReorderWithFilters: (filters: {
+    fund_id?: string
+    section_id?: string
+    series_id?: number
+    box_number?: number
+  }) => Promise<void>
+
+  //CREATE MOVEMENT
+  isCreateMovementOpen: boolean
   openCreateMovement: (u: RecordFile) => void
   closeCreateMovement: () => void
   handleCreateMovement: (data: CreateMovementHistory) => Promise<void>
-
 
   //RECIEVE
   isReceiveOpen: boolean
@@ -208,16 +221,16 @@ export const useRecordFiles = () => {
 export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
   const { logout } = useAuth()
   const { toastSuccess, toastError } = useToast()
-const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const goLoans = () => {
-    const parts = location.pathname.split("/");
-    parts[parts.length - 1] = "loans"; // reemplaza el último segmento
+    const parts = location.pathname.split('/')
+    parts[parts.length - 1] = 'loans' // reemplaza el último segmento
 
-    const newPath = parts.join("/");
-    navigate(newPath);
-  };
+    const newPath = parts.join('/')
+    navigate(newPath)
+  }
   // ==========================================================
   // GET RECORD FILES (HOOK COMPLETO Y CORREGIDO)
   // ==========================================================
@@ -301,6 +314,12 @@ const navigate = useNavigate();
     loading: loadingReceive,
     error: errorReceive,
   } = useReceiveLoanRecord()
+
+  const {
+    reorderRecordFiles,
+    loading: loadingReorder,
+    error: errorReorder,
+  } = useReorderRecordFiles()
   // ==========================================================
   // CREATE
   // ==========================================================
@@ -360,27 +379,38 @@ const navigate = useNavigate();
 
   const [isCreateLoanOpen, setCreateLoanOpen] = useState(false)
   const [isReceiveOpen, setReceiveOpen] = useState(false)
-const [isCreateMovementOpen, setCreateMovementOpen] = useState(false)
-const [selectedMovementRecordFile, setSelectedMovementRecordFile] = useState<RecordFile | null>(null)
+  const [isCreateMovementOpen, setCreateMovementOpen] = useState(false)
+  const [selectedMovementRecordFile, setSelectedMovementRecordFile] =
+    useState<RecordFile | null>(null)
 
-const openCreateMovement = (u: RecordFile) => {
-  setSelected(u)
-  setCreateMovementOpen(true)
-}
+  const openCreateMovement = (u: RecordFile) => {
+    setSelected(u)
+    setCreateMovementOpen(true)
+  }
 
-const closeCreateMovement = () => {
-  setSelected(null)
-  setCreateMovementOpen(false)
-}
-  const openCreateLoan = (u: RecordFile) => {setSelected(u)
-  setCreateLoanOpen(true)}
-  const closeCreateLoan = () => {setSelected(null) 
-    setCreateLoanOpen(false)}
-const {
-  createMovement,
-  loading: loadingCreateMovement,
-  error: errorCreateMovement,
-} = useCreateMovement()
+  const closeCreateMovement = () => {
+    setSelected(null)
+    setCreateMovementOpen(false)
+  }
+  const openCreateLoan = (u: RecordFile) => {
+    setSelected(u)
+    setCreateLoanOpen(true)
+  }
+  const closeCreateLoan = () => {
+    setSelected(null)
+    setCreateLoanOpen(false)
+  }
+
+  const [isReorderOpen, setReorderOpen] = useState(false)
+
+  const openReorder = () => setReorderOpen(true)
+  const closeReorder = () => setReorderOpen(false)
+
+  const {
+    createMovement,
+    loading: loadingCreateMovement,
+    error: errorCreateMovement,
+  } = useCreateMovement()
 
   const [isCoverOpen, setCoverOpen] = useState(false)
   const openExportExcel = () => {
@@ -442,44 +472,42 @@ const {
   // CREATE HANDLER
   // ==========================================================
   const handleCreateMovement = async (data: CreateMovementHistory) => {
-  if (!selected) return
-  try {
-    // aseguramos el record_file_id que viene del expediente
-    const payload: CreateMovementHistory = {
-      ...data,
-      record_file_id: selected.id,
+    if (!selected) return
+    try {
+      // aseguramos el record_file_id que viene del expediente
+      const payload: CreateMovementHistory = {
+        ...data,
+        record_file_id: selected.id,
+      }
+
+      await createMovement(payload)
+
+      toastSuccess({
+        id: 801,
+        title: 'Movimiento registrado',
+        message: 'El movimiento del expediente se registró correctamente.',
+      })
+
+      closeCreateMovement()
+      await refetch() // refresca expedientes si es necesario
+    } catch (err) {
+      const msg = getStandarMessageError(err)
+      if (msg) {
+        if (msg === 'Sesión expirada.') await logout()
+        return toastError({ id: 802, title: 'Error', message: msg })
+      }
+
+      return toastError({
+        id: 802,
+        title: 'Error',
+        message: getApiMessage(err as ApiError),
+      })
     }
-
-    await createMovement(payload)
-
-    toastSuccess({
-      id: 801,
-      title: "Movimiento registrado",
-      message: "El movimiento del expediente se registró correctamente.",
-    })
-
-    closeCreateMovement()
-    await refetch()  // refresca expedientes si es necesario
-  } catch (err) {
-    const msg = getStandarMessageError(err)
-    if (msg) {
-      if (msg === "Sesión expirada.") await logout()
-      return toastError({ id: 802, title: "Error", message: msg })
-    }
-
-    return toastError({
-      id: 802,
-      title: "Error",
-      message: getApiMessage(err as ApiError),
-    })
   }
-}
-
 
   const handleCreate = async (data: CreateRecordFile) => {
     try {
       await createRecordFile(data)
-      
 
       toastSuccess({
         id: 301,
@@ -547,7 +575,6 @@ const {
 
     try {
       await updateRecordFile(selected.id, payload)
-      
 
       toastSuccess({
         id: 303,
@@ -582,7 +609,6 @@ const {
 
     try {
       await deleteRecordFile(selected.id)
-      
 
       toastSuccess({
         id: 307,
@@ -685,7 +711,6 @@ const {
 
     try {
       await receiveLoanRecord(selected.id)
-      
 
       toastSuccess({
         id: 705,
@@ -710,6 +735,70 @@ const {
     }
   }
 
+  const handleReorderAll = async () => {
+    try {
+      const res = await reorderRecordFiles()
+
+      toastSuccess({
+        id: 901,
+        title: 'Reordenamiento completo',
+        message:
+          res.updated_records > 0
+            ? `Se actualizaron ${res.updated_records} expedientes.`
+            : 'No fue necesario actualizar expedientes.',
+      })
+
+      await refetch()
+    } catch (err) {
+      const msg = getStandarMessageError(err)
+      if (msg) {
+        if (msg === 'Sesión expirada.') await logout()
+        return toastError({ id: 902, title: 'Error', message: msg })
+      }
+
+      toastError({
+        id: 902,
+        title: 'Error al reordenar',
+        message: getApiMessage(err as ApiError),
+      })
+    }
+  }
+  type ReorderFilters = {
+    fund_id?: string
+    section_id?: string
+    series_id?: number
+    box_number?: number
+  }
+
+  const handleReorderWithFilters = async (filters: ReorderFilters) => {
+    try {
+      const res = await reorderRecordFiles(filters)
+
+      toastSuccess({
+        id: 903,
+        title: 'Reordenamiento aplicado',
+        message:
+          res.updated_records > 0
+            ? `Se actualizaron ${res.updated_records} expedientes.`
+            : 'No fue necesario actualizar expedientes.',
+      })
+
+      await refetch()
+    } catch (err) {
+      const msg = getStandarMessageError(err)
+      if (msg) {
+        if (msg === 'Sesión expirada.') await logout()
+        return toastError({ id: 904, title: 'Error', message: msg })
+      }
+
+      toastError({
+        id: 904,
+        title: 'Error al reordenar',
+        message: getApiMessage(err as ApiError),
+      })
+    }
+  }
+
   // ==========================================================
   // RETURN PROVIDER
   // ==========================================================
@@ -728,7 +817,8 @@ const {
         // filtros directos
         reference_code,
         setReferenceCode,
-        previous_reference_code,setPreviousReferenceCode,
+        previous_reference_code,
+        setPreviousReferenceCode,
         file_number,
         setFileNumber,
         box_number,
@@ -820,6 +910,12 @@ const {
         closeCover,
         handlePrintCover,
 
+        isReorderOpen,
+        openReorder,
+        closeReorder,
+        handleReorderAll,
+        handleReorderWithFilters,
+
         loadingGet,
         loadingCreate,
         loadingUpdate,
@@ -828,6 +924,7 @@ const {
         loadingPrint,
         loadingCreateLoan,
         loadingReceive,
+        loadingReorder,
 
         errorGet,
         errorCreate,
@@ -837,18 +934,19 @@ const {
         errorPrint,
         errorCreateLoan,
         errorReceive,
+        errorReorder,
 
         resetFilters,
         isExportExcelOpen,
         openExportExcel,
         closeExportExcel,
 
-         isCreateMovementOpen,
-    openCreateMovement,
-    closeCreateMovement,
-    handleCreateMovement,
-    loadingCreateMovement,
-    errorCreateMovement,
+        isCreateMovementOpen,
+        openCreateMovement,
+        closeCreateMovement,
+        handleCreateMovement,
+        loadingCreateMovement,
+        errorCreateMovement,
       }}
     >
       {children}

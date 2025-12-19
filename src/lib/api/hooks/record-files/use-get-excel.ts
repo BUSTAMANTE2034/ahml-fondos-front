@@ -14,10 +14,16 @@ interface ExportExcelOptions {
   file_number?: string
   box_number?: string
 
-  // por nombre
-  fund_name?: string
-  section_name?: string
-  series_name?: string
+  // ==========================
+  // RELACIONES (SOLO ID)
+  // ==========================
+  fund_id?: number
+  section_id?: number
+  series_id?: number
+
+  // ==========================
+  // OTRAS RELACIONES (AÚN POR NOMBRE)
+  // ==========================
   location_name?: string
   deterioration_name?: string
   typology_name?: string
@@ -30,7 +36,7 @@ interface ExportExcelOptions {
   file_date_after?: string | null
   file_date_before?: string | null
 
-  // ORDENAMIENTO
+  // ordenamiento
   order_by?: string | null
 }
 
@@ -63,16 +69,21 @@ export const useExportRecordFilesExcel = () => {
       if (filters.box_number)
         params.append("box_number", filters.box_number)
 
-      // filtros por nombre
-      if (filters.fund_name)
-        params.append("fund_name", filters.fund_name)
+      // ==========================
+      // RELACIONES (SOLO ID)
+      // ==========================
+      if (filters.fund_id)
+        params.append("fund_id", String(filters.fund_id))
 
-      if (filters.section_name)
-        params.append("section_name", filters.section_name)
+      if (filters.section_id)
+        params.append("section_id", String(filters.section_id))
 
-      if (filters.series_name)
-        params.append("series_name", filters.series_name)
+      if (filters.series_id)
+        params.append("series_id", String(filters.series_id))
 
+      // ==========================
+      // OTRAS RELACIONES (NAME)
+      // ==========================
       if (filters.location_name)
         params.append("location_name", filters.location_name)
 
@@ -87,7 +98,10 @@ export const useExportRecordFilesExcel = () => {
         params.append("sensitive", filters.sensitive)
 
       // disponibilidad
-      if (filters.availability_status && filters.availability_status !== "all")
+      if (
+        filters.availability_status &&
+        filters.availability_status !== "all"
+      )
         params.append("availability_status", filters.availability_status)
 
       // fechas documental
@@ -97,7 +111,7 @@ export const useExportRecordFilesExcel = () => {
       if (filters.file_date_before)
         params.append("file_date_before", filters.file_date_before)
 
-      // ORDENAMIENTO
+      // ordenamiento
       if (filters.order_by)
         params.append("order_by", filters.order_by)
 

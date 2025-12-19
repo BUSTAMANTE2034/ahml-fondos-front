@@ -113,7 +113,7 @@ const RecordFileFilterRow = () => {
       <div className="hidden lg:block">
         <FilterRowInput
           value={location_name}
-          placeholder="Lugar..."
+          placeholder="Localidad..."
           onChange={setLocationName}
         />
       </div>

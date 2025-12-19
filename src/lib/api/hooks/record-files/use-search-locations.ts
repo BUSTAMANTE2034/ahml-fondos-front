@@ -7,7 +7,7 @@ import {
 } from "@/lib/api/models/location"
 
 /**
- * Búsqueda ligera de lugares (Locations) por query.
+ * Búsqueda ligera de localidades (Locations) por query.
  * Ideal para selects, autocompletados y búsqueda rápida.
  *
  * - Solo usa `query`
@@ -64,9 +64,9 @@ export const useSearchLocations = (query: string | undefined,
         setResults(data.locations ?? [])
       } catch (err: any) {
         if (err instanceof ApiError) {
-          setError(err.message || "Error al buscar lugares.")
+          setError(err.message || "Error al buscar localidades.")
         } else {
-          setError("Error inesperado al buscar lugares.")
+          setError("Error inesperado al buscar localidades.")
         }
       } finally {
         setLoading(false)

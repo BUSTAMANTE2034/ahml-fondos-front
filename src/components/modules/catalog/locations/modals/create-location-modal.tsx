@@ -33,7 +33,7 @@ const CreateLocationModal = () => {
         {/* HEADER */}
         <div className="text-center gap-2 flex flex-col">
           <h2 className=" text-xl md:text-2xl font-bold text-blue-600">
-            Crear Lugar
+            Crear Localidad
           </h2>
           <p className="text-sm">
             Ingresa los datos del ubicación que deseas registrar.
@@ -47,8 +47,8 @@ const CreateLocationModal = () => {
         >
             <FormInput
               name="name"
-              label="Nombre de el lugar"
-              placeholder="Nombre de el lugar"
+              label="Nombre de la localidad"
+              placeholder="Nombre de la localidad"
               register={register}
               errors={errors}
               rules={{ required: 'Nombre obligatorio' }}
