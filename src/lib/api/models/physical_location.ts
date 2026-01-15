@@ -59,3 +59,37 @@ export interface PhysicalLocationsPaginationResponse {
     prev_page: number | null
   }
 }
+
+// =========================
+//   BOX DETAIL (ESTANTERÍA)
+// =========================
+export interface PhysicalLocationBoxDetail {
+  id: number
+  box_number: string
+  description?: string | null
+  total_record_files: number
+  classification_codes: string[]
+}
+
+// =========================
+//   PHYSICAL LOCATION DETAIL
+// =========================
+export interface PhysicalLocationDetail {
+  id: number
+  code: string
+  description?: string | null
+  is_active: boolean
+}
+
+// =========================
+//   RESPONSE
+// =========================
+export interface PhysicalLocationDetailResponse {
+  message: string
+  physical_location: PhysicalLocationDetail
+  boxes: PhysicalLocationBoxDetail[]
+  summary: {
+    total_boxes: number
+    total_record_files: number
+  }
+}

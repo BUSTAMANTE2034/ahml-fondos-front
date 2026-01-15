@@ -4,6 +4,7 @@ import OpcionMenu from '@ui/menuItem'
 import Edit from '@icons/edit.svg'
 import DeleteIcon from '@icons/deleteR.svg'
 import Menu from '@icons/options.svg'
+import Download  from '@icons/download.svg'
 
 
 import Eye from '@icons/eye.svg'
@@ -20,7 +21,7 @@ interface Props {
   item: PhysicalLocation
 }
 const PhysicalLocationRow = ({ item:physical_location }: Props) => {
-  const { openEdit, openDelete, openShow, openDisable, openEnable } =
+  const { openEdit, openDelete, openShow, openDisable, openEnable,openLabel } =
     usePhysicalLocations()
     const getActive=(s:boolean)=>{
       return s ?'Activa':'Inactiva'
@@ -93,6 +94,17 @@ const PhysicalLocationRow = ({ item:physical_location }: Props) => {
             }
             text='Editar'
             onClick={() => openEdit(physical_location)}
+          />
+          <OpcionMenu
+            icon={
+              <img
+                src={Download}
+                alt="Descargar etiqueta"
+                className="w-5"
+              />
+            }
+            text='Descargar etiqueta'
+            onClick={() => openLabel(physical_location)}
           />
           <OpcionMenu
             icon={<img src={DeleteIcon} alt="Eliminar" className="w-5" />}

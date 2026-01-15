@@ -1,7 +1,3 @@
-// --------------------------------------------------------------
-//  UpdateRecordFileModal — versión corregida y alineada con Create
-// --------------------------------------------------------------
-
 import Modal from '@ui/modal'
 import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
@@ -209,6 +205,13 @@ const UpdateRecordFileModal = () => {
   label="Caja"
   placeholder="Buscar caja…"
   value={watch('box_id') ?? null}
+  initialLabel={
+    selected.box
+      ? `${selected.box.box_number} — ${
+          selected.box.physical_location?.code ?? 'Sin ubicación'
+        }`
+      : undefined
+  }
   onChange={(id) =>
     setValue('box_id', id, { shouldValidate: true })
   }
@@ -221,6 +224,7 @@ const UpdateRecordFileModal = () => {
   searchError={boxError}
   error={errors.box_id?.message}
 />
+
 
             <FormInput
               name="page_count"

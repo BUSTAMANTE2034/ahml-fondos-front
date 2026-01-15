@@ -11,6 +11,7 @@ import DeletePhysicalLocationModal from '../modals/delete-physical_location-moda
 import ShowPhysicalLocationModal from '../modals/show-physical_location-modal'
 import EnablePhysicalLocationModal from '../modals/enable-physical_location-modal'
 import DisablePhysicalLocationModal from '../modals/disable-physical_location-modal'
+import GetPhysicalLocationLabelModal from '../modals/get-record-file-cover-modal'
 import { useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 const Table = () => {
@@ -91,6 +92,7 @@ const Table = () => {
       <EnablePhysicalLocationModal/>
       <DisablePhysicalLocationModal/>
       <ShowPhysicalLocationModal/>
+      <GetPhysicalLocationLabelModal/>
 
     </Card>
   )

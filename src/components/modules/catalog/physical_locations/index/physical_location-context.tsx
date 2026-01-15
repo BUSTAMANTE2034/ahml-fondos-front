@@ -11,6 +11,8 @@ import {
   useCreatePhysicalLocation,
   useUpdatePhysicalLocation,
   useDeletePhysicalLocation,
+  useGetPhysicalLocationDetail,
+  usePrintPhysicalLocationLabel
 } from '@hooks/catalog/physical_locations'
 
 import {
@@ -72,6 +74,15 @@ interface ContextValue {
   openShow: (u: PhysicalLocation, fromUrl?: boolean) => void
   closeShow: () => void
 
+   // PRINT 
+   isLabelOpen: boolean
+openLabel: (u: PhysicalLocation) => void
+closeLabel: () => void
+handlePrintLabel: () => Promise<void>
+
+loadingPrintLabel: boolean
+errorPrintLabel: string | null
+
   loadingGet: boolean
   loadingCreate: boolean
   loadingUpdate: boolean
@@ -101,13 +112,50 @@ export const PhysicalLocationsProvider = ({
 }) => {
   const { logout } = useAuth()
   const { toastSuccess, toastError } = useToast()
-
+const {
+  printLabel,
+  loading: loadingPrintLabel,
+  error: errorPrintLabel,
+} = usePrintPhysicalLocationLabel()
   const navigate = useNavigate()
   const location = useLocation()
+  const [isLabelOpen, setLabelOpen] = useState(false)
 
   // ==========================================================
   // GET PhysicalLocationS (main hook)
   // ==========================================================
+
+  const openLabel = (u: PhysicalLocation) => {
+  setSelected(u)
+  setLabelOpen(true)
+}
+
+const closeLabel = () => {
+  setSelected(null)
+  setLabelOpen(false)
+}
+const handlePrintLabel = async () => {
+  if (!selected) return
+
+  try {
+    await printLabel(selected.code)
+
+    toastSuccess({
+      id: 601,
+      title: 'Etiqueta generada',
+      message: 'La etiqueta de la estantería fue generada correctamente.',
+    })
+
+    closeLabel()
+  } catch {
+    toastError({
+      id: 602,
+      title: 'Error',
+      message: errorPrintLabel || 'Error al generar etiqueta.',
+    })
+  }
+}
+
   const {
     physicalLocations,
     loading: loadingGet,
@@ -456,15 +504,22 @@ export const PhysicalLocationsProvider = ({
         openShow,
         closeShow,
 
+        isLabelOpen,
+        openLabel,
+        closeLabel,
+        handlePrintLabel,
+
         loadingGet,
         loadingCreate,
         loadingUpdate,
         loadingDelete,
+        loadingPrintLabel,
 
         errorGet,
         errorCreate,
         errorUpdate,
         errorDelete,
+        errorPrintLabel
       }}
     >
       {children}

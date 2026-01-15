@@ -8,6 +8,7 @@ import AutoHome from '@components/security/authHome'
 import LoginGate from '@/components/security/loginGate'
 import FirstLoginPage from '@/pages/recover'
 import PhysicalLocationShowPage from '@/pages/modules/catalog/pyshical_location/show'
+import PhysicalLocationDetailPage from '@pages/modules/catalog/pyshical_location/detail'
 const AppRoutes = () => {
   return (
     
@@ -16,6 +17,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<RLogin />} /> */}
        <Route path="/" element={<AutoHome />} />
        <Route path="/physical_locations/:code" element={<PhysicalLocationShowPage />} />
+        <Route path="/physical_locations/:code/detail" element={<PhysicalLocationDetailPage />} />
 
   {/* (Opcional) /login solo si no estás logueado */}
   <Route path="/login" element={
