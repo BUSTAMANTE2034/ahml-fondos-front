@@ -24,8 +24,13 @@ const UpdateSectionModal = () => {
 
   const startDate = watch('start_date')
 
-  const [keyQuery, setKeyQuery] = useState('')
-  const { results: keyResults } = useSearchCatalogKeys(keyQuery)
+  const [keyQuery, setKeyQuery] = useState<string | undefined>(undefined)
+
+  const {
+    results: keyResults,
+    loading: keyLoading,
+    error: keyError,
+  } = useSearchCatalogKeys(keyQuery, true)
 
   // Cargar los datos del sección seleccionado
   useEffect(() => {
@@ -41,7 +46,7 @@ const UpdateSectionModal = () => {
   }, [selected, reset])
 
   const onSubmit = async (data: UpdateSection) => {
-    await handleUpdate({ ...data, catalog_key_id: selected?.catalog_key_id })
+    await handleUpdate(data)
   }
 
   if (!isEditOpen || !selected) return null
@@ -49,7 +54,6 @@ const UpdateSectionModal = () => {
   return (
     <Modal visible onClose={closeEdit} className=" ">
       <div className="flex flex-col gap-4 px-2 md:px-4">
-
         {/* HEADER */}
         <div className="text-center gap-2 flex flex-col">
           <h2 className="text-xl md:text-2xl font-bold text-blue-600">
@@ -59,8 +63,10 @@ const UpdateSectionModal = () => {
         </div>
 
         {/* FORM */}
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-2">
-
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col space-y-2"
+        >
           {/* NAME + ACRONYM */}
           <div className="w-full grid grid-cols-2 gap-4">
             <FormInput
@@ -69,7 +75,7 @@ const UpdateSectionModal = () => {
               placeholder="Nombre del sección"
               register={register}
               errors={errors}
-              rules={{ required: "Nombre obligatorio" }}
+              rules={{ required: 'Nombre obligatorio' }}
             />
 
             <FormInput
@@ -79,7 +85,7 @@ const UpdateSectionModal = () => {
               placeholder="Ingrese la sigla"
               register={register}
               errors={errors}
-              rules={{ required: "Sigla obligatorio" }}
+              rules={{ required: 'Sigla obligatorio' }}
             />
           </div>
 
@@ -92,7 +98,7 @@ const UpdateSectionModal = () => {
               type="date"
               register={register}
               errors={errors}
-              rules={{ required: "Fecha inicio obligatoria" }}
+              rules={{ required: 'Fecha inicio obligatoria' }}
             />
 
             {/* End */}
@@ -104,17 +110,18 @@ const UpdateSectionModal = () => {
               disabled={!startDate}
               errors={errors}
               rules={{
-                required: "Fecha de término obligatoria",
+                required: 'Fecha de término obligatoria',
                 validate: (value) => {
-                  const start = startDate ?? ""
-                  const end = value ?? ""
+                  const start = startDate ?? ''
+                  const end = value ?? ''
 
-                  if (!start) return "Selecciona primero la fecha de inicio"
-                  if (!end) return "La fecha de fin es obligatoria"
-                  if (end < start) return "La fecha de fin debe ser mayor que la de inicio"
+                  if (!start) return 'Selecciona primero la fecha de inicio'
+                  if (!end) return 'La fecha de fin es obligatoria'
+                  if (end < start)
+                    return 'La fecha de fin debe ser mayor que la de inicio'
 
                   return true
-                }
+                },
               }}
               min={addOneDay(startDate)}
             />
@@ -123,35 +130,24 @@ const UpdateSectionModal = () => {
           {/* CATALOG KEY SELECT */}
           <AsyncSearchSelect
             label="Clave del Catálogo"
-            placeholder="Ingrese la clave o nombre"
-            value={selected.catalog_key_id}
-            initialLabel={`${selected.catalog_key?.key} - ${selected.catalog_key?.name}`}  
-            error={errors.catalog_key_id?.message}
-            searchFn={async (q) => {
-              setKeyQuery(q)
-              if (!q.trim()) return []
-
-              return new Promise((resolve) => {
-                setTimeout(() => {
-                  resolve(
-                    keyResults.map((k) => ({
-                      id: k.id,
-                      label: `${k.key} - ${k.name}`,
-                    }))
-                  )
-                }, 10)
-              })
-            }}
-            onChange={(id) =>
-              setValue("catalog_key_id", id, { shouldValidate: true })
+            placeholder="Buscar clave del catálogo…"
+            value={watch('catalog_key_id') ?? null}
+            initialLabel={
+              selected.catalog_key
+                ? `${selected.catalog_key.key} — ${selected.catalog_key.name}`
+                : undefined
             }
-          />
-
-          <input
-            type="hidden"
-            {...register("catalog_key_id", {
-              required: "La clave del catálogo es obligatoria",
-            })}
+            onChange={(id) =>
+              setValue('catalog_key_id', id, { shouldValidate: true })
+            }
+            onQueryChange={setKeyQuery}
+            results={keyResults.map((k) => ({
+              id: k.id,
+              label: `${k.key} — ${k.name}`,
+            }))}
+            loading={keyLoading}
+            searchError={keyError}
+            error={errors.catalog_key_id?.message}
           />
 
           {/* BUTTONS */}
@@ -170,14 +166,15 @@ const UpdateSectionModal = () => {
 
               <button
                 type="submit"
-                className={`create ${loadingUpdate ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`create ${
+                  loadingUpdate ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
                 disabled={loadingUpdate}
               >
                 <span>Guardar cambios</span>
               </button>
             </div>
           )}
-
         </form>
       </div>
     </Modal>

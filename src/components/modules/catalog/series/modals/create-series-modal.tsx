@@ -21,10 +21,16 @@ const CreateSeriesModal = () => {
     setValue,
   } = useForm<CreateSeries>()
 
-  const startDate = watch('start_date') // ⭐ Para validar la fecha final
+  const startDate = watch('start_date') //  Para validar la fecha final
 
-  const [keyQuery, setKeyQuery] = useState('')
-  const { results: keyResults } = useSearchCatalogKeys(keyQuery)
+ const [keyQuery, setKeyQuery] = useState<string | undefined>(undefined)
+
+const {
+  results: keyResults,
+  loading: keyLoading,
+  error: keyError,
+} = useSearchCatalogKeys(keyQuery, true)
+
 
   const onSubmit = async (data: CreateSeries) => {
     await handleCreate(data)
@@ -117,36 +123,22 @@ const CreateSeriesModal = () => {
           {/* CATALOG KEY SELECT */}
           <div className="w-full grid grid-cols-1 gap-4 justify-between">
             <AsyncSearchSelect
-              label="Clave del Catálogo"
-              placeholder="Ingrese la clave o nombre"
-              value={null}
-              error={errors.catalog_key_id?.message}
-              searchFn={async (q) => {
-                setKeyQuery(q)
-                if (!q.trim()) return []
+  label="Clave del Catálogo"
+  placeholder="Buscar clave del catálogo…"
+  value={watch('catalog_key_id') ?? null}
+  onChange={(id) =>
+    setValue('catalog_key_id', id, { shouldValidate: true })
+  }
+  onQueryChange={setKeyQuery}
+  results={keyResults.map((k) => ({
+    id: k.id,
+    label: `${k.key} — ${k.name}`,
+  }))}
+  loading={keyLoading}
+  searchError={keyError}
+  error={errors.catalog_key_id?.message}
+/>
 
-                return new Promise((resolve) => {
-                  setTimeout(() => {
-                    resolve(
-                      keyResults.map((k) => ({
-                        id: k.id,
-                        label: `${k.key} - ${k.name}`,
-                      }))
-                    )
-                  }, 10)
-                })
-              }}
-              onChange={(id) => {
-                setValue('catalog_key_id', id, { shouldValidate: true })
-              }}
-            />
-
-            <input
-              type="hidden"
-              {...register('catalog_key_id', {
-                required: 'La clave del catálogo es obligatoria',
-              })}
-            />
           </div>
 
           {/* BUTTONS */}

@@ -1,21 +1,24 @@
-import { useEffect, useRef, useState } from 'react'
-import classNames from 'classnames'
-import X from '@icons/close.svg'
-import { IconButton } from '@/components/ui/iconButton'
+import { useState, useRef, useEffect } from "react";
+import classNames from "classnames";
+import X from "@icons/close.svg";
+import { IconButton } from "@/components/ui/iconButton";
 
 interface ResultItem {
-  id: number
-  label: string
+  id: number;
+  label: string;
 }
 
 interface AsyncSearchSelectProps {
-  label?: string
-  placeholder?: string
-  value: number | null
-  onChange: (id: number | null) => void
-  searchFn: (query: string) => Promise<ResultItem[]>
-  error?: string
-  initialLabel?: string
+  label?: string;
+  placeholder?: string;
+  value: number | null;
+  onChange: (id: number | null) => void;
+  results: ResultItem[];
+  loading?: boolean;
+  searchError?: string | null;
+  onQueryChange: (text: string) => void;
+  initialLabel?: string;
+  error?: string;
 }
 
 export const AsyncSearchSelect = ({
@@ -23,168 +26,133 @@ export const AsyncSearchSelect = ({
   placeholder,
   value,
   onChange,
-  searchFn,
+  results,
+  loading = false,
+  searchError,
+  onQueryChange,
+  initialLabel,
   error,
-  initialLabel
 }: AsyncSearchSelectProps) => {
-  const [query, setQuery] = useState('')
-  const [debounced, setDebounced] = useState('')
-  const [results, setResults] = useState<ResultItem[]>([])
-  const [showList, setShowList] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [searchError, setSearchError] = useState<string | null>(null)
+  const [query, setQuery] = useState(initialLabel || "");
+  const [showList, setShowList] = useState(false);
 
-  const [isSelecting, setIsSelecting] = useState(false)
-  const [hasSelected, setHasSelected] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  // --- INITIAL LABEL ---
-  useEffect(() => {
-    if (initialLabel) {
-      setQuery(initialLabel)
-      setHasSelected(true)
-    }
-  }, [initialLabel])
-
-  // --- DEBOUNCE ---
-  useEffect(() => {
-    if (isSelecting || hasSelected) return
-
-    const id = setTimeout(() => setDebounced(query), 500)
-    return () => clearTimeout(id)
-  }, [query, isSelecting, hasSelected])
-
-  // --- SEARCH ---
-  useEffect(() => {
-    if (hasSelected) return
-
-    const load = async () => {
-      if (!debounced.trim()) {
-        setResults([])
-        setShowList(false)
-        setSearchError(null)
-        return
-      }
-
-      setLoading(true)
-      setSearchError(null)
-
-      try {
-        const items = await searchFn(debounced)
-        setResults(items)
-        setShowList(true)
-      } catch (err) {
-        console.error(err)
-        setResults([])
-        setSearchError('Error al buscar')
-        setShowList(true)
-      }
-
-      setLoading(false)
-    }
-
-    load()
-  }, [debounced, searchFn, hasSelected])
-
-  // --- CLEAR ---
   const handleClear = () => {
-    setQuery('')
-    setDebounced('')
-    setHasSelected(false)
-    setResults([])
-    setShowList(false)
-    setSearchError(null)
-    onChange(null)
-  }
+    setQuery("");
+    onQueryChange("");
+    onChange(null);
+    setShowList(false);
+  };
 
-  // --- SELECT ITEM ---
   const handleSelect = (item: ResultItem) => {
-    setIsSelecting(true)
-    setHasSelected(true)
+    setQuery(item.label);
+    onChange(item.id);
+    setShowList(false);
+  };
 
-    setQuery(item.label)
-    setDebounced('')
-    setResults([])
-    setShowList(false)
-    setSearchError(null)
+  const showClearButton = query.trim() !== "" || showList || value !== null;
 
-    onChange(item.id)
+  // NEW — cerrar cuando pierdas clic fuera
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowList(false);
 
-    inputRef.current?.blur()
-    setTimeout(() => setIsSelecting(false), 0)
-  }
+        // limpiar si no hay selección
+        if (!value) {
+          setQuery("");
+          onQueryChange("");
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [value, onQueryChange]);
 
   return (
-    <div className="flex flex-col mb-3 relative">
+    <div className="flex flex-col mb-3 relative" ref={containerRef}>
       {label && <label className="font-bold text-xs md:text-sm">{label}</label>}
 
       <div className="relative">
         <input
-          ref={inputRef}
           className={classNames(
-            'border-b border-dark-gray2 text-[10px] md:text-xs py-1 w-full pr-5 focus:outline-none',
-            { 'border-red': !!error }
+            "border-b border-dark-gray2 text-[10px] md:text-xs py-1 w-full pr-5 focus:outline-none",
+            { "border-red": !!error }
           )}
           placeholder={placeholder}
           value={query}
           onChange={(e) => {
-            setQuery(e.target.value)
-            setHasSelected(false)
+            const text = e.target.value;
+            setQuery(text);
+            onQueryChange(text);
+            setShowList(true);
+          }}
+          onFocus={() => {
+            if (!query.trim()) {
+              onQueryChange("");
+            }
+            setShowList(true);
           }}
         />
 
-        {query && (
+        {showClearButton && (
           <IconButton
             onClick={handleClear}
             tooltip="Limpiar"
-            className="absolute! right-1 top-1/3 -translate-y-1/2"
+            className="absolute! right-1 top-1/2 -translate-y-1/2"
           >
-            <img src={X} alt="" className="h-6 w-6" />
+            <img src={X} alt="" className="h-4 w-4" />
           </IconButton>
         )}
       </div>
 
       {/* LOADING */}
-      {loading && !hasSelected && (
+      {loading && (
         <div className="absolute top-full left-0 w-full bg-white p-2 text-xs shadow-md z-50">
-          Buscando...
+          Buscando…
         </div>
       )}
 
-      {/* LISTA DE RESULTADOS */}
+      {/* LISTA */}
+{!loading && showList && (
+  <div
+    className="
+      absolute left-0 top-[calc(100%+2px)]
+      w-full
+      bg-white
+      shadow-lg
+      border border-dark-gray
+      rounded-b-xl
+      z-50
+      max-h-60
+      overflow-y-auto
+      scroll-t
+    "
+  >
+    {!!searchError && (
+      <div className="p-2 text-xs text-red">{searchError}</div>
+    )}
+
+    {!searchError && results.length === 0 && query.trim() && (
+      <div className="p-2 text-xs text-gray-500">Sin resultados</div>
+    )}
+
+    {results.map((item) => (
       <div
-        className={classNames(
-          'transition-all duration-150 overflow-hidden bg-white shadow-md border border-dark-gray rounded-b-xl w-full z-50',
-          {
-            'max-h-0 opacity-0': !showList || loading || hasSelected,
-            'max-h-60 opacity-100': showList && !loading && !hasSelected,
-          }
-        )}
+        key={item.id}
+        onClick={() => handleSelect(item)}
+        className="px-2 py-1 text-xs cursor-pointer hover:bg-gray-200"
       >
-        {/* ERROR */}
-        {!loading && searchError && (
-          <div className="p-2 text-xs text-red">{searchError}</div>
-        )}
-
-        {/* SIN RESULTADOS */}
-        {!loading && !searchError && results.length === 0 && (
-          <div className="p-2 text-xs text-gray-500">Sin resultados</div>
-        )}
-
-        {/* RESULTADOS */}
-        {results.map((item) => (
-          <div
-            key={item.id}
-            onClick={() => handleSelect(item)}
-            className="p-2 text-xs cursor-pointer hover:bg-gray-200"
-          >
-            {item.label}
-          </div>
-        ))}
+        {item.label}
       </div>
+    ))}
+  </div>
+)}
+
 
       {error && <span className="text-red text-[10px] mt-1">{error}</span>}
     </div>
-  )
-}
+  );
+};
