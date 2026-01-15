@@ -29,7 +29,7 @@ const adminRoutes = [
   { path: 'deteriorations', element: <DeteriorationsView /> },
   { path: 'typologies', element: <TypologiesView /> },
   { path: 'physical_locations', element: <PhysicalLocationsView /> },
-  { path: 'physical_locations/:code', element: <PhysicalLocationsView /> },
+  // { path: 'physical_locations/:code', element: <PhysicalLocationsView/> },
   { path: 'boxes', element: <BoxView /> }
 ]
 const managerRoutes = [
@@ -47,7 +47,7 @@ const managerRoutes = [
   { path: 'deteriorations', element: <DeteriorationsView /> },
   { path: 'typologies', element: <TypologiesView /> },
   { path: 'physical_locations', element: <PhysicalLocationsView /> },
-  { path: 'physical_locations/:code', element: <PhysicalLocationsView /> },
+  // { path: 'physical_locations/:code', element: <PhysicalLocationsView /> },
   { path: 'boxes', element: <BoxView /> },
 ]
 const archivistRoutes = [
@@ -62,7 +62,7 @@ const archivistRoutes = [
   { path: 'deteriorations', element: <DeteriorationsView /> },
   { path: 'typologies', element: <TypologiesView /> },
   { path: 'physical_locations', element: <PhysicalLocationsView /> },
-  { path: 'physical_locations/:code', element: <PhysicalLocationsView /> },
+  // { path: 'physical_locations/:code', element: <PhysicalLocationsView /> },
   { path: 'boxes', element: <BoxView /> }
 ]
 const visitorRoutes = [{ path: 'record-files', element: <RecordFilesView /> }]

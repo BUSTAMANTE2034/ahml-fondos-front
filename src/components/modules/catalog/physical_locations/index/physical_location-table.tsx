@@ -21,15 +21,15 @@ const Table = () => {
     loadingGet,
     errorGet,openCreate,openShow
   } = usePhysicalLocations()
-useEffect(() => {
-  if (!code || physicalLocations.length === 0) return
+// useEffect(() => {
+//   if (!code || physicalLocations.length === 0) return
 
-  const found = physicalLocations.find(pl => pl.code === code)
+//   const found = physicalLocations.find(pl => pl.code === code)
 
-  if (found) {
-    openShow(found, true) // 👈 fromUrl = true
-  }
-}, [code, physicalLocations])
+//   if (found) {
+//     openShow(found, true) // 👈 fromUrl = true
+//   }
+// }, [code, physicalLocations])
 
   return (
     <Card>

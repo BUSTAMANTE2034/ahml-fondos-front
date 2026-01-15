@@ -221,19 +221,19 @@ export const PhysicalLocationsProvider = ({
     setSelected(u)
     setShowOpen(true)
 
-    const target = `/admin/1/physical_locations/${u.code}`
+    // const target = `/admin/1/physical_locations/${u.code}`
 
-    if (!fromUrl && location.pathname !== target) {
-      navigate(target, { replace: true })
-    }
+    // if (!fromUrl && location.pathname !== target) {
+    //   navigate(target, { replace: true })
+    // }
   }
   const closeShow = () => {
   setSelected(null)
   setShowOpen(false)
 
-  navigate('/admin/1/physical_locations', {
-    replace: true,
-  })
+  // navigate('/admin/1/physical_locations', {
+  //   replace: true,
+  // })
 }
   // ==========================================================
   // CREATE HANDLER
