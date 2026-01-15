@@ -47,7 +47,7 @@ const ShowRecordFileModal = () => {
 
           <p>
             <span className="font-semibold">Número de Caja: </span>
-            {selected.box_number ?? '—'}
+            {selected.box.box_number ?? '—'}
           </p>
 
           <p>
@@ -179,6 +179,21 @@ const ShowRecordFileModal = () => {
             <span>—</span>
           )}
         </div>
+        {/* UBICACIÓN FÍSICA */}
+<div className="mt-2 p-3 rounded-xl border border-blue-200 bg-white flex flex-col gap-1">
+  <p className="font-semibold text-blue-600 text-sm">
+    Ubicación física
+  </p>
+
+  <p>
+    <span className="font-semibold">Estantería: </span>
+    {selected.box?.physical_location?.code ?? '—'}
+  </p>
+
+  <p className="text-xs text-dark2-gray">
+    {selected.box?.physical_location?.description ?? ''}
+  </p>
+</div>
 
         {/* BOTÓN */}
         <div className="flex justify-end pt-2">

@@ -11,8 +11,8 @@ import LocationsView from '@pages/modules/catalog/location'
 import SectionsView from '@pages/modules/catalog/section'
 import SeriesView from '@pages/modules/catalog/series'
 import TypologiesView from '@pages/modules/catalog/typology'
-
-
+import PhysicalLocationsView from '@pages/modules/catalog/pyshical_location'
+import BoxView from '@pages/modules/catalog/box'
 const adminRoutes = [
   { path: 'managers', element: <ManagersView /> },
   { path: 'archivists', element: <ArchivistsView /> },
@@ -28,6 +28,9 @@ const adminRoutes = [
   { path: 'locations', element: <LocationsView /> },
   { path: 'deteriorations', element: <DeteriorationsView /> },
   { path: 'typologies', element: <TypologiesView /> },
+  { path: 'physical_locations', element: <PhysicalLocationsView /> },
+  { path: 'physical_locations/:code', element: <PhysicalLocationsView /> },
+  { path: 'boxes', element: <BoxView /> }
 ]
 const managerRoutes = [
   { path: 'archivists', element: <ArchivistsView /> },
@@ -43,6 +46,9 @@ const managerRoutes = [
   { path: 'locations', element: <LocationsView /> },
   { path: 'deteriorations', element: <DeteriorationsView /> },
   { path: 'typologies', element: <TypologiesView /> },
+  { path: 'physical_locations', element: <PhysicalLocationsView /> },
+  { path: 'physical_locations/:code', element: <PhysicalLocationsView /> },
+  { path: 'boxes', element: <BoxView /> },
 ]
 const archivistRoutes = [
   { path: 'record-files', element: <RecordFilesView /> },
@@ -55,6 +61,9 @@ const archivistRoutes = [
   { path: 'locations', element: <LocationsView /> },
   { path: 'deteriorations', element: <DeteriorationsView /> },
   { path: 'typologies', element: <TypologiesView /> },
+  { path: 'physical_locations', element: <PhysicalLocationsView /> },
+  { path: 'physical_locations/:code', element: <PhysicalLocationsView /> },
+  { path: 'boxes', element: <BoxView /> }
 ]
 const visitorRoutes = [{ path: 'record-files', element: <RecordFilesView /> }]
 

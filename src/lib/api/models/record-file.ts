@@ -13,6 +13,11 @@ export interface Typology {
     email: string
   } | null
 }
+export interface PhysicalLocation {
+  id: number
+  code: string
+  description: string | null
+}
 
 // =========================
 //      DETERIORATION
@@ -40,7 +45,12 @@ export interface RecordFile {
 
   subject: string
   file_number: string | null        // backend expects string for ILIKE
-  box_number: string | null         // backend expects string for ILIKE
+  box:{
+    id: number
+    box_number: string | null
+    description: string | null
+    physical_location: PhysicalLocation | null
+  }     // backend expects string for ILIKE
   sensitive_data: boolean
   comments: string | null
   availability_status: RecordFileAvailability
@@ -50,7 +60,7 @@ export interface RecordFile {
   file_date: string | null
   last_preservation_date: string | null
   last_fund_date: string | null
-
+  box_id: number | null
   fund_id: number | null
   section_id: number | null
   series_id: number | null
@@ -110,7 +120,7 @@ export interface CreateRecordFile {
   subject: string
   previous_reference_code?: string | null 
   file_number?: string | null
-  box_number?: string | null
+  box_id?: number | null
   comments?: string | null
   sensitive_data?: boolean
   availability_status?: RecordFileAvailability

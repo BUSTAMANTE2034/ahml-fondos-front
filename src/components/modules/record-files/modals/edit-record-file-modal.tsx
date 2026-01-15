@@ -24,6 +24,7 @@ import {
   useSearchLocations,
   useSearchDeteriorations,
   useSearchTypologies,
+  useSearchBoxes,
 } from '@hooks/record-files'
 
 import TextInput from '@/components/forms/text'
@@ -52,6 +53,7 @@ const UpdateRecordFileModal = () => {
   // -----------------------------------------
   // QUERIES PARA SELECTS
   // -----------------------------------------
+  const [boxQuery, setBoxQuery] = useState('')
   const [fundQuery, setFundQuery] = useState('')
   const [sectionQuery, setSectionQuery] = useState('')
   const [seriesQuery, setSeriesQuery] = useState('')
@@ -59,6 +61,8 @@ const UpdateRecordFileModal = () => {
   const [deteriorationQuery, setDeteriorationQuery] = useState('')
   const [typologyQuery, setTypologyQuery] = useState('')
 
+  const { results: boxResults, loading: boxLoading, error: boxError } =
+    useSearchBoxes(boxQuery, true)
   const { results: fundResults } = useSearchFunds(fundQuery, true)
   const { results: sectionResults } = useSearchSections(sectionQuery, true)
   const { results: seriesResults } = useSearchSeries(seriesQuery, true)
@@ -96,6 +100,7 @@ const UpdateRecordFileModal = () => {
   // REGISTROS OBLIGATORIOS (igual que en Create)
   // -----------------------------------------
   useEffect(() => {
+    register('box_id', { required: 'Selecciona una caja.' })
     register('fund_id', { required: 'Selecciona un fondo.' })
     register('section_id', { required: 'Selecciona una sección.' })
     register('series_id', { required: 'Selecciona una serie.' })
@@ -123,7 +128,7 @@ const UpdateRecordFileModal = () => {
     reset({
       subject: selected.subject,
       file_number: selected.file_number,
-      box_number: selected.box_number,
+      box_id: selected.box_id,
       page_count: selected.page_count,
       file_date: selected.file_date,
 
@@ -200,14 +205,22 @@ const UpdateRecordFileModal = () => {
               rules={{ required: 'Campo obligatorio' }}
             /> */}
 
-            <FormInput
-              name="box_number"
-              label="No.Caja"
-              toUpper
-              register={register}
-              errors={errors}
-              rules={{ required: 'Campo obligatorio' }}
-            />
+            <AsyncSearchSelect
+  label="Caja"
+  placeholder="Buscar caja…"
+  value={watch('box_id') ?? null}
+  onChange={(id) =>
+    setValue('box_id', id, { shouldValidate: true })
+  }
+  onQueryChange={setBoxQuery}
+  results={boxResults.map((b) => ({
+    id: b.id,
+    label: `${b.box_number} — ${b.physical_location?.code ?? 'Sin ubicación'}`,
+  }))}
+  loading={boxLoading}
+  searchError={boxError}
+  error={errors.box_id?.message}
+/>
 
             <FormInput
               name="page_count"

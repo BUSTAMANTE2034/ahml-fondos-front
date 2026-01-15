@@ -56,7 +56,7 @@ const RecordFilesRow = ({ item: recordFile }: Props) => {
       <span className="text-xs font-medium hidden md:block">
         {recordFile.file_number}
       </span>
-      <span className="text-xs hidden md:block">{recordFile.box_number}</span>
+      <span className="text-xs hidden md:block">{recordFile.box.box_number}</span>
       <span className="hidden md:block text-xs">
         {recordFile.fund?.acronym}
       </span>

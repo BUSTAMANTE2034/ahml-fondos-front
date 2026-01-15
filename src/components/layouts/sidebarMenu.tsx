@@ -17,6 +17,8 @@ import SeriesIcon from '@icons/serieW.svg'
 import TypologiesIcon from '@icons/typologyW.svg'
 import DeteriorationsIcon from '@icons/deteriorationW.svg'
 import LocationsIcon from '@icons/locationW.svg'
+import PhysicalLocationsIcon from '@icons/pyshical_location.svg'
+import BoxesIcon from '@icons/boxW.svg'
 
 const SidebarMenu = () => {
   const { user } = useAuth()
@@ -77,6 +79,9 @@ const SidebarMenu = () => {
         <Option to={`/${user?.role}/${user?.id}/series`} label="Series">
           <img src={SeriesIcon} alt="Series" />
         </Option>
+        <Option to={`/${user?.role}/${user?.id}/boxes`} label="Cajas">
+          <img src={BoxesIcon} alt="Cajas" />
+        </Option>
         <Option to={`/${user?.role}/${user?.id}/typologies`} label="Tipologías">
           <img src={TypologiesIcon} alt="Tipologías" />
         </Option>
@@ -88,6 +93,9 @@ const SidebarMenu = () => {
         </Option>
         <Option to={`/${user?.role}/${user?.id}/locations`} label="Localidades">
           <img src={LocationsIcon} alt="Localidades" />
+        </Option>
+        <Option to={`/${user?.role}/${user?.id}/physical_locations`} label="Ubicaciones físicas">
+          <img src={PhysicalLocationsIcon} alt="Ubicaciones físicas" />
         </Option>
       </div>)}
       

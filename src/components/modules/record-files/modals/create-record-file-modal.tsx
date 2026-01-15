@@ -15,7 +15,7 @@ import {
   useSearchSeries,
   useSearchLocations,
   useSearchDeteriorations,
-  useSearchTypologies,
+  useSearchTypologies,useSearchBoxes
 } from '@hooks/record-files'
 
 import { useEffect, useState } from 'react'
@@ -42,7 +42,9 @@ const CreateRecordFileModal = () => {
 
   // -----------------------------------------
   // QUERIES PARA SELECTS
-  // -----------------------------------------
+  // ----------------------------------------
+  // 
+  const [boxQuery, setBoxQuery] = useState<string | undefined>(undefined)
   const [fundQuery, setFundQuery] = useState<string | undefined>(undefined)
   const [sectionQuery, setSectionQuery] = useState<string | undefined>(
     undefined
@@ -61,6 +63,11 @@ const CreateRecordFileModal = () => {
   // -----------------------------------------
   // HOOKS (fetch)
   // -----------------------------------------
+  const {
+  results: boxResults,
+  loading: boxLoading,
+  error: boxError,
+} = useSearchBoxes(boxQuery, true)
   const {
     results: fundResults,
     loading: fundLoading,
@@ -119,6 +126,7 @@ const CreateRecordFileModal = () => {
   // REGISTROS CORRECTOS (sin hidden inputs)
   // -----------------------------------------
   useEffect(() => {
+    register('box_id', { required: 'Selecciona una caja.' })
     register('fund_id', { required: 'Selecciona un fondo.' })
     register('section_id', { required: 'Selecciona una sección.' })
     register('series_id', { required: 'Selecciona una serie.' })
@@ -196,14 +204,22 @@ const CreateRecordFileModal = () => {
               rules={{ required: 'Campo obligatorio' }}
             /> */}
 
-            <FormInput
-              name="box_number"
-              label="No.Caja"
-              toUpper
-              register={register}
-              errors={errors}
-              rules={{ required: 'Campo obligatorio' }}
-            />
+            <AsyncSearchSelect
+  label="Caja"
+  placeholder="Buscar caja…"
+  value={watch('box_id') ?? null}
+  onChange={(id) =>
+    setValue('box_id', id, { shouldValidate: true })
+  }
+  onQueryChange={setBoxQuery}
+  results={boxResults.map((b) => ({
+    id: b.id,
+    label: `${b.box_number} — ${b.physical_location?.code ?? 'Sin ubicación'}`,
+  }))}
+  loading={boxLoading}
+  searchError={boxError}
+  error={errors.box_id?.message}
+/>
 
             <FormInput
               name="page_count"
