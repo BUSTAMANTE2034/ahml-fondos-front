@@ -1,6 +1,6 @@
 import Modal from '@ui/modal'
 import { useManagers } from '../index/manager-context'
-import { formatFecha,getRoleLabel } from '@ui/functions'
+import { formatFecha, getRoleLabel } from '@ui/functions'
 
 const ShowManagerModal = () => {
   const { selected, isShowOpen, closeShow } = useManagers()
@@ -9,56 +9,79 @@ const ShowManagerModal = () => {
 
   return (
     <Modal visible onClose={closeShow}>
-      <div className="flex flex-col gap-4 px-2 md:px-4">
+      <div className="flex flex-col gap-6 px-2 md:px-4">
 
-        {/* HEADER */}
+        {/* ================= HEADER ================= */}
         <div className="text-center flex flex-col gap-2">
           <h2 className="text-xl md:text-2xl font-bold text-blue-600">
-            Información del Gestor
+            Información del gestor
           </h2>
-          <p className="text-sm">
-            Detalles del gestor seleccionado.
+          <p className="text-sm text-dark2-gray">
+            Detalles del gestor seleccionado
           </p>
         </div>
 
-        {/* CONTENIDO */}
-        <div className="flex flex-col gap-3 text-sm">
+        {/* ================= IDENTIDAD ================= */}
+        <div className="p-4 rounded-2xl border border-blue-200 bg-blue-50">
+          <h3 className="font-bold text-sm text-blue-600 mb-3">
+            Datos personales
+          </h3>
 
-          <p>
-            <span className="font-bold">Nombre: </span>
-            {selected.first_name} {selected.last_name}
-          </p>
-
-          <p>
-            <span className="font-bold">Correo: </span>
-            {selected.email}
-          </p>
-
-          <p>
-            <span className="font-bold">Número de empleado: </span>
-            {selected.employee_id ?? 'No registrado'}
-          </p>
-
-          <p>
-            <span className="font-bold">Rol: </span>
-            {getRoleLabel(selected.role)}
-          </p>
-
-          <p>
-            <span className="font-bold">Estatus: </span>
-            {selected.is_active ? 'Activo' : 'Inactivo'}
-          </p>
-
-          {selected.last_login && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             <p>
-              <span className="font-bold">Último acceso: </span>
-              {formatFecha (selected.last_login)}
+              <span className="font-semibold">Nombre:</span><br />
+              {selected.first_name} {selected.last_name}
             </p>
-          )}
+
+            <p>
+              <span className="font-semibold">Correo:</span><br />
+              {selected.email}
+            </p>
+
+            <p>
+              <span className="font-semibold">Número de empleado:</span><br />
+              {selected.employee_id ?? '—'}
+            </p>
+
+            <p>
+              <span className="font-semibold">Rol:</span><br />
+              {getRoleLabel(selected.role)}
+            </p>
+          </div>
         </div>
 
-        {/* BOTÓN */}
-        <div className="flex justify-end pt-4">
+        {/* ================= ESTADO ================= */}
+        <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray">
+          <h3 className="font-bold text-sm text-blue-600 mb-3">
+            Estado del usuario
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <p>
+              <span className="font-semibold">Estatus:</span><br />
+              <span
+                className={
+                  selected.is_active
+                    ? 'text-green-600 font-medium'
+                    : 'text-red-600 font-medium'
+                }
+              >
+                {selected.is_active ? 'Activo' : 'Inactivo'}
+              </span>
+            </p>
+            
+
+            {selected.last_login && (
+              <p>
+                <span className="font-semibold">Último acceso:</span><br />
+                {formatFecha(selected.last_login)}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* ================= FOOTER ================= */}
+        <div className="flex justify-end pt-2">
           <button onClick={closeShow} className="cancel">
             <span>Cerrar</span>
           </button>

@@ -1,204 +1,201 @@
 import Modal from '@ui/modal'
 import { useRecordFiles } from '../index/record-file-context.js'
-import { formatFecha, invertDate, getAvailabilityLabel,getReadableDocumentSizes } from '@ui/functions'
+import {
+  formatFecha,
+  invertDate,
+  getAvailabilityLabel,
+  getReadableDocumentSizes,
+} from '@ui/functions'
 
 const ShowRecordFileModal = () => {
   const { selected, isShowOpen, closeShow } = useRecordFiles()
-
   if (!isShowOpen || !selected) return null
 
+  const availabilityColor =
+    selected.availability_status === 'available'
+      ? 'text-green-600'
+      : 'text-red-600'
+
   return (
-    <Modal visible onClose={closeShow} big={true}>
+    <Modal visible onClose={closeShow} big>
       <div className="flex flex-col gap-6 px-2 md:px-4">
-        {/* HEADER */}
-        <div className="text-center flex flex-col gap-2">
+
+        {/* ================= HEADER ================= */}
+        <div className="text-center">
           <h2 className="text-xl md:text-2xl font-bold text-blue-600">
-            Información del Expediente
+            Expediente documental
           </h2>
           <p className="text-sm text-dark2-gray">
-            Detalles completos del expediente seleccionado.
+            Información completa del expediente
           </p>
         </div>
 
-        {/* SECCIÓN PRINCIPAL */}
-        <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray flex flex-col gap-2 text-sm">
-          <h3 className="font-bold text-blue-600 text-sm mb-1">
-            Datos Generales
+        {/* ================= IDENTIDAD ================= */}
+        <div className="p-4 rounded-2xl border border-blue-200 bg-blue-50">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <p>
+              <span className="font-semibold">Código de referencia:</span><br />
+              {selected.reference_code}
+            </p>
+
+            <p>
+              <span className="font-semibold">
+                Código de referencia anterior:
+              </span><br />
+              {selected.previous_reference_code || '—'}
+            </p>
+
+            <p className="md:col-span-2">
+              <span className="font-semibold">Asunto:</span><br />
+              {selected.subject || '—'}
+            </p>
+          </div>
+        </div>
+
+        {/* ================= DATOS GENERALES ================= */}
+        <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray">
+          <h3 className="font-bold text-blue-600 text-sm mb-3">
+            Datos generales
           </h3>
 
-          <p>
-            <span className="font-semibold">Código de Referencia: </span>
-            {selected.reference_code}
-          </p>
-           <p>
-            <span className="font-semibold">Código de Referencia Anterior: </span>
-            {selected.previous_reference_code}
-          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+            <p>
+              <span className="font-semibold">Expediente:</span><br />
+              {selected.file_number ?? '—'}
+            </p>
 
-          <p>
-            <span className="font-semibold ">Asunto: </span>
-            {selected.subject || '—'}
-          </p>
+            <p>
+              <span className="font-semibold">Caja:</span><br />
+              {selected.box?.box_number ?? '—'}
+            </p>
 
-          <p>
-            <span className="font-semibold">Número de Expediente: </span>
-            {selected.file_number ?? '—'}
-          </p>
+            <p>
+              <span className="font-semibold">Páginas:</span><br />
+              {selected.page_count ?? '—'}
+            </p>
 
-          <p>
-            <span className="font-semibold">Número de Caja: </span>
-            {selected.box.box_number ?? '—'}
-          </p>
+            <p>
+              <span className="font-semibold">Tamaño documentos:</span><br />
+              {getReadableDocumentSizes(selected.document_sizes) ?? '—'}
+            </p>
 
-          <p>
-            <span className="font-semibold">Páginas: </span>
-            {selected.page_count ?? '—'}
-          </p>
-          <p>
-            <span className="font-semibold">Medidad de documentos: </span>
-            {getReadableDocumentSizes(selected.document_sizes) ?? '—'}
-          </p>
+            <p>
+              <span className="font-semibold">Fecha documental:</span><br />
+              {selected.file_date
+                ? invertDate(selected.file_date)
+                : '—'}
+            </p>
 
-          <p>
-            <span className="font-semibold">Fecha Documental: </span>
-            {selected.file_date ? invertDate(selected.file_date) : '—'}
-          </p>
+            <p>
+              <span className="font-semibold">Disponibilidad:</span><br />
+              <span className={`font-medium ${availabilityColor}`}>
+                {getAvailabilityLabel(selected.availability_status)}
+              </span>
+            </p>
 
-          <p>
-            <span className="font-semibold">Fecha Último Fondo: </span>
-            {selected.last_fund_date
-              ? invertDate(selected.last_fund_date)
-              : '—'}
-          </p>
-
-          <p>
-            <span className="font-semibold">Fecha Última Preservación: </span>
-            {selected.last_preservation_date
-              ? invertDate(selected.last_preservation_date)
-              : '—'}
-          </p>
-
-          <p>
-            <span className="font-semibold">Disponibilidad: </span>
-            <span
-              className={
-                selected.availability_status === 'available'
-                  ? 'text-green-600 font-medium'
-                  : 'text-red-600 font-medium'
-              }
-            >
-              {getAvailabilityLabel(selected.availability_status)}
-            </span>
-          </p>
-
-          <p>
-            <span className="font-semibold">Datos Sensibles: </span>
-            {selected.sensitive_data ? 'Sí' : 'No'}
-          </p>
-
-          <p>
-            <span className="font-semibold">Comentarios: </span>
-            {selected.comments || '—'}
-          </p>
-        </div>
-
-        {/* SECCIÓN RELACIONES */}
-        <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray flex flex-col gap-2 text-sm">
-          <h3 className="font-bold text-blue-600 text-sm mb-1">Relaciones</h3>
-
-          <p>
-            <span className="font-semibold">Fondo: </span>
-            {selected.fund ? selected.fund.name : '—'}
-          </p>
-
-          <p>
-            <span className="font-semibold">Sección: </span>
-            {selected.section ? selected.section.name : '—'}
-          </p>
-
-          <p>
-            <span className="font-semibold">Serie: </span>
-            {selected.series ? selected.series.name : '—'}
-          </p>
-
-          <p>
-            <span className="font-semibold">Localidad: </span>
-            {selected.location ? selected.location.name : '—'}
-          </p>
-
-          <p>
-            <span className="font-semibold">Deterioro: </span>
-            {selected.deterioration_status
-              ? selected.deterioration_status.name
-              : '—'}
-          </p>
-
-          <div className="flex flex-col gap-1">
-            <span className="font-semibold">Tipologías:</span>
-            {selected.typologies && selected.typologies.length > 0 ? (
-              <ul className="list-disc pl-5">
-                {selected.typologies.map((t) => (
-                  <li key={t.id}>{t.name}</li>
-                ))}
-              </ul>
-            ) : (
-              <span>—</span>
-            )}
+            <p>
+              <span className="font-semibold">Datos sensibles:</span><br />
+              {selected.sensitive_data ? 'Sí' : 'No'}
+            </p>
           </div>
 
-          <p>
-            <span className="font-semibold">Creado el: </span>
-            {formatFecha(selected.created_at)}
+          <div className="mt-3 text-sm">
+            <span className="font-semibold">Comentarios:</span>
+            <p className="text-dark2-gray">
+              {selected.comments || '—'}
+            </p>
+          </div>
+        </div>
+
+        {/* ================= RELACIONES ================= */}
+        <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray">
+          <h3 className="font-bold text-blue-600 text-sm mb-3">
+            Clasificación archivística
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <p><strong>Fondo:</strong> {selected.fund?.name || '—'}</p>
+            <p><strong>Sección:</strong> {selected.section?.name || '—'}</p>
+            <p><strong>Serie:</strong> {selected.series?.name || '—'}</p>
+            <p><strong>Localidad:</strong> {selected.location?.name || '—'}</p>
+            <p><strong>Deterioro:</strong> {selected.deterioration_status?.name || '—'}</p>
+          </div>
+
+          <div className="mt-3 text-sm">
+            <span className="font-semibold">Tipologías:</span>
+            {selected.typologies?.length ? (
+              <div className="flex flex-wrap gap-2 mt-1">
+                {selected.typologies.map(t => (
+                  <span
+                    key={t.id}
+                    className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700"
+                  >
+                    {t.name}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-dark2-gray">—</p>
+            )}
+          </div>
+        </div>
+
+        {/* ================= UBICACIÓN FÍSICA ================= */}
+        <div className="p-4 rounded-2xl border border-blue-200 bg-white">
+          <h3 className="font-bold text-blue-600 text-sm mb-2">
+            Ubicación física
+          </h3>
+
+          <p className="text-sm">
+            <strong>Estantería:</strong>{' '}
+            {selected.box?.physical_location?.code ?? 'Sin ubicación'}
           </p>
 
-          <p>
-            <span className="font-semibold">Última actualización: </span>
-            {formatFecha(selected.updated_at)}
+          <p className="text-xs text-dark2-gray">
+            {selected.box?.physical_location?.description ?? ''}
           </p>
         </div>
 
-        {/* USUARIO CREADOR */}
-        <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray flex flex-col gap-2 text-sm">
-          <h3 className="font-bold text-blue-600 text-sm mb-1">
-            Usuario Creador
+        {/* ================= USUARIO ================= */}
+        <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray">
+          <h3 className="font-bold text-blue-600 text-sm mb-2">
+            Usuario creador
           </h3>
 
           {selected.user ? (
-            <>
-              <p>
-                <span className="font-semibold">Nombre: </span>
-                {selected.user.first_name} {selected.user.last_name}
-              </p>
-
-              <p>
-                <span className="font-semibold">Correo: </span>
+            <p className="text-sm">
+              {selected.user.first_name} {selected.user.last_name}<br />
+              <span className="text-xs text-dark2-gray">
                 {selected.user.email}
-              </p>
-            </>
+              </span>
+            </p>
           ) : (
             <span>—</span>
           )}
         </div>
-        {/* UBICACIÓN FÍSICA */}
-<div className="mt-2 p-3 rounded-xl border border-blue-200 bg-white flex flex-col gap-1">
-  <p className="font-semibold text-blue-600 text-sm">
-    Ubicación física
-  </p>
+{/* ================= METADATOS ================= */}
+<div className="p-4 rounded-2xl border border-dark-gray bg-light-gray">
+  <h3 className="font-bold text-blue-600 text-sm mb-2">
+    Metadatos del registro
+  </h3>
 
-  <p>
-    <span className="font-semibold">Estantería: </span>
-    {selected.box?.physical_location?.code ?? '—'}
-  </p>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+    <p>
+      <span className="font-semibold">Fecha de creación:</span><br />
+      {formatFecha(selected.created_at)}
+    </p>
 
-  <p className="text-xs text-dark2-gray">
-    {selected.box?.physical_location?.description ?? ''}
-  </p>
+    <p>
+      <span className="font-semibold">Última actualización:</span><br />
+      {formatFecha(selected.updated_at)}
+    </p>
+  </div>
 </div>
 
-        {/* BOTÓN */}
-        <div className="flex justify-end pt-2">
+        {/* ================= FOOTER ================= */}
+        <div className="flex justify-end">
           <button onClick={closeShow} className="cancel">
-            <span>Cerrar</span>
+             <span>Cerrar</span>
           </button>
         </div>
       </div>

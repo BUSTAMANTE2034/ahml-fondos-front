@@ -11,106 +11,140 @@ const ShowBoxModal = () => {
 
   return (
     <Modal visible onClose={closeShow}>
-      <div className="flex flex-col gap-4 px-2 md:px-4">
-        {/* HEADER */}
+      <div className="flex flex-col gap-6 px-2 md:px-4">
+
+        {/* ================= HEADER ================= */}
         <div className="text-center flex flex-col gap-2">
           <h2 className="text-xl md:text-2xl font-bold text-blue-600">
-            Información de la Caja
+            Información de la caja
           </h2>
-          <p className="text-sm">Detalles de la caja seleccionada</p>
+          <p className="text-sm text-dark2-gray">
+            Detalles de la caja seleccionada
+          </p>
         </div>
 
-        {/* CONTENIDO */}
-        <div className="flex flex-col gap-3 text-sm">
-          {/* DATOS DE LA CAJA */}
-          <p>
-            <span className="font-bold">Número de la Caja: </span>
-            {selected.box_number}
-          </p>
+        {/* ================= DATOS DE LA CAJA ================= */}
+        <div className="p-4 rounded-2xl border border-blue-200 bg-blue-50">
+          <h3 className="font-bold text-sm text-blue-600 mb-3">
+            Datos de la caja
+          </h3>
 
-          <p>
-            <span className="font-bold">Descripción: </span>
-            {selected.description || '—'}
-          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <p>
+              <span className="font-semibold">Número de la caja:</span><br />
+              {selected.box_number}
+            </p>
 
-          <p>
-            <span className="font-bold">Estatus: </span>
-            {selected.is_active ? 'Activa' : 'Inactiva'}
-          </p>
+            <p>
+              <span className="font-semibold">Estatus:</span><br />
+              <span
+                className={
+                  selected.is_active
+                    ? 'text-green-600 font-medium'
+                    : 'text-red-600 font-medium'
+                }
+              >
+                {selected.is_active ? 'Activa' : 'Inactiva'}
+              </span>
+            </p>
 
-          <p>
-            <span className="font-bold">Creado el: </span>
-            {formatFecha(selected.created_at)}
-          </p>
+            <p className="md:col-span-2">
+              <span className="font-semibold">Descripción:</span><br />
+              {selected.description || '—'}
+            </p>
+          </div>
+        </div>
+{/* ================= UBICACIÓN FÍSICA ================= */}
+        <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray">
+          <h3 className="font-bold text-sm text-blue-600 mb-3">
+            Ubicación física
+          </h3>
 
-          <p>
-            <span className="font-bold">Última actualización: </span>
-            {formatFecha(selected.updated_at)}
-          </p>
+          {location ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <p>
+                <span className="font-semibold">Código:</span><br />
+                {location.code}
+              </p>
 
-          {/* UBICACIÓN FÍSICA */}
-          <div className="flex flex-col gap-1 p-4 bg-light-gray border border-dark-gray rounded-3xl">
-            <span className="font-bold text-blue-600">
-              Ubicación física
-            </span>
-
-            {location ? (
-              <>
-                <span>
-                  <span className="font-bold">Código: </span>
-                  {location.code}
-                </span>
-
-                <span>
-                  <span className="font-bold">Descripción: </span>
-                  {location.description || '—'}
-                </span>
-
-                <span>
-                  <span className="font-bold">Estatus: </span>
+              <p>
+                <span className="font-semibold">Estatus:</span><br />
+                <span
+                  className={
+                    location.is_active
+                      ? 'text-green-600 font-medium'
+                      : 'text-red-600 font-medium'
+                  }
+                >
                   {location.is_active ? 'Activa' : 'Inactiva'}
                 </span>
-              </>
-            ) : (
-              <span>—</span>
-            )}
-          </div>
+              </p>
 
-          {/* USUARIO CREADOR */}
-          <div className="flex flex-col gap-1 p-4 bg-light-gray border border-dark-gray rounded-3xl">
-            <span className="font-bold text-blue-600">
-              Usuario creador
-            </span>
+              <p className="md:col-span-2">
+                <span className="font-semibold">Descripción:</span><br />
+                {location.description || '—'}
+              </p>
+            </div>
+          ) : (
+            <span className="text-sm">—</span>
+          )}
+        </div>
+        {/* ================= METADATOS ================= */}
+        <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray">
+          <h3 className="font-bold text-sm text-blue-600 mb-3">
+            Metadatos
+          </h3>
 
-            {selected.user ? (
-              <>
-                <span>
-                  <span className="font-bold">Nombre: </span>
-                  {selected.user.first_name} {selected.user.last_name}
-                </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <p>
+              <span className="font-semibold">Creado el:</span><br />
+              {formatFecha(selected.created_at)}
+            </p>
 
-                <span>
-                  <span className="font-bold">Número de empleado: </span>
-                  {selected.user.employee_id || '—'}
-                </span>
-
-                <span>
-                  <span className="font-bold">Correo: </span>
-                  {selected.user.email}
-                </span>
-              </>
-            ) : (
-              <span>—</span>
-            )}
+            <p>
+              <span className="font-semibold">Última actualización:</span><br />
+              {formatFecha(selected.updated_at)}
+            </p>
           </div>
         </div>
 
-        {/* BOTÓN */}
-        <div className="flex justify-end pt-4">
+        
+
+        {/* ================= USUARIO CREADOR ================= */}
+        <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray">
+          <h3 className="font-bold text-sm text-blue-600 mb-3">
+            Usuario creador
+          </h3>
+
+          {selected.user ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <p>
+                <span className="font-semibold">Nombre:</span><br />
+                {selected.user.first_name} {selected.user.last_name}
+              </p>
+
+              <p>
+                <span className="font-semibold">Número de empleado:</span><br />
+                {selected.user.employee_id || '—'}
+              </p>
+
+              <p className="md:col-span-2">
+                <span className="font-semibold">Correo:</span><br />
+                {selected.user.email}
+              </p>
+            </div>
+          ) : (
+            <span className="text-sm">—</span>
+          )}
+        </div>
+
+        {/* ================= FOOTER ================= */}
+        <div className="flex justify-end pt-2">
           <button onClick={closeShow} className="cancel">
             <span>Cerrar</span>
           </button>
         </div>
+
       </div>
     </Modal>
   )

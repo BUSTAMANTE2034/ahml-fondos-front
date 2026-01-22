@@ -9,89 +9,121 @@ const ShowSectionModal = () => {
 
   return (
     <Modal visible onClose={closeShow}>
-      <div className="flex flex-col gap-4 px-2 md:px-4">
-        {/* HEADER */}
+      <div className="flex flex-col gap-6 px-2 md:px-4">
+
+        {/* ================= HEADER ================= */}
         <div className="text-center flex flex-col gap-2">
           <h2 className="text-xl md:text-2xl font-bold text-blue-600">
-            Información del Sección
+            Información de la sección
           </h2>
-          <p className="text-sm">Detalles de la sección seleccionada</p>
-        </div>
-
-        {/* CONTENIDO */}
-        <div className="flex flex-col gap-3 text-sm">
-          <p>
-            <span className="font-bold">Nombre del Sección: </span>
-            {selected.name}
-          </p>
-
-          <p>
-            <span className="font-bold">Sigla: </span>
-            {selected.acronym ?? '—'}
-          </p>
-
-          <p>
-            <span className="font-bold">Clave de Catálogo: </span>
-            {selected.catalog_key
-              ? `${selected.catalog_key.key} - ${selected.catalog_key.name}`
-              : 'Sin clave asignada'}
-          </p>
-
-          <p>
-            <span className="font-bold">Fecha Inicio: </span>
-            {selected.start_date ? formatFecha(selected.start_date) : '—'}
-          </p>
-
-          <p>
-            <span className="font-bold">Fecha Fin: </span>
-            {selected.end_date ? formatFecha(selected.end_date) : '—'}
-          </p>
-
-          <p>
-            <span className="font-bold">Estatus: </span>
-            {selected.is_active ? 'Activo' : 'Inactivo'}
-          </p>
-
-          <p>
-            <span className="font-bold">Creado el: </span>
-            {formatFecha(selected.created_at)}
-          </p>
-
-          <p>
-            <span className="font-bold">Última actualización: </span>
-            {formatFecha(selected.updated_at)}
-          </p>
-          <p className="flex flex-col w-full p-4 bg-light-gray border border-dark-gray rounded-3xl">
-            <span className="font-bold">Usuario Creador:</span>
-
-            {selected.user ? (
-              <>
-                <span>
-                  <span className="font-bold">Nombre: </span>
-                  {selected.user.first_name} {selected.user.last_name}
-                </span>
-                <span>
-                  <span className="font-bold">Númeor de empleado: </span>
-                  {selected.user.employee_id}
-                </span>
-
-                <span>
-                  <span className="font-bold">Correo: </span>
-                  {selected.user.email}
-                </span>
-              </>
-            ) : (
-              <span>—</span>
-            )}
+          <p className="text-sm text-dark2-gray">
+            Detalles de la sección seleccionada
           </p>
         </div>
 
-        {/* BOTÓN */}
-        <div className="flex justify-end pt-4">
+        {/* ================= DATOS DE LA SECCIÓN ================= */}
+        <div className="p-4 rounded-2xl border border-blue-200 bg-blue-50">
+          <h3 className="font-bold text-sm text-blue-600 mb-3">
+            Datos de la sección
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <p>
+              <span className="font-semibold">Nombre de la sección:</span><br />
+              {selected.name}
+            </p>
+
+            <p>
+              <span className="font-semibold">Sigla:</span><br />
+              {selected.acronym ?? '—'}
+            </p>
+
+            <p className="md:col-span-2">
+              <span className="font-semibold">Clave de catálogo:</span><br />
+              {selected.catalog_key
+                ? `${selected.catalog_key.key} - ${selected.catalog_key.name}`
+                : '—'}
+            </p>
+
+            <p>
+              <span className="font-semibold">Fecha inicio:</span><br />
+              {selected.start_date ? formatFecha(selected.start_date) : '—'}
+            </p>
+
+            <p>
+              <span className="font-semibold">Fecha fin:</span><br />
+              {selected.end_date ? formatFecha(selected.end_date) : '—'}
+            </p>
+
+            <p>
+              <span className="font-semibold">Estatus:</span><br />
+              <span
+                className={
+                  selected.is_active
+                    ? 'text-green-600 font-medium'
+                    : 'text-red-600 font-medium'
+                }
+              >
+                {selected.is_active ? 'Activo' : 'Inactivo'}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {/* ================= METADATOS ================= */}
+        <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray">
+          <h3 className="font-bold text-sm text-blue-600 mb-3">
+            Metadatos
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <p>
+              <span className="font-semibold">Creado el:</span><br />
+              {formatFecha(selected.created_at)}
+            </p>
+
+            <p>
+              <span className="font-semibold">Última actualización:</span><br />
+              {formatFecha(selected.updated_at)}
+            </p>
+          </div>
+        </div>
+
+        {/* ================= USUARIO CREADOR ================= */}
+        <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray">
+          <h3 className="font-bold text-sm text-blue-600 mb-3">
+            Usuario creador
+          </h3>
+
+          {selected.user ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <p>
+                <span className="font-semibold">Nombre:</span><br />
+                {selected.user.first_name} {selected.user.last_name}
+              </p>
+
+              <p>
+                <span className="font-semibold">Número de empleado:</span><br />
+                {selected.user.employee_id ?? '—'}
+              </p>
+
+              <p className="md:col-span-2">
+                <span className="font-semibold">Correo:</span><br />
+                {selected.user.email}
+              </p>
+            </div>
+          ) : (
+            <span className="text-sm">—</span>
+          )}
+        </div>
+
+        {/* ================= FOOTER ================= */}
+        <div className="flex justify-end pt-2">
           <button onClick={closeShow} className="cancel">
             <span>Cerrar</span>
           </button>
         </div>
+
       </div>
     </Modal>
   )
