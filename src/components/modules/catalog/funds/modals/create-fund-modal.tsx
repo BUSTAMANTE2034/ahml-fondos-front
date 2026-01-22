@@ -1,5 +1,5 @@
 import Modal from '@ui/modal'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { FormInput } from '@/components/forms/input'
 import { useFunds } from '../index/fund-context.js'
 import Loader from '@ui/loader'
@@ -19,18 +19,18 @@ const CreateFundModal = () => {
     formState: { errors },
     reset,
     setValue,
+    control,
   } = useForm<CreateFund>()
 
   const startDate = watch('start_date') // ⭐ Para validar la fecha final
 
   const [keyQuery, setKeyQuery] = useState<string | undefined>(undefined)
 
-const {
-  results: keyResults,
-  loading: keyLoading,
-  error: keyError,
-} = useSearchCatalogKeys(keyQuery, true)
-
+  const {
+    results: keyResults,
+    loading: keyLoading,
+    error: keyError,
+  } = useSearchCatalogKeys(keyQuery, true)
 
   const onSubmit = async (data: CreateFund) => {
     await handleCreate(data)
@@ -71,7 +71,6 @@ const {
             <FormInput
               name="acronym"
               label="Sigla"
-              
               placeholder="Ingrese la sigla"
               register={register}
               errors={errors}
@@ -122,23 +121,28 @@ const {
 
           {/* CATALOG KEY SELECT */}
           <div className="w-full grid grid-cols-1 gap-4 justify-between">
-            
-
-           <AsyncSearchSelect
-  label="Clave del Catálogo"
-  placeholder="Buscar clave del catálogo…"
-  value={watch('catalog_key_id') ?? null}
-  onChange={(id) =>
-    setValue('catalog_key_id', id, { shouldValidate: true })
-  }
-  onQueryChange={setKeyQuery}
-  results={keyResults.map((k) => ({
-    id: k.id,
-    label: `${k.key} — ${k.name}`,
-  }))}
-  loading={keyLoading}
-  searchError={keyError}
-  error={errors.catalog_key_id?.message}
+            <Controller
+  name="catalog_key_id"
+  control={control}
+  rules={{
+    required: 'La clave de catálogo es obligatoria',
+  }}
+  render={({ field }) => (
+    <AsyncSearchSelect
+      label="Clave del Catálogo"
+      placeholder="Buscar clave del catálogo…"
+      value={field.value ?? null}
+      onChange={(id) => field.onChange(id)}
+      onQueryChange={setKeyQuery}
+      results={keyResults.map((k) => ({
+        id: k.id,
+        label: `${k.key} — ${k.name}`,
+      }))}
+      loading={keyLoading}
+      searchError={keyError}
+      error={errors.catalog_key_id?.message}
+    />
+  )}
 />
 
           </div>
