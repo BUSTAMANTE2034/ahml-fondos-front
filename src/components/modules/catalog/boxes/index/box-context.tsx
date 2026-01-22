@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react'
 
 import {
   Box,
+  BoxOrderByParam,
   CreateBox,
   UpdateBox,
 } from '@models/box'
@@ -25,7 +26,9 @@ interface ContextValue {
   boxes: Box[]
   pages: number | null
   current_page: number | null
-
+// order
+  order_by: BoxOrderByParam | null
+  setOrderBy: (v: BoxOrderByParam | null) => void
   query: string
   queryInput: string
   setQuery: (q: string) => void
@@ -117,6 +120,7 @@ export const BoxesProvider = ({ children }: { children: ReactNode }) => {
     // filters
     is_active,
     setIsActive,
+    order_by,setOrderBy,
 
   
 
@@ -371,6 +375,10 @@ export const BoxesProvider = ({ children }: { children: ReactNode }) => {
         queryInput,
         setQuery,
 
+         // orden
+        order_by,
+        setOrderBy,
+        
         is_active,
         setIsActive,
 

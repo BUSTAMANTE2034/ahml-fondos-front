@@ -11,6 +11,7 @@ import DeleteSeriesModal from '../modals/delete-series-modal'
 import ShowSeriesModal from '../modals/show-series-modal'
 import EnableSeriesModal from '../modals/enable-series-modal'
 import DisableSeriesModal from '../modals/disable-series-modal'
+import SeriesOrderFilter from './filter-order'
 
 const Table = () => {
   const {
@@ -26,7 +27,7 @@ const Table = () => {
           <h2 className="text-2xl font-bold text-blue-600 dark:text-main-green flex flex-1 justify-start w-full">
             Series
           </h2>
-
+<SeriesOrderFilter/>
           <SeriesFilter />
         </div>
 

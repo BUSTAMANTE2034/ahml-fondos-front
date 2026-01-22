@@ -11,6 +11,7 @@ import DeleteKeyModal from '../modals/delete-key-modal'
 import ShowKeyModal from '../modals/show-key-modal'
 import EnableKeyModal from '../modals/enable-key-modal'
 import DisableKeyModal from '../modals/disable-key-modal'
+import CatalogKeysOrderFilter from './filter-order'
 
 const Table = () => {
   const {
@@ -26,7 +27,7 @@ const Table = () => {
           <h2 className="text-2xl font-bold text-blue-600 dark:text-main-green flex flex-1 justify-start w-full">
             Claves de Catálogo
           </h2>
-
+<CatalogKeysOrderFilter/>
           <KeyFilter />
         </div>
 

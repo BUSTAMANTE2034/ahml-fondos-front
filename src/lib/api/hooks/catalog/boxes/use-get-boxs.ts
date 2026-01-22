@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   Box,
   BoxesPaginationResponse,
+  BoxOrderByParam,
   OptionsGetBoxes,
 } from '@/lib/api/models/box'
 import { apiFetch } from '@/lib/types/client'
@@ -11,6 +12,7 @@ export const useGetBoxes = ({
   initialPage = 1,
   initialPerPage = 20,
   initialIsActive = null,
+  initialOrderBy = null,
 }: OptionsGetBoxes = {}) => {
 
   // DATA
@@ -34,7 +36,9 @@ export const useGetBoxes = ({
   // SEARCH
   const [queryInput, setQueryInput] = useState('')
   const [query, setQuery] = useState('')
-
+const [order_by, setOrderBy] = useState<BoxOrderByParam | null>(
+    initialOrderBy
+  )
   // Debounce search
   useEffect(() => {
     const id = setTimeout(() => {
@@ -56,7 +60,7 @@ export const useGetBoxes = ({
 
     if (query) params.append('query', query)
     if (is_active !== null) params.append('is_active', String(is_active))
-
+    if (order_by !== null) params.append('order_by', order_by)
     const url = `/boxes${params.toString() ? `?${params}` : ''}`
 
     try {
@@ -79,7 +83,7 @@ export const useGetBoxes = ({
     } finally {
       setLoading(false)
     }
-  }, [currentPage, pageSize, query, is_active])
+  }, [currentPage, pageSize, query, is_active,order_by])
 
   // Auto fetch
   useEffect(() => {
@@ -112,6 +116,12 @@ export const useGetBoxes = ({
     goPrev,
     setPage: setCurrentPage,
     setPageSize,
+    order_by,
+    setOrderBy: (v: BoxOrderByParam | null) => {
+      setOrderBy(v)
+      setCurrentPage(1)
+    },
+
 
     // search
     query,

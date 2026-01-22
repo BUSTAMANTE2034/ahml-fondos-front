@@ -11,6 +11,7 @@ import DeleteBoxModal from '../modals/delete-box-modal'
 import ShowBoxModal from '../modals/show-box-modal'
 import EnableBoxModal from '../modals/enable-box-modal'
 import DisableBoxModal from '../modals/disable-box-modal'
+import BoxesOrderFilter from './filter-order'
 
 const Table = () => {
   const {
@@ -26,7 +27,7 @@ const Table = () => {
           <h2 className="text-2xl font-bold text-blue-600 dark:text-main-green flex flex-1 justify-start w-full">
             Cajas
           </h2>
-
+<BoxesOrderFilter />
           <BoxFilter />
         </div>
 

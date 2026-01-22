@@ -37,12 +37,22 @@ export interface PhysicalLocationResponse {
   physical_location?: PhysicalLocation
   message: string
 }
+export type PhysicalLocationOrderByParam =
+  | "code_asc"
+  | "code_desc"
+  | "description_asc"
+  | "description_desc"
+  | "created_at_asc"
+  | "created_at_desc"
+  | "updated_at_asc"
+  | "updated_at_desc"
 
 export interface OptionsGetPhysicalLocations {
   initialPage?: number
   initialPerPage?: number
   initialIsActive?: boolean | null
   initialCode?: string
+   initialOrderBy?: PhysicalLocationOrderByParam | null
 }
 
 export interface PhysicalLocationsPaginationResponse {

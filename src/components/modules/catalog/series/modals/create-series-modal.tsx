@@ -62,7 +62,7 @@ const {
             <FormInput
               name="name"
               label="Nombre de la serie"
-              placeholder="Nombre del fondo"
+              placeholder="Nombre de la serie"
               register={register}
               errors={errors}
               rules={{ required: 'Nombre obligatorio' }}

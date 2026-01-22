@@ -35,12 +35,23 @@ export interface Catalog_KeyResponse {
   catalog_Key?: Catalog_Key
   message: string
 }
+export type CatalogKeyOrderByParam =
+  | "created_at_asc"
+  | "created_at_desc"
+  | "updated_at_asc"
+  | "updated_at_desc"
+  | "name_asc"
+  | "name_desc"
+  | "key_asc"
+  | "key_desc"
 
 
 export interface OptionsGetCatalog_Key {
   initialPage?: number | null
   initialPerPage?: number | null
   initialIsActive?: boolean | null
+  initialOrderBy?: CatalogKeyOrderByParam | null
+
 }
 export interface Catalog_KeysPaginationResponse {
   message: string

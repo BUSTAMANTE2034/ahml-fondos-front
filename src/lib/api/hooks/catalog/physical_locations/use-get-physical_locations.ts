@@ -3,6 +3,7 @@ import {
   PhysicalLocation,
   PhysicalLocationsPaginationResponse,
   OptionsGetPhysicalLocations,
+  PhysicalLocationOrderByParam,
 } from '@/lib/api/models/physical_location'
 import { apiFetch } from '@/lib/types/client'
 import { ApiError } from '@/lib/types/errors'
@@ -11,6 +12,7 @@ export const useGetPhysicalLocations = ({
   initialPage = 1,
   initialPerPage = 20,
   initialIsActive = null,
+  initialOrderBy = null,
 }: OptionsGetPhysicalLocations = {}) => {
 
   // DATA
@@ -34,7 +36,9 @@ export const useGetPhysicalLocations = ({
   // SEARCH
   const [queryInput, setQueryInput] = useState('')
   const [query, setQuery] = useState('')
-
+const [order_by, setOrderBy] = useState<PhysicalLocationOrderByParam | null>(
+    initialOrderBy
+  )
   // Debounce search
   useEffect(() => {
     const id = setTimeout(() => {
@@ -56,6 +60,7 @@ export const useGetPhysicalLocations = ({
 
     if (query) params.append('query', query)
     if (is_active !== null) params.append('is_active', String(is_active))
+    if (order_by !== null) params.append('order_by', order_by)
 
     const url = `/physical_locations${params.toString() ? `?${params}` : ''}`
 
@@ -79,7 +84,7 @@ export const useGetPhysicalLocations = ({
     } finally {
       setLoading(false)
     }
-  }, [currentPage, pageSize, query, is_active])
+  }, [currentPage, pageSize, query, is_active,order_by])
 
   // Auto fetch
   useEffect(() => {
@@ -117,6 +122,12 @@ export const useGetPhysicalLocations = ({
     query,
     queryInput,
     setQuery: setQueryInput,
+    order_by,
+    setOrderBy: (v: PhysicalLocationOrderByParam | null) => {
+      setOrderBy(v)
+      setCurrentPage(1)
+    },
+
 
     // filters
     is_active,

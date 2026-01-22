@@ -4,6 +4,7 @@ import {
   PhysicalLocation,
   CreatePhysicalLocation,
   UpdatePhysicalLocation,
+  PhysicalLocationOrderByParam,
 } from '@models/physical_location'
 
 import {
@@ -27,7 +28,9 @@ interface ContextValue {
   physicalLocations: PhysicalLocation[]
   pages: number | null
   current_page: number | null
-
+// order
+  order_by: PhysicalLocationOrderByParam | null
+  setOrderBy: (v: PhysicalLocationOrderByParam | null) => void
   query: string
   queryInput: string
   setQuery: (q: string) => void
@@ -160,7 +163,7 @@ const handlePrintLabel = async () => {
     physicalLocations,
     loading: loadingGet,
     error: errorGet,
-
+order_by,setOrderBy,
     currentPage: current_page,
     totalPages: pages,
 
@@ -457,7 +460,9 @@ const handlePrintLabel = async () => {
         physicalLocations,
         pages,
         current_page,
-
+ // orden
+        order_by,
+        setOrderBy,
         query,
         queryInput,
         setQuery,

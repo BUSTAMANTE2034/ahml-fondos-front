@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   Series,
   SeriesPaginationResponse,
-  OptionsGetSeries
+  OptionsGetSeries,
+  SeriesOrderByParam
 } from '@/lib/api/models/series'
 import { apiFetch } from '@/lib/types/client'
 import { ApiError } from '@/lib/types/errors'
@@ -11,6 +12,7 @@ export const useGetSeries = ({
   initialPage = 1,
   initialPerPage = 20,
   initialIsActive = null,
+  initialOrderBy = null,
 }: OptionsGetSeries = {}) => {
 
   const [series, setSeries] = useState<Series[]>([])
@@ -34,7 +36,9 @@ export const useGetSeries = ({
   // búsqueda libre
   const [queryInput, setQueryInput] = useState('')
   const [query, setQuery] = useState('')
-
+const [order_by, setOrderBy] = useState<SeriesOrderByParam | null>(
+    initialOrderBy
+  )
   // debounce
   useEffect(() => {
     const id = setTimeout(() => {
@@ -58,6 +62,7 @@ export const useGetSeries = ({
       if (is_active !== null) params.append('is_active', String(is_active))
       if (start_date) params.append('start_date', start_date)
       if (end_date) params.append('end_date', end_date)
+      if (order_by) params.append('order_by', order_by)
 
       const url = `/series${params.toString() ? `?${params}` : ''}`
 
@@ -82,7 +87,7 @@ export const useGetSeries = ({
         setLoading(false)
       }
     },
-    [currentPage, pageSize, query, is_active, start_date, end_date]
+    [currentPage, pageSize, query, is_active, start_date, end_date,order_by]
   )
 
   // auto fetch
@@ -124,6 +129,11 @@ export const useGetSeries = ({
     prevPage,
     goNext,
     goPrev,
+order_by,
+    setOrderBy: (v: SeriesOrderByParam | null) => {
+      setOrderBy(v)
+      setCurrentPage(1)
+    },
 
     setPage: setCurrentPage,
     setPageSize,

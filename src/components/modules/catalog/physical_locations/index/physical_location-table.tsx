@@ -14,6 +14,7 @@ import DisablePhysicalLocationModal from '../modals/disable-physical_location-mo
 import GetPhysicalLocationLabelModal from '../modals/get-record-file-cover-modal'
 import { useParams } from 'react-router-dom'
 import { useEffect } from 'react'
+import PhysicalLocationsOrderFilter from './filter-order'
 const Table = () => {
     const { code } = useParams<{ code?: string }>()
 
@@ -39,7 +40,7 @@ const Table = () => {
           <h2 className="text-2xl font-bold text-blue-600 dark:text-main-green flex flex-1 justify-start w-full">
             Ubicaciones Físicas
           </h2>
-
+<PhysicalLocationsOrderFilter />
           <PhysicalLocationFilter />
         </div>
 

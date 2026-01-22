@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react'
 
 import {
   Catalog_Key,
+  CatalogKeyOrderByParam,
   CreateCatalog_Key,
   UpdateCatalog_Key,
 } from '@models/catalog-key'
@@ -25,7 +26,9 @@ interface ContextValue {
   pages: number | null
   current_page: number | null
   total: number | null
-
+// order
+  order_by: CatalogKeyOrderByParam | null
+  setOrderBy: (v: CatalogKeyOrderByParam | null) => void
   query: string
   queryInput: string
   setQuery: (q: string) => void
@@ -108,6 +111,7 @@ export const KeysProvider = ({ children }: { children: ReactNode }) => {
     total,
     pages,
     current_page,
+    order_by,setOrderBy,
 
     query,
     queryInput,
@@ -380,6 +384,9 @@ export const KeysProvider = ({ children }: { children: ReactNode }) => {
         current_page,
         total,
         entity_type,
+         // orden
+        order_by,
+        setOrderBy,
         setEntityType,
         query,
         queryInput,

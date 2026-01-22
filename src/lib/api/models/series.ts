@@ -1,6 +1,19 @@
 // ===============================
 // MODELOS PRINCIPALES
 // ===============================
+export type SeriesOrderByParam =
+  | "created_at_asc"
+  | "created_at_desc"
+  | "updated_at_asc"
+  | "updated_at_desc"
+  | "start_date_asc"
+  | "start_date_desc"
+  | "end_date_asc"
+  | "end_date_desc"
+  | "name_asc"
+  | "name_desc"
+  | "acronym_asc"
+  | "acronym_desc"
 
 export interface Series {
   id: number
@@ -62,6 +75,8 @@ export interface OptionsGetSeries {
   initialPage?: number
   initialPerPage?: number
   initialIsActive?: boolean | null
+  // ordenamiento
+    initialOrderBy?: SeriesOrderByParam | null
 }
 
 export interface SeriesPaginationResponse {

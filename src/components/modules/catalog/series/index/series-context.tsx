@@ -4,6 +4,7 @@ import {
   Series,
   CreateSeries,
   UpdateSeries,
+  SeriesOrderByParam,
 } from '@models/series'
 
 import {
@@ -47,6 +48,9 @@ interface ContextValue {
 
   refetch: () => Promise<void>
 
+// order
+  order_by: SeriesOrderByParam| null
+  setOrderBy: (v: SeriesOrderByParam | null) => void
   selected: Series | null
   setSelected: (u: Series | null) => void
 
@@ -110,7 +114,7 @@ export const SeriesProvider = ({ children }: { children: ReactNode }) => {
 
     currentPage:current_page,
     totalPages:pages,
-
+order_by,setOrderBy,
     hasNext,
     hasPrev,
     nextPage,
@@ -434,6 +438,9 @@ export const SeriesProvider = ({ children }: { children: ReactNode }) => {
         errorCreate,
         errorUpdate,
         errorDelete,
+         // orden
+        order_by,
+        setOrderBy,
       }}
     >
       {children}

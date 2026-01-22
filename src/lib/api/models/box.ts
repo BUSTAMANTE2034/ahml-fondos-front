@@ -51,6 +51,17 @@ export interface BoxResponse {
   box?: Box
   message: string
 }
+export type BoxOrderByParam =
+  | "box_number_asc"
+  | "box_number_desc"
+  | "created_at_asc"
+  | "created_at_desc"
+  | "updated_at_asc"
+  | "updated_at_desc"
+  | "physical_location_code_asc"
+  | "physical_location_code_desc"
+  | "physical_location_desc_asc"
+  | "physical_location_desc_desc"
 
 export interface OptionsGetBoxes {
   initialPage?: number
@@ -58,6 +69,7 @@ export interface OptionsGetBoxes {
   initialIsActive?: boolean | null
   initialBoxNumber?: string
   initialPhysicalLocationId?: number
+  initialOrderBy?: BoxOrderByParam | null
 }
 
 export interface BoxesPaginationResponse {

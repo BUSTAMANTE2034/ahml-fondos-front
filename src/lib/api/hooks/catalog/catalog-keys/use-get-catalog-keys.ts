@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   Catalog_Key,
   Catalog_KeysPaginationResponse,
+  CatalogKeyOrderByParam,
   OptionsGetCatalog_Key,
 } from '@models/catalog-key'
 import { ApiError } from '@/lib/types/errors'
@@ -11,6 +12,7 @@ export const useGetCatalogKeys = ({
   initialPage = 1,
   initialPerPage = 20,
   initialIsActive = null,
+  initialOrderBy = null,
 }: OptionsGetCatalog_Key = {}) => {
   // DATA
   const [catalog_keys, setCatalogKeys] = useState<Catalog_Key[]>([])
@@ -34,7 +36,9 @@ export const useGetCatalogKeys = ({
   const [hasPrev, setHasPrev] = useState(false)
   const [nextPage, setNextPage] = useState<number | null>(null)
   const [prevPage, setPrevPage] = useState<number | null>(null)
-
+const [order_by, setOrderBy] = useState<CatalogKeyOrderByParam | null>(
+    initialOrderBy
+  )
   // Input debounce
   useEffect(() => {
     const id = setTimeout(() => {
@@ -55,6 +59,7 @@ export const useGetCatalogKeys = ({
     if (is_active !== null) params.append('is_active', String(is_active))
     if (entity_type !== null) params.append('entity_type', String(entity_type))
     if (query) params.append('query', query)
+    if (order_by) params.append('order_by', order_by)  
 
     const url = `/catalog-keys${params.toString() ? `?${params}` : ''}`
 
@@ -86,7 +91,7 @@ export const useGetCatalogKeys = ({
     } finally {
       setLoading(false)
     }
-  }, [current_page, per_page, query, is_active,entity_type])
+  }, [current_page, per_page, query, is_active,entity_type,order_by])
 
   // AUTO REQUEST
   useEffect(() => {
@@ -127,6 +132,12 @@ export const useGetCatalogKeys = ({
   setEntityType(types)
   setCurrentPage(1)
 },
+order_by,
+    setOrderBy: (v: CatalogKeyOrderByParam| null) => {
+      setOrderBy(v)
+      setCurrentPage(1)
+    },
+
 
 
     // Search
