@@ -1,0 +1,289 @@
+import { useEffect, useMemo, useState } from 'react'
+import Loader from '@ui/loader'
+import Modal from '@ui/modal'
+
+import { useRecordDiagnosis } from '../index/record-diagnosis-context'
+import { useSearchDiagnosisCatalog } from '@/lib/api/hooks/record-diagnosis'
+import { useSearchDeteriorations } from '@hooks/record-files'
+import { useUpdateRecordFile } from '@hooks/record-files'
+import { useGetRecordFileById } from '@/lib/api/hooks/record-files/use-get-record-file-by-id'
+
+import { AsyncSearchSelect } from '../index/record-diagnosis-seach-select'
+import { AsyncSearchSelect as AsyncSearchSelect2 } from '@/components/modules/record-files/index/record-file-seach-select'
+import TextArea from '@/components/forms/text-area'
+import { formatInputDate } from '@/components/ui/functions'
+
+const EditRecordDiagnosisModal = () => {
+  const {
+    isEditOpen,
+    closeEdit,
+    selected,
+    handleUpdate,
+    loadingUpdate,
+  } = useRecordDiagnosis()
+
+  /* ======================================================
+     STATE
+  ====================================================== */
+  const [query, setQuery] = useState<string>()
+  const [selectedIds, setSelectedIds] = useState<number[]>([])
+  const [observations, setObservations] = useState('')
+  const [formError, setFormError] = useState<string | null>(null)
+
+  const [deteriorationQuery, setDeteriorationQuery] = useState('')
+  const [deteriorationId, setDeteriorationId] = useState<number | null>(null)
+
+  /* ======================================================
+     DATA
+  ====================================================== */
+  const recordFileId = selected?.record_file_id ?? null
+
+  const { recordFile, loading: loadingFile } =
+    useGetRecordFileById(recordFileId) // ✅ MISMO QUE CREATE
+
+  const { results, loading, error } =
+    useSearchDiagnosisCatalog(query, true)
+
+  const {
+    results: deteriorationResults,
+    loading: deteriorationLoading,
+    error: deteriorationError,
+  } = useSearchDeteriorations(deteriorationQuery, true)
+
+  const { updateRecordFile, loading: loadingUpdateFile } =
+    useUpdateRecordFile()
+
+  /* ======================================================
+     PRECARGA DATOS (🔥 CLAVE)
+  ====================================================== */
+  useEffect(() => {
+    if (!selected) return
+
+    setSelectedIds(
+      selected.diagnosis_catalog?.map((d) => d.id) ?? []
+    )
+
+    setObservations(selected.observations ?? '')
+  }, [selected])
+
+  // ✅ deterioro desde recordFile (NO desde selected)
+  useEffect(() => {
+    if (!recordFile) return
+    setDeteriorationId(recordFile.deterioration_status_id ?? null)
+  }, [recordFile])
+
+  /* ======================================================
+     GROUP BY CONCEPT (IGUAL)
+  ====================================================== */
+  const grouped = useMemo(() => {
+    const map: Record<string, typeof results> = {}
+    results.forEach((item) => {
+      if (!map[item.concept]) map[item.concept] = []
+      map[item.concept].push(item)
+    })
+    return map
+  }, [results])
+
+  /* ======================================================
+     TOGGLE
+  ====================================================== */
+  const toggle = (id: number) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    )
+  }
+
+  /* ======================================================
+     SUBMIT
+  ====================================================== */
+  const onSubmit = async () => {
+    if (!selected || !recordFileId) return
+
+    if (!selectedIds.length) {
+      setFormError('Selecciona al menos un diagnóstico.')
+      return
+    }
+
+    setFormError(null)
+
+    try {
+      // 1️⃣ actualizar revisión
+      await handleUpdate({
+        diagnosis_catalog_ids: selectedIds,
+        observations: observations || undefined,
+      })
+
+      // 2️⃣ actualizar deterioro si cambió
+      if (
+        deteriorationId &&
+        deteriorationId !== recordFile?.deterioration_status_id
+      ) {
+        await updateRecordFile(recordFileId, {
+          deterioration_status_id: deteriorationId,
+        })
+      }
+
+      closeEdit()
+    } catch {
+      setFormError('Ocurrió un error al guardar la revisión.')
+    }
+  }
+
+  const isSaving =
+    loadingUpdate || loadingUpdateFile || loadingFile
+
+  if (!isEditOpen || !selected) return null
+
+  return (
+    <Modal visible onClose={closeEdit} big closeBackdrop={false}>
+      <div className="flex flex-col flex-1 h-full gap-4 px-2 md:px-4 w-full">
+
+        {/* HEADER */}
+        <div className="text-center flex flex-col gap-2">
+          <h2 className="text-xl md:text-2xl font-bold text-blue-600">
+            Editar revisión
+          </h2>
+          <p className="text-sm">
+            Modifica los diagnósticos del expediente
+          </p>
+        </div>
+
+        {/* INFO EXPEDIENTE */}
+        {loadingFile ? (
+          <div className="flex flex-col items-center gap-2 text-base">
+            <Loader size={25} />
+            <span>Cargando expediente…</span>
+          </div>
+        ) : recordFile ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 items-center text-center p-3 rounded-xl border bg-blue-600 text-sm">
+            <div>
+              <p className="text-white font-semibold">Referencia</p>
+              <p className="text-dark-gray">
+                {recordFile.reference_code ?? '—'}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white font-semibold">Estado</p>
+              <p className="font-semibold text-dark-gray">
+                {recordFile.deterioration_status?.name ?? '—'}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white font-semibold">Actualizado</p>
+              <p className="font-semibold text-dark-gray">
+                {formatInputDate(recordFile.updated_at)}
+              </p>
+            </div>
+          </div>
+        ) : null}
+
+        {/* BUSCADOR + LISTADO */}
+        <div className="border rounded-xl p-3 space-y-3">
+          <AsyncSearchSelect
+            placeholder="Buscar diagnóstico…"
+            value={null}
+            results={[]}
+            loading={loading}
+            searchError={error}
+            onChange={() => {}}
+            onQueryChange={setQuery}
+          />
+
+          <div className="max-h-72 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 scroll-t">
+            {Object.entries(grouped).map(([concept, items]) => (
+              <div
+                key={concept}
+                className="bg-dark-gray border border-dark-gray2 rounded-xl p-3"
+              >
+                <h4 className="font-bold text-blue-700 text-lg text-center mb-1">
+                  {concept}
+                </h4>
+
+                <div className="space-y-1">
+                  {items.map((item) => (
+                    <label
+                      key={item.id}
+                      className="flex gap-2 text-sm cursor-pointer hover:bg-main-gray px-2 py-1 rounded-lg"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(item.id)}
+                        onChange={() => toggle(item.id)}
+                      />
+                      {item.detail}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {formError && (
+          <div className="text-sm text-red-600 text-right">
+            {formError}
+          </div>
+        )}
+
+        <TextArea
+          className="text-sm!"
+          name="observations"
+          label="Observaciones generales"
+          rows={3}
+          value={observations}
+          onChange={(e) => setObservations(e.target.value)}
+        />
+
+        {/* DETERIORO */}
+        <div className="border rounded-xl p-3 space-y-2">
+          <h4 className="font-semibold text-blue-600 text-sm">
+            Estado de deterioro del expediente
+          </h4>
+
+          <AsyncSearchSelect2
+            key={recordFile?.deterioration_status_id} // ✅ igual que Create
+            placeholder="Buscar estado de deterioro…"
+            value={deteriorationId}
+            initialLabel={recordFile?.deterioration_status?.name} // ✅ FIX
+            onChange={(id) => setDeteriorationId(id)}
+            onQueryChange={setDeteriorationQuery}
+            results={deteriorationResults.map((d) => ({
+              id: d.id,
+              label: d.name,
+            }))}
+            loading={deteriorationLoading}
+            searchError={deteriorationError}
+          />
+        </div>
+
+        {/* ACTIONS */}
+        <div className="flex justify-end gap-4">
+          <button onClick={closeEdit} className="cancel">
+            <span>Cancelar</span>
+          </button>
+
+          <button
+            onClick={onSubmit}
+            disabled={isSaving}
+            className="create"
+          >
+            <span>Guardar cambios</span>
+          </button>
+        </div>
+
+        {isSaving && (
+          <div className="fixed inset-0 z-50 bg-black/40 flex flex-col items-center justify-center cursor-wait">
+            <Loader size={40} />
+            <span className="mt-4 text-white text-lg font-semibold">
+              Guardando revisión…
+            </span>
+          </div>
+        )}
+      </div>
+    </Modal>
+  )
+}
+
+export default EditRecordDiagnosisModal

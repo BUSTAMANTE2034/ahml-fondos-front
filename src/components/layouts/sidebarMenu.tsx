@@ -19,6 +19,8 @@ import DeteriorationsIcon from '@icons/deteriorationW.svg'
 import LocationsIcon from '@icons/locationW.svg'
 import PhysicalLocationsIcon from '@icons/pyshical_location.svg'
 import BoxesIcon from '@icons/boxW.svg'
+import Check from '@icons/revision.svg'
+import DiagnosticsIcon from '@icons/diagnostico.svg'
 
 const SidebarMenu = () => {
   const { user } = useAuth()
@@ -61,6 +63,9 @@ const SidebarMenu = () => {
         <Option to={`/${user?.role}/${user?.id}/movements`} label="Movimientos">
           <img src={MovementsIcon} alt="Movimientos" />
         </Option>
+        <Option to={`/${user?.role}/${user?.id}/record_diagnosis`} label="Revisiones">
+          <img src={Check} alt="Revisión" />
+        </Option>
       </div>
       {(user?.role === 'admin' || user?.role === 'manager'|| user?.role === 'archivist') && (<div className="flex flex-col gap-1 mb-6">
         <h2 className=" py-2 font-semibold text-xl text-gray-4">Catálogo</h2>
@@ -96,6 +101,9 @@ const SidebarMenu = () => {
         </Option>
         <Option to={`/${user?.role}/${user?.id}/physical_locations`} label="Ubicaciones físicas">
           <img src={PhysicalLocationsIcon} alt="Ubicaciones físicas" />
+        </Option>
+        <Option to={`/${user?.role}/${user?.id}/catalog_diagnosis`} label="Diagnósticos">
+          <img src={DiagnosticsIcon} alt="Diagnósticos" />
         </Option>
       </div>)}
       

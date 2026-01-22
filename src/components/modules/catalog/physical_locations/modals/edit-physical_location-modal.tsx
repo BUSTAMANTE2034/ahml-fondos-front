@@ -55,11 +55,19 @@ const UpdatePhysicalLocationModal = () => {
 
             <FormInput
               name="code"
-              label="Nombre de la Ubicación física"
-              placeholder="Ingrese el nombre"
+              label="Código de la Ubicación física"
+              placeholder="Ingrese el código"
               register={register}
               errors={errors}
-              rules={{ required: 'Nombre obligatorio' }}
+              rules={{ required: 'Código obligatorio' }}
+            />
+            <FormInput
+              name="description"
+              label="Descripción de la Ubicación física"
+              placeholder="Ingrese la descripción"
+              register={register}
+              errors={errors}
+              rules={{ required: 'Descripción obligatoria' }}
             />
 
           {/* BUTTONS */}

@@ -47,11 +47,19 @@ const CreatePhysicalLocationModal = () => {
         >
             <FormInput
               name="code"
-              label="Nombre de la ubicación física"
-              placeholder="Nombre de la ubicación física"
+              label="Código de la ubicación física"
+              placeholder="Ingrese el código"
               register={register}
               errors={errors}
-              rules={{ required: 'Nombre obligatorio' }}
+              rules={{ required: 'Código obligatorio' }}
+            />
+            <FormInput
+              name="description"
+              label="Descripción de la ubicación física"
+              placeholder="Descripción de la ubicación física"
+              register={register}
+              errors={errors}
+              rules={{ required: 'Descripción obligatoria' }}
             />
 
           

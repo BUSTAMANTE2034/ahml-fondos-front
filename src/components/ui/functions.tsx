@@ -130,6 +130,14 @@ export const DOCUMENT_SIZES = [
   { id: "doble_carta", label: "Doble carta" }
 ];
 
+// catalog_diagnosis-concepts.ts
+export const DIAGNOSIS_CONCEPTS = [
+  { id: 'unidades_documentales', label: 'Unidades documentales' },
+  { id: 'deterioros_sustrato', label: 'Deterioros del sustrato' },
+  { id: 'material_sustentado', label: 'Material sustentado' },
+  { id: 'otro', label: 'Otro' },
+]
+
 
 export function isDateBeforeOrToday(dateString: string): boolean {
   if (!dateString) return false;

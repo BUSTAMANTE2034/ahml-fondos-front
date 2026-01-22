@@ -13,6 +13,9 @@ import Download from '@icons/download.svg'
 
 import Disable from '@icons/inactiveB.svg'
 import EnableButton from '@icons/activeBr.svg'
+import { useLocation, useNavigate } from 'react-router-dom'
+
+import Revision from '@icons/revision3.svg'
 
 import { useRecordFiles } from './record-file-context.js'
 
@@ -38,6 +41,10 @@ const RecordFilesRow = ({ item: recordFile }: Props) => {
     openCreateMovement,
   } = useRecordFiles()
 
+  const navigate = useNavigate()
+  const location = useLocation()
+  const basePath = location.pathname.split('/record-files')[0]
+
   return (
     <div
       className={`grid gap-1  grid-cols-[1.6fr_0.6fr_0.6fr_0.2fr] md:grid-cols-[1fr_0.3fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.2fr]   lg:grid-cols-[1fr_0.3fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.3fr_0.2fr] text-xs md:text-sm  px-2  rounded-2xl   
@@ -45,18 +52,20 @@ const RecordFilesRow = ({ item: recordFile }: Props) => {
       recordFile.availability_status === 'on_loan' &&
       'bg-yellow-200  hover:bg-yellow-100 '
     } ${
-        recordFile.availability_status === 'under_review' &&
-        'bg-orange-400  hover:bg-orange-300 text-white'
-      } ${
-        recordFile.availability_status === 'unavailable' &&
-        'bg-red-600  hover:bg-red-500  text-white'
-      } `}
+      recordFile.availability_status === 'under_review' &&
+      'bg-orange-400  hover:bg-orange-300 text-white'
+    } ${
+      recordFile.availability_status === 'unavailable' &&
+      'bg-red-600  hover:bg-red-500  text-white'
+    } `}
     >
       <span className=" text-xs ">{recordFile.reference_code}</span>
       <span className="text-xs font-medium hidden md:block">
         {recordFile.file_number}
       </span>
-      <span className="text-xs hidden md:block">{recordFile.box.box_number}</span>
+      <span className="text-xs hidden md:block">
+        {recordFile.box.box_number}
+      </span>
       <span className="hidden md:block text-xs">
         {recordFile.fund?.acronym}
       </span>
@@ -78,7 +87,8 @@ const RecordFilesRow = ({ item: recordFile }: Props) => {
         {recordFile.location?.name}
       </span>
       <span className="flex items-center ml-auto">
-        <MenuDesplegable className='text-black'
+        <MenuDesplegable
+          className="text-black"
           trigger={
             <img
               src={Menu}
@@ -122,6 +132,17 @@ const RecordFilesRow = ({ item: recordFile }: Props) => {
               icon={<img src={Movement} alt="Mover" className="w-5" />}
               text="Mover"
               onClick={() => openCreateMovement(recordFile)}
+            />
+          )}
+          {recordFile.availability_status === 'under_review' && (
+            <OpcionMenu
+              icon={<img src={Revision} alt="Revisar" className="w-5" />}
+              text="Revisar"
+              onClick={() =>
+                navigate(
+                  `${basePath}/record_diagnosis/new_diagnosis/record_file/${recordFile.id}`,
+                )
+              }
             />
           )}
 

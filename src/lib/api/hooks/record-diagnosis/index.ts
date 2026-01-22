@@ -1,0 +1,5 @@
+export * from './use-create-record-diagnosis'
+export * from './use-delete-record-diagnosis'
+export * from './use-get-record-diagnosis'
+export * from './use-update-record-diagnosis'
+export * from './use-search-record-diagnosis'
