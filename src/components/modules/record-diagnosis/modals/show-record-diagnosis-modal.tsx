@@ -1,6 +1,6 @@
 import Modal from '@ui/modal'
 import { useRecordDiagnosis } from '../index/record-diagnosis-context'
-import { invertDate } from '@/components/ui/functions'
+import { formatFecha, invertDate } from '@/components/ui/functions'
 
 const ShowRecordDiagnosisModal = () => {
   const { selected, isShowOpen, closeShow } = useRecordDiagnosis()
@@ -33,7 +33,7 @@ const ShowRecordDiagnosisModal = () => {
 
           <p>
             <span className="font-bold">Fecha de revisión: </span>
-            {invertDate(selected.revision_date)}
+            {formatFecha(selected.revision_date)}
           </p>
 
           <p>
@@ -81,12 +81,12 @@ const ShowRecordDiagnosisModal = () => {
 
           <p>
             <span className="font-bold">Creado el: </span>
-            {invertDate(selected.created_at)}
+            {formatFecha(selected.created_at)}
           </p>
 
           <p>
             <span className="font-bold">Última actualización: </span>
-            {invertDate(selected.updated_at)}
+            {formatFecha(selected.updated_at)}
           </p>
         </div>
 

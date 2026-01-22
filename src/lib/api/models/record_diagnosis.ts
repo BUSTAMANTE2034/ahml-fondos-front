@@ -96,4 +96,5 @@ export interface OptionsGetRecordDiagnosis {
 
   initialStartDate?: string | null
   initialEndDate?: string | null
+  initialDetail?: string 
 }

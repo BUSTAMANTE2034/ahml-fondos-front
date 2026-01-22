@@ -38,7 +38,7 @@ const Table = () => {
         </div>
       </CardHeader>
 
-      <div className="grid grid-cols-[0.6fr_0.6fr_1.6fr_0.2fr]  md:grid-cols-[0.4fr_0.8fr_1.8fr_0.4fr_0.2fr] px-2  w-full items-center   border-b-2   border-main-blue font-semibold text-sm md:text-base text-left">
+      <div className="grid grid-cols-[0.6fr_0.6fr_1.6fr_0.2fr]  md:grid-cols-[0.4fr_0.8fr_1.8fr_0.6fr_0.2fr] px-2  w-full items-center   border-b-2   border-main-blue font-semibold text-sm md:text-base text-left">
         {/* THEAD */}
         <span className="hidden lg:block">Concepto</span>
         <span className="">Detalle</span>

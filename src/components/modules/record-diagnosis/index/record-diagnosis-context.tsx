@@ -38,6 +38,9 @@ interface ContextValue {
   queryInput: string
   setQuery: (q: string) => void
 
+  diagnosisDetail: string
+  setDiagnosisDetail: (d: string) => void
+
   // filters
   record_file_id: number | null
   setRecordFileId: (id: number | null) => void
@@ -148,6 +151,8 @@ export const RecordDiagnosisProvider = ({
     query,
   queryInput,
   setQuery,
+  diagnosisDetail,
+  setDiagnosisDetail,
     refetch,
   } = useGetRecordDiagnosis({
     initialPage: 1,
@@ -365,6 +370,8 @@ export const RecordDiagnosisProvider = ({
         query,
     queryInput,
     setQuery,
+    diagnosisDetail,
+    setDiagnosisDetail,
 
 
         hasNext,

@@ -15,8 +15,8 @@ export const useGetRecordDiagnosis = ({
   initialStartDate = null,
   initialEndDate = null,
   initialQuery = '',
+  initialDetail = '',
 }: OptionsGetRecordDiagnosis & { initialQuery?: string } = {}) => {
-
   // ==========================================================
   // DATA
   // ==========================================================
@@ -40,7 +40,7 @@ export const useGetRecordDiagnosis = ({
   // FILTERS
   // ==========================================================
   const [record_file_id, setRecordFileId] = useState<number | null>(
-    initialRecordFileId
+    initialRecordFileId,
   )
   const [user_id, setUserId] = useState<number | null>(initialUserId)
   const [start_date, setStartDate] = useState<string | null>(initialStartDate)
@@ -51,7 +51,7 @@ export const useGetRecordDiagnosis = ({
   // ==========================================================
   const [queryInput, setQueryInput] = useState(initialQuery)
   const [query, setQuery] = useState(initialQuery)
-
+  const [diagnosisDetail, setDiagnosisDetail] = useState(initialDetail)
   // Debounce del search
   useEffect(() => {
     const id = setTimeout(() => {
@@ -79,11 +79,11 @@ export const useGetRecordDiagnosis = ({
     if (record_file_id !== null)
       params.append('record_file_id', String(record_file_id))
 
-    if (user_id !== null)
-      params.append('user_id', String(user_id))
+    if (user_id !== null) params.append('user_id', String(user_id))
 
     if (start_date) params.append('start_date', start_date)
     if (end_date) params.append('end_date', end_date)
+    if (diagnosisDetail) params.append('diagnosis_detail', diagnosisDetail)
 
     const url = `/record_diagnosis${params.toString() ? `?${params}` : ''}`
 
@@ -93,18 +93,12 @@ export const useGetRecordDiagnosis = ({
         parse: 'json',
       } as any)
 
-      if (
-        !data ||
-        typeof data !== 'object' ||
-        !('record_diagnoses' in data)
-      ) {
+      if (!data || typeof data !== 'object' || !('record_diagnoses' in data)) {
         throw new ApiError('Respuesta inválida del servidor.', 200, data)
       }
 
       setRecordDiagnoses(
-        Array.isArray(data.record_diagnoses)
-          ? data.record_diagnoses
-          : []
+        Array.isArray(data.record_diagnoses) ? data.record_diagnoses : [],
       )
 
       const p = data.pagination
@@ -113,7 +107,6 @@ export const useGetRecordDiagnosis = ({
       setHasPrev(p.has_prev)
       setNextPage(p.next_page)
       setPrevPage(p.prev_page)
-
     } catch (err: any) {
       if (err instanceof ApiError) {
         setError(err.message || 'Error al obtener revisiones.')
@@ -131,6 +124,7 @@ export const useGetRecordDiagnosis = ({
     user_id,
     start_date,
     end_date,
+    diagnosisDetail
   ])
 
   // ==========================================================
@@ -211,6 +205,12 @@ export const useGetRecordDiagnosis = ({
     end_date,
     setStartDate: handleSetStartDate,
     setEndDate: handleSetEndDate,
+
+    diagnosisDetail,
+    setDiagnosisDetail: (v: string) => {
+      setDiagnosisDetail(v)
+      setCurrentPage(1)
+    },
 
     // Refetch manual
     refetch: fetchRecordDiagnosis,

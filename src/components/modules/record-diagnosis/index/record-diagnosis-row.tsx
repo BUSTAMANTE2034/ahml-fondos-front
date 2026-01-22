@@ -30,11 +30,11 @@ const RecordDiagnosisRow = ({ item }: Props) => {
   }
 // item.record_file?.deterioration_status.name ?? 
   return (
-    <div className="grid grid-cols-[0.6fr_1.6fr_0.6fr_0.2fr]  md:grid-cols-[0.7fr_0.6fr_1.6fr_0.6fr_0.2fr] px-2 rounded-2xl hover:bg-main-gray text-xs">
+    <div className="grid grid-cols-[0.7fr_0.7fr_0.7fr_0.2fr]  md:grid-cols-[0.7fr_0.6fr_1.6fr_0.6fr_0.2fr] px-2 rounded-2xl hover:bg-main-gray text-xs">
       <span>{item.record_file?.reference_code || 'Cargando'}</span>
-      <span>{formatFecha(item.record_file?.updated_at || 'Cargando')}</span>
-      <span>{item.observations || 'Sin Observaciones'}</span>
-      <span>{formatFecha(item.revision_date)}</span>
+      <span className=' text-[10px] md:text-xs' >{formatFecha(item.record_file?.updated_at || 'Cargando')}</span>
+      <span className='md:block hidden'>{item.observations || 'Sin Observaciones'}</span>
+      <span className=' text-[10px] md:text-xs'>{formatFecha(item.revision_date)}</span>
 
       <MenuDesplegable
         trigger={<img src={Menu} className="h-7 w-7 cursor-pointer" />}

@@ -25,7 +25,7 @@ const DiagnosisCatalogRow = ({ item:diagnosisCatalog }: Props) => {
 
   return (
     <div
-      className={`grid grid-cols-[0.6fr_0.6fr_1.6fr_0.2fr]  md:grid-cols-[0.4fr_0.8fr_1.8fr_0.4fr_0.2fr] text-xs md:text-sm  px-2  rounded-2xl   
+      className={`grid grid-cols-[0.6fr_0.6fr_1.6fr_0.2fr]  md:grid-cols-[0.4fr_0.8fr_1.8fr_0.6fr_0.2fr] text-xs md:text-sm  px-2  rounded-2xl   
     w-full items-center  text-left hover:bg-main-gray  ${
         !diagnosisCatalog.is_active &&
         'bg-light-gray 4 hover:bg-main-gray '
@@ -34,7 +34,7 @@ const DiagnosisCatalogRow = ({ item:diagnosisCatalog }: Props) => {
       <span className="hidden lg:block">{diagnosisCatalog.concept}</span>
       <span className="">{diagnosisCatalog.detail}</span>
       <span className="hidden lg:block">{diagnosisCatalog.description||'Sin descripción'}</span>
-       <span className="text-xs">{invertDate(diagnosisCatalog.updated_at)}</span>
+       <span className="text-xs">{formatFecha(diagnosisCatalog.updated_at)}</span>
       <span className="flex items-center ml-auto">
         <MenuDesplegable
           trigger={
