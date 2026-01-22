@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom'
 interface ModalContainerProps {
   visible?: boolean
   big?: boolean
+  superbig?: boolean
   children?: ReactNode
 
   onClose?: () => void
@@ -20,6 +21,7 @@ interface ModalContainerProps {
 const Modal = ({
   visible = false,
   big=false,
+  superbig=false,
   children,
   onClose,
 
@@ -57,6 +59,7 @@ const Modal = ({
     >
       <div
         className={`${big ? 'w-4/5 md:w-4/6 lg:w-4/7 max-h-[90%]' : 'w-4/5 md:w-3/6 lg:w-3/7 max-h-[80%]'
+        } ${superbig ? 'w-11/12 md:w-10/12 lg:w-9/12 max-h-[90%]' : ''
         } min-h-[120px] py-1 relative bg-white shadow-md flex flex-col mx-auto  overflow-hidden border border-dark2-gray rounded-3xl ${className}`}
         onClick={handleModalClick}
       >

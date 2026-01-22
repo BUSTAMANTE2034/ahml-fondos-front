@@ -156,7 +156,7 @@ export const RecordDiagnosisProvider = ({
     refetch,
   } = useGetRecordDiagnosis({
     initialPage: 1,
-    initialPerPage: 20,
+    initialPerPage: 5,
   })
 
   /* ========================================================

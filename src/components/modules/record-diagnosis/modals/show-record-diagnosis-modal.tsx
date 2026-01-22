@@ -6,9 +6,22 @@ const ShowRecordDiagnosisModal = () => {
   const { selected, isShowOpen, closeShow } = useRecordDiagnosis()
 
   if (!isShowOpen || !selected) return null
+  const diagnosisCatalog = selected.diagnosis_catalog ?? []
+
+const groupedByConcept = diagnosisCatalog.reduce(
+  (acc: Record<string, typeof diagnosisCatalog>, item) => {
+    if (!acc[item.concept]) {
+      acc[item.concept] = []
+    }
+    acc[item.concept].push(item)
+    return acc
+  },
+  {}
+)
+
 
   return (
-    <Modal visible onClose={closeShow}>
+    <Modal visible onClose={closeShow} big>
       <div className="flex flex-col gap-4 px-2 md:px-4">
 
         {/* HEADER */}
@@ -41,21 +54,45 @@ const ShowRecordDiagnosisModal = () => {
             {selected.observations || 'Sin observaciones'}
           </p>
 
-          <div className="flex flex-col gap-2 p-4 bg-light-gray border border-dark-gray rounded-3xl">
-            <span className="font-bold">Diagnósticos asociados:</span>
+          {/* DIAGNÓSTICOS */}
+<div className="flex flex-col gap-3 p-4 bg-light-gray border border-dark-gray rounded-3xl">
+  <span className="font-bold text-base">Diagnósticos</span>
 
-            {selected.diagnosis_catalog?.length ? (
-              <ul className="list-disc pl-4">
-                {selected.diagnosis_catalog.map((d:any) => (
-                  <li key={d.id}>
-                    <strong>{d.concept}</strong> — {d.detail}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <span>—</span>
-            )}
-          </div>
+  {diagnosisCatalog.length ? (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {Object.entries(groupedByConcept).map(([concept, items]) => (
+        <div
+          key={concept}
+          className="
+            p-4
+            rounded-2xl
+            border border-blue-200
+            bg-white
+            shadow-sm
+          "
+        >
+          {/* CONCEPTO */}
+          <span className="block text-sm font-bold text-blue-600 uppercase tracking-wide mb-2">
+            {concept}
+          </span>
+
+          {/* DETALLES */}
+          <ul className="list-disc pl-5 flex flex-col gap-1">
+            {items.map((d) => (
+              <li key={d.id} className="text-sm text-gray-700">
+                {d.detail || 'Sin detalle'}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <span>—</span>
+  )}
+</div>
+
+
 
           <div className="flex flex-col gap-1 p-4 bg-light-gray border border-dark-gray rounded-3xl">
             <span className="font-bold">Usuario revisor:</span>

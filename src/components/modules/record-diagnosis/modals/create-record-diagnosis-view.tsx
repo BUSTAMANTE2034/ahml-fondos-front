@@ -190,7 +190,7 @@ const CreateRecordDiagnosisView = () => {
           {Object.entries(grouped).map(([concept, items]) => (
             <div
               key={concept}
-              className="bg-dark-gray border border-dark-gray2 rounded-xl p-3"
+              className=" p-4 border border-blue-300  rounded-2xl bg-white shadow-lg"
             >
               <h4 className="font-bold text-blue-700 text-lg  text-center mb-1">
                 {concept}
@@ -200,12 +200,13 @@ const CreateRecordDiagnosisView = () => {
                 {items.map((item) => (
                   <label
                     key={item.id}
-                    className="flex gap-2 text-sm cursor-pointer hover:bg-main-gray px-2 py-1 rounded-lg"
+                    className="flex gap-2 text-sm cursor-pointer hover:bg-blue-100 active:bg-blue-200 px-2 py-1 rounded-2xl"
                   >
                     <input
                       type="checkbox"
                       checked={selectedIds.includes(item.id)}
                       onChange={() => toggle(item.id)}
+                      className="accent-blue-500"
                     />
                     {item.detail}
                   </label>

@@ -14,13 +14,8 @@ import TextArea from '@/components/forms/text-area'
 import { formatInputDate } from '@/components/ui/functions'
 
 const EditRecordDiagnosisModal = () => {
-  const {
-    isEditOpen,
-    closeEdit,
-    selected,
-    handleUpdate,
-    loadingUpdate,
-  } = useRecordDiagnosis()
+  const { isEditOpen, closeEdit, selected, handleUpdate, loadingUpdate } =
+    useRecordDiagnosis()
 
   /* ======================================================
      STATE
@@ -41,8 +36,7 @@ const EditRecordDiagnosisModal = () => {
   const { recordFile, loading: loadingFile } =
     useGetRecordFileById(recordFileId) // ✅ MISMO QUE CREATE
 
-  const { results, loading, error } =
-    useSearchDiagnosisCatalog(query, true)
+  const { results, loading, error } = useSearchDiagnosisCatalog(query, true)
 
   const {
     results: deteriorationResults,
@@ -50,8 +44,7 @@ const EditRecordDiagnosisModal = () => {
     error: deteriorationError,
   } = useSearchDeteriorations(deteriorationQuery, true)
 
-  const { updateRecordFile, loading: loadingUpdateFile } =
-    useUpdateRecordFile()
+  const { updateRecordFile, loading: loadingUpdateFile } = useUpdateRecordFile()
 
   /* ======================================================
      PRECARGA DATOS (🔥 CLAVE)
@@ -59,9 +52,7 @@ const EditRecordDiagnosisModal = () => {
   useEffect(() => {
     if (!selected) return
 
-    setSelectedIds(
-      selected.diagnosis_catalog?.map((d) => d.id) ?? []
-    )
+    setSelectedIds(selected.diagnosis_catalog?.map((d) => d.id) ?? [])
 
     setObservations(selected.observations ?? '')
   }, [selected])
@@ -89,7 +80,7 @@ const EditRecordDiagnosisModal = () => {
   ====================================================== */
   const toggle = (id: number) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     )
   }
 
@@ -129,23 +120,19 @@ const EditRecordDiagnosisModal = () => {
     }
   }
 
-  const isSaving =
-    loadingUpdate || loadingUpdateFile || loadingFile
+  const isSaving = loadingUpdate || loadingUpdateFile || loadingFile
 
   if (!isEditOpen || !selected) return null
 
   return (
-    <Modal visible onClose={closeEdit} big closeBackdrop={false}>
+    <Modal visible onClose={closeEdit} superbig closeBackdrop={false}>
       <div className="flex flex-col flex-1 h-full gap-4 px-2 md:px-4 w-full">
-
         {/* HEADER */}
         <div className="text-center flex flex-col gap-2">
           <h2 className="text-xl md:text-2xl font-bold text-blue-600">
             Editar revisión
           </h2>
-          <p className="text-sm">
-            Modifica los diagnósticos del expediente
-          </p>
+          <p className="text-sm">Modifica los diagnósticos del expediente</p>
         </div>
 
         {/* INFO EXPEDIENTE */}
@@ -195,7 +182,7 @@ const EditRecordDiagnosisModal = () => {
             {Object.entries(grouped).map(([concept, items]) => (
               <div
                 key={concept}
-                className="bg-dark-gray border border-dark-gray2 rounded-xl p-3"
+                className=" p-4 border border-blue-300  rounded-2xl bg-white shadow-lg"
               >
                 <h4 className="font-bold text-blue-700 text-lg text-center mb-1">
                   {concept}
@@ -205,12 +192,13 @@ const EditRecordDiagnosisModal = () => {
                   {items.map((item) => (
                     <label
                       key={item.id}
-                      className="flex gap-2 text-sm cursor-pointer hover:bg-main-gray px-2 py-1 rounded-lg"
+                      className="flex gap-2 text-sm cursor-pointer hover:bg-blue-100 active:bg-blue-200 px-2 py-1 rounded-2xl"
                     >
                       <input
                         type="checkbox"
                         checked={selectedIds.includes(item.id)}
                         onChange={() => toggle(item.id)}
+                       className="accent-blue-500"
                       />
                       {item.detail}
                     </label>
@@ -222,9 +210,7 @@ const EditRecordDiagnosisModal = () => {
         </div>
 
         {formError && (
-          <div className="text-sm text-red-600 text-right">
-            {formError}
-          </div>
+          <div className="text-sm text-red-600 text-right">{formError}</div>
         )}
 
         <TextArea
@@ -264,11 +250,7 @@ const EditRecordDiagnosisModal = () => {
             <span>Cancelar</span>
           </button>
 
-          <button
-            onClick={onSubmit}
-            disabled={isSaving}
-            className="create"
-          >
+          <button onClick={onSubmit} disabled={isSaving} className="create">
             <span>Guardar cambios</span>
           </button>
         </div>

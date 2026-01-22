@@ -87,7 +87,7 @@ const isList = !isCreate && !isEdit
           <RecordDiagnosisRow key={r.id} item={r} />
         ))
       ) : (
-        <div>No hay revisiones</div>
+        <div className='flex flex-col items-center'>No hay revisiones</div>
       )}
     </>
   )}
@@ -97,6 +97,7 @@ const isList = !isCreate && !isEdit
       <ShowRecordDiagnosisModal />
       <EditRecordDiagnosisModal/>
       <DeleteRecordDiagnosisModal />
+      <RecordDiagnosisPaginator />
     </Card>
   )
 }
