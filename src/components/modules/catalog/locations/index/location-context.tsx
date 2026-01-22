@@ -4,6 +4,7 @@ import {
   Location,
   CreateLocation,
   UpdateLocation,
+  LocationOrderByParam,
 } from '@models/location'
 
 import {
@@ -33,6 +34,8 @@ interface ContextValue {
   is_active: boolean | null
   setIsActive: (a: boolean | null) => void
 
+  order_by: LocationOrderByParam | null
+  setOrderBy: (v: LocationOrderByParam | null) => void
 
   hasNext: boolean
   hasPrev: boolean
@@ -118,6 +121,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
     is_active,
     setIsActive,
 
+    order_by,setOrderBy,
   
 
     query,
@@ -422,6 +426,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
         errorCreate,
         errorUpdate,
         errorDelete,
+        order_by,setOrderBy,
       }}
     >
       {children}

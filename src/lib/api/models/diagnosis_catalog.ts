@@ -62,6 +62,19 @@ export interface DiagnosisCatalogPaginationResponse {
     prev_page: number | null
   }
 }
+export type DiagnosisCatalogOrderBy =
+  | 'concept_asc'
+  | 'concept_desc'
+  | 'detail_asc'
+  | 'detail_desc'
+  | 'description_asc'
+  | 'description_desc'
+  | 'created_at_asc'
+  | 'created_at_desc'
+  | 'updated_at_asc'
+  | 'updated_at_desc'
+  | null
+
 
 // ==============================
 // OPCIONES GET (FILTROS)
@@ -74,4 +87,6 @@ export interface OptionsGetDiagnosisCatalog {
   initialConcept?: string | null
   initialDetail?: string | null
   initialQuery?: string | null
+  initialOrderBy?: DiagnosisCatalogOrderBy | null
+
 }

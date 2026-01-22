@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   DiagnosisCatalog,
+  DiagnosisCatalogOrderBy,
   DiagnosisCatalogPaginationResponse,
   OptionsGetDiagnosisCatalog,
 } from '@/lib/api/models/diagnosis_catalog'
@@ -14,6 +15,8 @@ export const useGetDiagnosisCatalog = ({
   initialConcept = null,
   initialDetail = null,
   initialQuery = null,
+  initialOrderBy = null,
+
 }: OptionsGetDiagnosisCatalog = {}) => {
 
   // DATA
@@ -39,7 +42,9 @@ export const useGetDiagnosisCatalog = ({
   // SEARCH
   const [queryInput, setQueryInput] = useState(initialQuery ?? '')
   const [query, setQuery] = useState(initialQuery ?? '')
-
+const [order_by, setOrderBy] = useState<DiagnosisCatalogOrderBy  | null>(
+    initialOrderBy
+  )
   // Debounce search
   useEffect(() => {
     const id = setTimeout(() => {
@@ -64,6 +69,7 @@ export const useGetDiagnosisCatalog = ({
 
     if (concept) params.append('concept', concept)
     if (detail) params.append('detail', detail)
+    if (order_by !== null) params.append('order_by', order_by)
 
     const url = `/diagnosis_catalog${params.toString() ? `?${params}` : ''}`
 
@@ -103,7 +109,7 @@ export const useGetDiagnosisCatalog = ({
     } finally {
       setLoading(false)
     }
-  }, [currentPage, pageSize, query, is_active, concept, detail])
+  }, [currentPage, pageSize, query, is_active, concept, detail,order_by])
 
   // AUTO FETCH
   useEffect(() => {
@@ -153,6 +159,10 @@ export const useGetDiagnosisCatalog = ({
     goNext,
     goPrev,
 
+    order_by,setOrderBy: (v: DiagnosisCatalogOrderBy  | null) => {
+              setOrderBy(v)
+              setCurrentPage(1)
+            },
     // Search
     query,
     queryInput,

@@ -30,12 +30,17 @@ export interface UpdateLocation {
 export interface LocationResponse {
   location?: Location
   message: string
-}
+}export type LocationOrderByParam =
+  | "name_asc"
+  | "name_desc"
+  | "updated_at_asc"
+  | "updated_at_desc"
 
 export interface OptionsGetLocations {
   initialPage?: number
   initialPerPage?: number
   initialIsActive?: boolean | null
+   initialOrderBy?: LocationOrderByParam | null
 }
 
 export interface LocationsPaginationResponse {

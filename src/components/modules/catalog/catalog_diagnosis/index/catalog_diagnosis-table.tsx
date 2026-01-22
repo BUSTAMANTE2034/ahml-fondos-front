@@ -11,6 +11,8 @@ import DeleteDiagnosisCatalogModal from '../modals/delete-catalog_diagnosis-moda
 import ShowDiagnosisCatalogModal from '../modals/show-catalog_diagnosis-modal'
 import EnableDiagnosisCatalogModal from '../modals/enable-catalog_diagnosis-modal'
 import DisableDiagnosisCatalogModal from '../modals/disable-catalog_diagnosis-modal'
+import FilterOrderDiagnosisCatalog from './order'
+import DiagnosisCatalogOrderFilter from './filter-order'
 
 const Table = () => {
   const {
@@ -26,7 +28,7 @@ const Table = () => {
           <h2 className="text-2xl font-bold text-blue-600 dark:text-main-green flex flex-1 justify-start w-full">
             Catálogo de Diagnósticos
           </h2>
-
+<DiagnosisCatalogOrderFilter />
           <DiagnosisCatalogFilter />
         </div>
 

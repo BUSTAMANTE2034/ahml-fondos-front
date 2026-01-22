@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
   Location,
+  LocationOrderByParam,
   LocationsPaginationResponse,
   OptionsGetLocations,
 } from '@/lib/api/models/location'
@@ -11,6 +12,7 @@ export const useGetLocations = ({
   initialPage = 1,
   initialPerPage = 20,
   initialIsActive = null,
+  initialOrderBy = null,
 }: OptionsGetLocations = {}) => {
 
   // DATA
@@ -34,7 +36,9 @@ export const useGetLocations = ({
   // SEARCH
   const [queryInput, setQueryInput] = useState('')
   const [query, setQuery] = useState('')
-
+const [order_by, setOrderBy] = useState<LocationOrderByParam | null>(
+    initialOrderBy
+  )
   // Debounce search
   useEffect(() => {
     const id = setTimeout(() => {
@@ -56,6 +60,7 @@ export const useGetLocations = ({
 
     if (query) params.append('query', query)
     if (is_active !== null) params.append('is_active', String(is_active))
+    if (order_by !== null) params.append('order_by', order_by)
 
     const url = `/locations${params.toString() ? `?${params}` : ''}`
 
@@ -79,7 +84,7 @@ export const useGetLocations = ({
     } finally {
       setLoading(false)
     }
-  }, [currentPage, pageSize, query, is_active])
+  }, [currentPage, pageSize, query, is_active,order_by])
 
   // Auto fetch
   useEffect(() => {
@@ -112,7 +117,11 @@ export const useGetLocations = ({
     goPrev,
     setPage: setCurrentPage,
     setPageSize,
-
+    order_by,
+    setOrderBy: (v: LocationOrderByParam | null) => {
+          setOrderBy(v)
+          setCurrentPage(1)
+        },
     // search
     query,
     queryInput,

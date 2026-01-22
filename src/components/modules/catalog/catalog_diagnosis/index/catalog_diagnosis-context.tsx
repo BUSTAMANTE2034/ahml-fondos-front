@@ -4,6 +4,7 @@ import {
   DiagnosisCatalog,
   CreateDiagnosisCatalog,
   UpdateDiagnosisCatalog,
+  DiagnosisCatalogOrderBy,
 } from '@models/diagnosis_catalog'
 
 import {
@@ -29,6 +30,8 @@ interface ContextValue {
   pages: number | null
   current_page: number | null
 
+  order_by: DiagnosisCatalogOrderBy | null
+  setOrderBy: (v: DiagnosisCatalogOrderBy| null) => void
   // SEARCH
   query: string
   queryInput: string
@@ -143,6 +146,7 @@ export const DiagnosisCatalogProvider = ({ children }: { children: ReactNode }) 
 
     detail,
     setDetail,
+    order_by,setOrderBy,
 
     query,
     queryInput,
@@ -378,6 +382,7 @@ export const DiagnosisCatalogProvider = ({ children }: { children: ReactNode }) 
         diagnosisCatalog,
         pages,
         current_page,
+        order_by,setOrderBy,
 
         query,
         queryInput,

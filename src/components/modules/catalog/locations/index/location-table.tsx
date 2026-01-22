@@ -11,6 +11,7 @@ import DeleteLocationModal from '../modals/delete-location-modal'
 import ShowLocationModal from '../modals/show-location-modal'
 import EnableLocationModal from '../modals/enable-location-modal'
 import DisableLocationModal from '../modals/disable-location-modal'
+import LocationsOrderFilter from './filter-order'
 
 const Table = () => {
   const {
@@ -26,7 +27,7 @@ const Table = () => {
           <h2 className="text-2xl font-bold text-blue-600 dark:text-main-green flex flex-1 justify-start w-full">
             Localidades
           </h2>
-
+<LocationsOrderFilter />
           <LocationFilter />
         </div>
 
