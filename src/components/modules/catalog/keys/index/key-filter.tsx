@@ -19,7 +19,7 @@ const KeyFilter = () => {
         Filtros
       </span>
 
-      <MenuDesplegable
+      <MenuDesplegable className='w-60'
         trigger={
           <img
             src={Filter}
