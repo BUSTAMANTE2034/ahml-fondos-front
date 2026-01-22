@@ -87,7 +87,7 @@ const isList = !isCreate && !isEdit
           <RecordDiagnosisRow key={r.id} item={r} />
         ))
       ) : (
-        <div className='flex flex-col items-center'>No hay revisiones</div>
+        <div className='flex flex-col items-center text-dark2-gray'>No hay revisiones</div>
       )}
     </>
   )}

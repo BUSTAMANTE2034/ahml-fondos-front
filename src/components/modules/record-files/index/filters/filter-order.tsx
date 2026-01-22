@@ -26,7 +26,7 @@ const RecordFilesOrderFilter = () => {
         Orden
       </span>
 
-      <MenuDesplegable
+      <MenuDesplegable className='max-w-90! w-90!'
         trigger={<img src={Filter} alt="menu" className="icon-size" />}
       >
         <div className="flex flex-col gap-3 p-3 w-full">

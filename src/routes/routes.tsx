@@ -89,6 +89,16 @@ const archivistRoutes = [
   { path: 'physical_locations', element: <PhysicalLocationsView /> },
   // { path: 'physical_locations/:code', element: <PhysicalLocationsView /> },
   { path: 'boxes', element: <BoxView /> },
+  { path: 'catalog_diagnosis', element: <CatalogDiagnosisView /> },
+  // {path: 'record_diagnosis', element: <RecordDiagnosisView /> },
+  {
+    path: 'record_diagnosis',
+    element: <RecordDiagnosisView />,
+  },
+  {
+    path: 'record_diagnosis/new_diagnosis/record_file/:record_file_id',
+    element: <RecordDiagnosisView />,
+  },
 ]
 const visitorRoutes = [{ path: 'record-files', element: <RecordFilesView /> }]
 
