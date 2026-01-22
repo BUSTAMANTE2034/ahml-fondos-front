@@ -7,7 +7,7 @@ const SearchFund = () => {
   const { queryInput, setQuery } = useRecordDiagnosis()
 
   return (
-    <div className="relative w-full max-w-60 flex items-center">
+    <div className="relative w-full max-w-70 flex items-center">
       <input
         type="text"
         value={queryInput}
