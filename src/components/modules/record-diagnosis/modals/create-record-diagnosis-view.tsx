@@ -186,7 +186,7 @@ const CreateRecordDiagnosisView = () => {
         />
 
         {/* LISTADO */}
-        <div className="max-h-72 overflow-y-auto  grid   grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-4  scroll-t">
+        <div className="max-h-100 overflow-y-auto  grid   grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-4  scroll-t">
           {Object.entries(grouped).map(([concept, items]) => (
             <div
               key={concept}
@@ -219,34 +219,36 @@ const CreateRecordDiagnosisView = () => {
       {formError && (
         <div className="text-sm text-red-600 text-right">{formError}</div>
       )}
-      <TextArea
-        className="text-sm!"
-        name="observations"
-        label="Observaciones generales"
-        placeholder="Agrega comentarios u observaciones adicionales"
-        rows={3}
-        value={observations}
-        onChange={(e) => setObservations(e.target.value)}
-      />
-      <div className="border rounded-xl p-3 space-y-2">
-        <h4 className="font-semibold text-blue-600 text-sm">
-          Estado de deterioro del expediente
-        </h4>
-
-        <AsyncSearchSelect2
-          key={recordFile?.deterioration_status_id} // 👈 CLAVE
-          placeholder="Buscar estado de deterioro…"
-          value={deteriorationId}
-          initialLabel={recordFile?.deterioration_status?.name}
-          onChange={(id) => setDeteriorationId(id)}
-          onQueryChange={setDeteriorationQuery}
-          results={deteriorationResults.map((d) => ({
-            id: d.id,
-            label: d.name,
-          }))}
-          loading={deteriorationLoading}
-          searchError={deteriorationError}
+      <div className="flex  flex-col md:flex-row  gap-6 w-full items-center  h-40">
+        <TextArea
+          className="text-sm!"
+          name="observations"
+          label="Observaciones generales"
+          placeholder="Agrega comentarios u observaciones adicionales"
+          rows={3}
+          value={observations}
+          onChange={(e) => setObservations(e.target.value)}
         />
+        <div className="w-1/2 h-30 my-auto border rounded-xl p-3 space-y-2">
+          <h4 className="font-semibold text-blue-600 text-sm">
+            Estado de deterioro del expediente
+          </h4>
+
+          <AsyncSearchSelect2
+            key={recordFile?.deterioration_status_id} // 👈 CLAVE
+            placeholder="Buscar estado de deterioro…"
+            value={deteriorationId}
+            initialLabel={recordFile?.deterioration_status?.name}
+            onChange={(id) => setDeteriorationId(id)}
+            onQueryChange={setDeteriorationQuery}
+            results={deteriorationResults.map((d) => ({
+              id: d.id,
+              label: d.name,
+            }))}
+            loading={deteriorationLoading}
+            searchError={deteriorationError}
+          />
+        </div>
       </div>
 
       {/* ACTIONS */}
