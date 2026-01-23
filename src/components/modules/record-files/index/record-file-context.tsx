@@ -44,6 +44,7 @@ interface ContextValue {
   query: string
   queryInput: string
   setQuery: (q: string) => void
+  totalItems: number
 
   // pagination
   hasNext: boolean
@@ -246,6 +247,7 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
     prevPage,
     goNext,
     goPrev,
+    totalItems,
 
     query,
     queryInput,
@@ -808,6 +810,7 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
         recordFiles,
         pages,
         current_page,
+        totalItems,
 
         // búsqueda global
         query,

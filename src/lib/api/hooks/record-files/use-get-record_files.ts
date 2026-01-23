@@ -57,6 +57,7 @@ export const useGetRecordFiles = ({
   const [pageSize, setPageSize] = useState(initialPerPage)
 
   const [totalPages, setTotalPages] = useState(1)
+  const [totalItems, setTotalItems] = useState(0)
   const [hasNext, setHasNext] = useState(false)
   const [hasPrev, setHasPrev] = useState(false)
   const [nextPage, setNextPage] = useState<number | null>(null)
@@ -178,6 +179,7 @@ export const useGetRecordFiles = ({
       setHasPrev(p.has_prev)
       setNextPage(p.next_page)
       setPrevPage(p.prev_page)
+      setTotalItems(p.total)
     } catch (err: any) {
       setError(err instanceof ApiError ? err.message : 'Error desconocido.')
     } finally {
@@ -220,6 +222,7 @@ export const useGetRecordFiles = ({
     recordFiles,
     loading,
     error,
+    totalItems,
 
     currentPage,
     totalPages,
