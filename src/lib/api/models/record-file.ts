@@ -181,6 +181,18 @@ export type RecordFileOrderByParam =
   | "box_number_desc"
   | "file_number_asc"
   | "file_number_desc"
+  | "fund_name_asc"
+  | "fund_name_desc"
+  | "section_name_asc"
+  | "section_name_desc"
+  | "series_name_asc"
+  | "series_name_desc"
+  | "location_name_asc"
+  | "location_name_desc"
+
+export type RecordFileOrderBy =
+  | RecordFileOrderByParam
+  | `${RecordFileOrderByParam},${RecordFileOrderByParam}`
 
 // =========================
 //      GET OPTIONS

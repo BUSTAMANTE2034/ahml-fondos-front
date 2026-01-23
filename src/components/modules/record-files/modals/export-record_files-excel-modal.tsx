@@ -26,6 +26,15 @@ import {
   Hash,
   FileText,
 } from 'lucide-react'
+import {
+ 
+  FolderTree,
+  Layers,
+  Archive,
+  MapPin,
+  Tag,
+  X,
+} from "lucide-react"
 
 // ---------------------------------------------------------
 // ORDER TYPES
@@ -37,10 +46,22 @@ type OrderField =
   | 'deterioration_status_updated_at'
   | 'box_number'
   | 'file_number'
+  | 'reference_code'
+  | 'previous_reference_code'
+  | 'fund_name'
+  | 'section_name'
+  | 'series_name'
+  | 'location_name'
+
 
 type OrderDir = 'asc' | 'desc'
 
-type OrderByParam = `${OrderField}_${OrderDir}`
+type OrderValue = `${OrderField}_${OrderDir}`
+
+type OrderState = {
+  data?: OrderValue
+  date?: OrderValue
+}
 
 const ORDER_FIELDS: { value: OrderField; label: string; icon: any }[] = [
   { value: 'updated_at', label: 'Última actualización', icon: Clock4 },
@@ -92,7 +113,7 @@ const ExportRecordFilesExcelModal = () => {
   const [fQuery, setFQuery] = useState(query)
   const [fReferenceCode, setFReferenceCode] = useState(reference_code)
   const [fPrevReferenceCode, setFPrevReferenceCode] = useState(
-    previous_reference_code
+    previous_reference_code,
   )
   const [fFileNumber, setFFileNumber] = useState(file_number)
   const [fBoxNumber, setFBoxNumber] = useState(box_number)
@@ -131,11 +152,21 @@ const ExportRecordFilesExcelModal = () => {
   const [fFileAfter, setFFileAfter] = useState(file_date_after)
   const [fFileBefore, setFFileBefore] = useState(file_date_before)
 
-  const [fOrderBy, setFOrderBy] = useState<OrderByParam | null>(order_by)
-
+  const [orderState, setOrderState] = useState<OrderState>({})
+  const isDateField = (field: OrderField) =>
+    field === 'created_at' ||
+    field === 'updated_at' ||
+    field === 'file_date' ||
+    field === 'deterioration_status_updated_at'
   const applyOrder = (field: OrderField, dir: OrderDir) => {
-    setFOrderBy(`${field}_${dir}`)
+    const type = isDateField(field) ? 'date' : 'data'
+
+    setOrderState((prev) => ({
+      ...prev,
+      [type]: `${field}_${dir}`,
+    }))
   }
+
   const clearFilters = () => {
     setPerPage('50')
 
@@ -180,7 +211,104 @@ const ExportRecordFilesExcelModal = () => {
     setFFileAfter(null)
     setFFileBefore(null)
 
-    setFOrderBy(null)
+    setOrderState({})
+  }
+  // =========================
+// CAMPOS DE FECHA
+// =========================
+const DATE_FIELDS = [
+  {
+    value: 'updated_at',
+    label: 'Última actualización',
+    icon: Clock4,
+  },
+  {
+    value: 'created_at',
+    label: 'Fecha de creación',
+    icon: CalendarDays,
+  },
+  {
+    value: 'file_date',
+    label: 'Fecha del documento',
+    icon: CalendarDays,
+  },
+  {
+    value: 'deterioration_status_updated_at',
+    label: 'Último deterioro',
+    icon: ShieldAlert,
+  },
+] as const
+
+// =========================
+// CAMPOS DE DATOS
+// =========================
+const DATA_FIELDS = [
+  {
+    value: 'box_number',
+    label: 'Número de caja',
+    icon: Hash,
+  },
+  {
+    value: 'file_number',
+    label: 'Número de expediente',
+    icon: FileText,
+  },
+  {
+    value: 'reference_code',
+    label: 'Código de clasificación',
+    icon: Tag,
+  },
+  {
+    value: 'previous_reference_code',
+    label: 'Referencia anterior',
+    icon: Tag,
+  },
+  {
+    value: 'fund_name',
+    label: 'Fondo',
+    icon: FolderTree,
+  },
+  {
+    value: 'section_name',
+    label: 'Sección',
+    icon: Layers,
+  },
+  {
+    value: 'series_name',
+    label: 'Serie',
+    icon: Archive,
+  },
+  {
+    value: 'location_name',
+    label: 'Ubicación',
+    icon: MapPin,
+  },
+] as const
+
+
+  const renderOrderField = (
+    f: { value: OrderField; label: string; icon: any },
+    type: 'date' | 'data',
+  ) => {
+    const current = type === 'date' ? orderState.date : orderState.data
+    const isAsc = current === `${f.value}_asc`
+    const isDesc = current === `${f.value}_desc`
+    const Icon = f.icon
+
+    return (
+      <div key={f.value} className="flex items-center gap-2">
+        <Icon size={16} />
+        <span className="flex-1 text-xs">{f.label}</span>
+
+        <OrderBtn active={isAsc} onClick={() => applyOrder(f.value, 'asc')}>
+          <ArrowUpAZ size={16} />
+        </OrderBtn>
+
+        <OrderBtn active={isDesc} onClick={() => applyOrder(f.value, 'desc')}>
+          <ArrowDownAZ size={16} />
+        </OrderBtn>
+      </div>
+    )
   }
 
   // ---------------------------------------------------------
@@ -202,6 +330,9 @@ const ExportRecordFilesExcelModal = () => {
     useSearchTypologies(fTypologyName)
 
   if (!isExportExcelOpen) return null
+
+  const combinedOrderBy =
+    [orderState.data, orderState.date].filter(Boolean).join(',') || undefined
 
   // ---------------------------------------------------------
   // EXPORT
@@ -229,7 +360,7 @@ const ExportRecordFilesExcelModal = () => {
       file_date_after: fFileAfter,
       file_date_before: fFileBefore,
 
-      order_by: fOrderBy ?? undefined,
+      order_by: combinedOrderBy,
     })
   }
 
@@ -483,12 +614,17 @@ const ExportRecordFilesExcelModal = () => {
         {/* =============================== */}
         {/*        ORDENAMIENTO             */}
         {/* =============================== */}
-        <section className="border  border-dark-gray2 rounded-xl p-4 bg-main-gray space-y-3">
+        {/* <section className="border  border-dark-gray2 rounded-xl p-4 bg-main-gray space-y-3">
           <h3 className="text-sm font-semibold text-blue-600">Ordenar por</h3>
 
           {ORDER_FIELDS.map((f) => {
-            const isAsc = fOrderBy === `${f.value}_asc`
-            const isDesc = fOrderBy === `${f.value}_desc`
+            const current = isDateField(f.value)
+              ? orderState.date
+              : orderState.data
+
+            const isAsc = current === `${f.value}_asc`
+            const isDesc = current === `${f.value}_desc`
+
             const Icon = f.icon
 
             return (
@@ -512,7 +648,33 @@ const ExportRecordFilesExcelModal = () => {
               </div>
             )
           })}
-        </section>
+        </section> */}
+        <section className="border border-dark-gray2 rounded-xl p-4 bg-main-gray">
+  <h3 className="text-sm font-semibold text-blue-600 mb-3">
+    Ordenar por
+  </h3>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+    {/* FECHAS */}
+    <div className="flex flex-col gap-2">
+      <span className="text-xs font-semibold text-dark-gray2">
+        Fechas
+      </span>
+      {DATE_FIELDS.map((f) => renderOrderField(f, 'date'))}
+    </div>
+
+    {/* DATOS */}
+    <div className="flex flex-col gap-2">
+      <span className="text-xs font-semibold text-dark-gray2">
+        Datos
+      </span>
+      {DATA_FIELDS.map((f) => renderOrderField(f, 'data'))}
+    </div>
+
+  </div>
+</section>
+
 
         {/* =============================== */}
         {/* BOTONES                         */}
