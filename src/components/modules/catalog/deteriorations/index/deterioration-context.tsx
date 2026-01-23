@@ -25,6 +25,7 @@ interface ContextValue {
   deteriorations: Deterioration[]
   pages: number | null
   current_page: number | null
+  totalItems: number
 
   query: string
   queryInput: string
@@ -103,6 +104,7 @@ export const DeteriorationsProvider = ({ children }: { children: ReactNode }) =>
     deteriorations,
     loading: loadingGet,
     error: errorGet,
+    totalItems,
 
     currentPage:current_page,
     totalPages:pages,
@@ -363,6 +365,7 @@ export const DeteriorationsProvider = ({ children }: { children: ReactNode }) =>
         deteriorations,
         pages,
         current_page,
+        totalItems,
 
         query,
         queryInput,

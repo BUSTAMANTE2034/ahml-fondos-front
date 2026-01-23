@@ -37,6 +37,7 @@ interface ContextValue {
   end_date: string | null
   setStartDate: (d: string | null) => void
   setEndDate: (d: string | null) => void
+  totalItems: number
 
   hasNext: boolean
   hasPrev: boolean
@@ -107,6 +108,7 @@ export const SectionsProvider = ({ children }: { children: ReactNode }) => {
     sections,
     loading: loadingGet,
     error: errorGet,
+    totalItems,
 
     currentPage:current_page,
     totalPages:pages,
@@ -370,6 +372,7 @@ export const SectionsProvider = ({ children }: { children: ReactNode }) => {
         sections,
         pages,
         current_page,
+        totalItems,
 
         query,
         queryInput,

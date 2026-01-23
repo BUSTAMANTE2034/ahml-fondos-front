@@ -26,6 +26,7 @@ import { useToast, useAuth } from '@contexts/index'
    CONTEXT TYPE
 ========================================================== */
 interface ContextValue {
+  totalItems: number
   diagnosisCatalog: DiagnosisCatalog[]
   pages: number | null
   current_page: number | null
@@ -127,6 +128,7 @@ export const DiagnosisCatalogProvider = ({ children }: { children: ReactNode }) 
     diagnosisCatalog,
     loading: loadingGet,
     error: errorGet,
+    totalItems,
 
     currentPage: current_page,
     totalPages: pages,
@@ -379,6 +381,7 @@ export const DiagnosisCatalogProvider = ({ children }: { children: ReactNode }) 
   return (
     <DiagnosisCatalogContext.Provider
       value={{
+        totalItems,
         diagnosisCatalog,
         pages,
         current_page,

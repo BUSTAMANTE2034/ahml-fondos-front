@@ -21,6 +21,7 @@ export const useGetSeries = ({
 
   // paginación
   const [currentPage, setCurrentPage] = useState(initialPage)
+  const [totalItems, setTotalItems] = useState(0)
   const [pageSize, setPageSize] = useState(initialPerPage)
   const [totalPages, setTotalPages] = useState(1)
   const [hasNext, setHasNext] = useState(false)
@@ -80,6 +81,7 @@ const [order_by, setOrderBy] = useState<SeriesOrderByParam | null>(
         setHasPrev(p.has_prev)
         setNextPage(p.next_page)
         setPrevPage(p.prev_page)
+        setTotalItems(p.total)
 
       } catch (err: any) {
         setError(err instanceof ApiError ? err.message : 'Error desconocido.')
@@ -120,6 +122,7 @@ const [order_by, setOrderBy] = useState<SeriesOrderByParam | null>(
     loading,
     error,
 
+    totalItems,
     // paginación
     currentPage,
     totalPages,

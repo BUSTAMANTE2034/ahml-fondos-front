@@ -25,6 +25,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useToast, useAuth } from '@contexts/index'
 
 interface ContextValue {
+  totalItems: number
   physicalLocations: PhysicalLocation[]
   pages: number | null
   current_page: number | null
@@ -166,6 +167,7 @@ const handlePrintLabel = async () => {
 order_by,setOrderBy,
     currentPage: current_page,
     totalPages: pages,
+    totalItems,
 
     hasNext,
     hasPrev,
@@ -460,6 +462,7 @@ order_by,setOrderBy,
         physicalLocations,
         pages,
         current_page,
+        totalItems,
  // orden
         order_by,
         setOrderBy,

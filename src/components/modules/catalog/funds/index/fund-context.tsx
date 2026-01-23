@@ -29,6 +29,7 @@ interface ContextValue {
   query: string
   queryInput: string
   setQuery: (q: string) => void
+  totalItems: number
 
   is_active: boolean | null
   setIsActive: (a: boolean | null) => void
@@ -110,7 +111,7 @@ export const FundsProvider = ({ children }: { children: ReactNode }) => {
 
     currentPage:current_page,
     totalPages:pages,
-
+totalItems,
     hasNext,
     hasPrev,
     nextPage,
@@ -371,6 +372,7 @@ export const FundsProvider = ({ children }: { children: ReactNode }) => {
         pages,
         current_page,
 
+        totalItems,
         query,
         queryInput,
         setQuery,

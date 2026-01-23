@@ -21,6 +21,7 @@ export const useGetLoans = ({
   // PAGINATION
   const [currentPage, setCurrentPage] = useState<number | null>(initialPage)
   const [pageSize, setPageSize] = useState<number | null>(initialPerPage)
+    const [totalItems, setTotalItems] = useState(0)
 
   const [totalPages, setTotalPages] = useState(1)
   const [hasNext, setHasNext] = useState(false)
@@ -82,6 +83,7 @@ export const useGetLoans = ({
 
       const p = data.pagination
       setTotalPages(p.pages)
+      setTotalItems(p.total)
       setHasNext(p.has_next ?? false)
       setHasPrev(p.has_prev ?? false)
       setNextPage(p.next_page ?? null)
@@ -151,6 +153,7 @@ export const useGetLoans = ({
     loans,
     loading,
     error,
+    totalItems,
 
     // Pagination
     currentPage,

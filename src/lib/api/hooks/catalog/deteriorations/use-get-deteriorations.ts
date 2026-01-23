@@ -21,6 +21,7 @@ export const useGetDeteriorations = ({
   // PAGINATION
   const [currentPage, setCurrentPage] = useState<number | null>(initialPage)
   const [pageSize, setPageSize] = useState<number | null>(initialPerPage)
+    const [totalItems, setTotalItems] = useState(0)
 
   const [totalPages, setTotalPages] = useState(1)
   const [hasNext, setHasNext] = useState(false)
@@ -70,6 +71,7 @@ export const useGetDeteriorations = ({
 
       const p = data.pagination
       setTotalPages(p.pages)
+      setTotalItems(p.total)
       setHasNext(p.has_next)
       setHasPrev(p.has_prev)
       setNextPage(p.next_page)
@@ -101,6 +103,7 @@ export const useGetDeteriorations = ({
     deteriorations,
     loading,
     error,
+    totalItems,
 
     // paginación
     currentPage,

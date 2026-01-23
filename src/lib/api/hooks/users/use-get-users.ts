@@ -22,7 +22,7 @@ export const useGetUsers = ({
   const [per_page, setPer_page] = useState<number | null>(initialPerPage)
   const [role, setRole] = useState<string | null>(initialRole)
   const [is_active, setIsActive] = useState<boolean | null>(initialIsActive)
-  const [total, setTotal] = useState<number | null>(0)
+  const [total, setTotal] = useState<number>(0)
   //Query
   const [queryInput, setQueryInput] = useState('')
   const [query, setQuery] = useState('')

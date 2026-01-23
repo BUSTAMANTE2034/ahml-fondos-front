@@ -44,6 +44,7 @@ interface ContextValue {
   query: string
   queryInput: string
   setQuery: (q: string) => void
+  totalItems: number
 
   // pagination
   hasNext: boolean
@@ -85,6 +86,9 @@ interface ContextValue {
 
   deterioration_name: string
   setDeteriorationName: (v: string) => void
+
+  user_query: string
+  setUserQuery: (v: string) => void
 
   typology_name: string
   setTypologyName: (v: string) => void
@@ -246,6 +250,7 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
     prevPage,
     goNext,
     goPrev,
+    totalItems,
 
     query,
     queryInput,
@@ -260,6 +265,7 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
     setFileNumber,
     box_number,
     setBoxNumber,
+    user_query,setUserQuery,
 
     // confidencialidad
     sensitive,
@@ -292,6 +298,7 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
     // ordenamiento
     order_by,
     setOrderBy,
+
 
     refetch,
   } = useGetRecordFiles()
@@ -808,6 +815,9 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
         recordFiles,
         pages,
         current_page,
+        totalItems,
+        user_query,
+        setUserQuery,
 
         // búsqueda global
         query,

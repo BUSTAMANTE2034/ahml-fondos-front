@@ -25,6 +25,7 @@ interface ContextValue {
   typologies: Typology[]
   pages: number | null
   current_page: number | null
+  totalItems: number
 
   query: string
   queryInput: string
@@ -103,6 +104,7 @@ export const TypologiesProvider = ({ children }: { children: ReactNode }) => {
     typologies,
     loading: loadingGet,
     error: errorGet,
+    totalItems,
 
     currentPage:current_page,
     totalPages:pages,
@@ -363,6 +365,7 @@ export const TypologiesProvider = ({ children }: { children: ReactNode }) => {
         typologies,
         pages,
         current_page,
+        totalItems,
 
         query,
         queryInput,

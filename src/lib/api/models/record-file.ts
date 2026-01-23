@@ -204,6 +204,7 @@ export interface GetRecordFilesOptions {
 
   // filtros por nombre
   initialFundName?: string
+  initialUserQuery?: string
   initialSectionName?: string
   initialSeriesName?: string
   initialLocationName?: string

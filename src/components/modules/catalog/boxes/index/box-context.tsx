@@ -26,6 +26,7 @@ interface ContextValue {
   boxes: Box[]
   pages: number | null
   current_page: number | null
+  totalItems: number
 // order
   order_by: BoxOrderByParam | null
   setOrderBy: (v: BoxOrderByParam | null) => void
@@ -123,7 +124,7 @@ export const BoxesProvider = ({ children }: { children: ReactNode }) => {
     order_by,setOrderBy,
 
   
-
+totalItems,
     query,
     queryInput,
     setQuery,
@@ -369,6 +370,7 @@ export const BoxesProvider = ({ children }: { children: ReactNode }) => {
       value={{
         boxes,
         pages,
+        totalItems,
         current_page,
 
         query,

@@ -72,6 +72,7 @@ interface ContextValue {
   closeDisable: () => void
   handleEnable: (active: boolean) => Promise<void>
 
+  totalItems: number
   isDeleteOpen: boolean
   openDelete: (u: Series) => void
   closeDelete: () => void
@@ -111,7 +112,7 @@ export const SeriesProvider = ({ children }: { children: ReactNode }) => {
     series,
     loading: loadingGet,
     error: errorGet,
-
+totalItems,
     currentPage:current_page,
     totalPages:pages,
 order_by,setOrderBy,
@@ -377,6 +378,7 @@ order_by,setOrderBy,
         series,
         pages,
         current_page,
+        totalItems,
 
         query,
         queryInput,

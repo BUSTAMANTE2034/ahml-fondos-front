@@ -11,7 +11,7 @@ interface ResultItem {
 interface AsyncSearchSelectProps {
   label?: string;
   placeholder?: string;
-  value: number | null;
+  value?: number | null;
   onChange: (id: number | null) => void;
   results: ResultItem[];
   loading?: boolean;

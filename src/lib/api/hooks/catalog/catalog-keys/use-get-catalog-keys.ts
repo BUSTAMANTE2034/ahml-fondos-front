@@ -36,6 +36,7 @@ export const useGetCatalogKeys = ({
   const [hasPrev, setHasPrev] = useState(false)
   const [nextPage, setNextPage] = useState<number | null>(null)
   const [prevPage, setPrevPage] = useState<number | null>(null)
+  const [totalItems, setTotalItems] = useState(0)
 const [order_by, setOrderBy] = useState<CatalogKeyOrderByParam | null>(
     initialOrderBy
   )
@@ -75,6 +76,7 @@ const [order_by, setOrderBy] = useState<CatalogKeyOrderByParam | null>(
       // SET DATA
       setCatalogKeys(catalogKeys)
       setTotal(pagination.total)
+      
       setPages(pagination.pages)
       setPerPage(pagination.per_page)
       setCurrentPage(pagination.current_page)
@@ -82,6 +84,7 @@ const [order_by, setOrderBy] = useState<CatalogKeyOrderByParam | null>(
       setNextPage(pagination.next_page)
       setHasNext(pagination.has_next)
       setHasPrev(pagination.has_prev)
+      setTotalItems(pagination.total)
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message || 'Error al obtener clave de catálogo.')
@@ -120,6 +123,7 @@ const [order_by, setOrderBy] = useState<CatalogKeyOrderByParam | null>(
     hasPrev,
     nextPage,
     prevPage,
+    totalItems,
 
     // Filters
     is_active,
