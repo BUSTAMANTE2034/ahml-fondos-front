@@ -685,6 +685,7 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
   const resetFilters = () => {
     // búsqueda global
     setQuery('')
+    setUserQuery('')
 
     // filtros directos
     setReferenceCode('')

@@ -28,12 +28,15 @@ const RecordFilesFilter = () => {
     availability_status,
     file_date_after,
     file_date_before,
+    user_query,
     order_by,resetFilters
   } = useRecordFiles()
 
   const hasFilters =
     query.trim() !== "" ||
     reference_code.trim() !== "" ||
+    user_query.trim() !== "" ||
+
     file_number.trim() !== "" ||
     box_number.trim() !== "" ||
     sensitive !== "all" ||
