@@ -23,6 +23,7 @@ import { useToast, useAuth } from '@contexts/index'
 // =======================================
 
 interface ContextValue {
+  totalItems: number
   loans: Loan[]
   pages: number | null
   current_page: number | null
@@ -124,6 +125,7 @@ export const LoansProvider = ({ children }: { children: ReactNode }) => {
     loans,
     loading: loadingGet,
     error: errorGet,
+    totalItems,
 
     currentPage: current_page,
     totalPages: pages,
@@ -378,6 +380,7 @@ export const LoansProvider = ({ children }: { children: ReactNode }) => {
     <LoansContext.Provider
       value={{
         loans,
+        totalItems,
         pages,
         current_page,
 

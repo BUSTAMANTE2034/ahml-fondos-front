@@ -37,6 +37,7 @@ interface ContextValue {
   setIsActive: (a: boolean | null) => void
   entity_type: string[]
 setEntityType: (s: string[]) => void
+totalItems: number 
 
 
   hasNext: boolean
@@ -113,7 +114,7 @@ export const KeysProvider = ({ children }: { children: ReactNode }) => {
     current_page,
     order_by,setOrderBy,
 
-    query,
+    query,totalItems,
     queryInput,
     setQuery,
 
@@ -384,6 +385,7 @@ export const KeysProvider = ({ children }: { children: ReactNode }) => {
         current_page,
         total,
         entity_type,
+        totalItems,
          // orden
         order_by,
         setOrderBy,

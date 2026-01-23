@@ -22,6 +22,7 @@ export const useGetSections = ({
   const [pageSize, setPageSize] = useState(initialPerPage)
 
   const [totalPages, setTotalPages] = useState(1)
+    const [totalItems, setTotalItems] = useState(0)
   const [hasNext, setHasNext] = useState(false)
   const [hasPrev, setHasPrev] = useState(false)
   const [nextPage, setNextPage] = useState<number | null>(null)
@@ -74,6 +75,7 @@ export const useGetSections = ({
 
         const p = data.pagination
         setTotalPages(p.pages)
+        setTotalItems(p.total)
         setHasNext(p.has_next)
         setHasPrev(p.has_prev)
         setNextPage(p.next_page)
@@ -117,6 +119,8 @@ export const useGetSections = ({
     sections,
     loading,
     error,
+
+    totalItems,
 
     currentPage,
     totalPages,

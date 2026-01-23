@@ -33,6 +33,7 @@ interface ContextValue {
   recordDiagnoses: RecordDiagnosis[]
   pages: number
   current_page: number | null
+  totalItems: number
 
   query: string
   queryInput: string
@@ -130,7 +131,7 @@ export const RecordDiagnosisProvider = ({
 
     currentPage: current_page,
     totalPages: pages,
-
+totalItems,
     hasNext,
     hasPrev,
     nextPage,
@@ -156,7 +157,7 @@ export const RecordDiagnosisProvider = ({
     refetch,
   } = useGetRecordDiagnosis({
     initialPage: 1,
-    initialPerPage: 5,
+    initialPerPage: 20,
   })
 
   /* ========================================================
@@ -414,6 +415,7 @@ export const RecordDiagnosisProvider = ({
         errorCreate,
         errorUpdate,
         errorDelete,
+        totalItems,
       }}
     >
       {children}

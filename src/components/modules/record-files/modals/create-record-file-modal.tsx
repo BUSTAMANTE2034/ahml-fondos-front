@@ -15,7 +15,8 @@ import {
   useSearchSeries,
   useSearchLocations,
   useSearchDeteriorations,
-  useSearchTypologies,useSearchBoxes
+  useSearchTypologies,
+  useSearchBoxes,
 } from '@hooks/record-files'
 
 import { useEffect, useState } from 'react'
@@ -38,36 +39,65 @@ const CreateRecordFileModal = () => {
     reset,
     watch,
     setValue,
-  } = useForm<CreateRecordFile>()
+  } = useForm<CreateRecordFile>({
+    shouldUnregister: true,
+    defaultValues: {
+      box_id: null,
+      fund_id: null,
+      section_id: null,
+      series_id: null,
+      location_id: null,
+      deterioration_status_id: null,
+      typology_ids: [],
+      document_sizes: '',
+      sensitive_data: false,
+    },
+  })
+  const resetForm = () => {
+    reset({
+      box_id: null,
+      fund_id: null,
+      section_id: null,
+      series_id: null,
+      location_id: null,
+      deterioration_status_id: null,
+      typology_ids: [],
+      document_sizes: '',
+      sensitive_data: false,
+      previous_reference_code: '',
+    })
+
+    resetReference()
+  }
 
   // -----------------------------------------
   // QUERIES PARA SELECTS
   // ----------------------------------------
-  // 
+  //
   const [boxQuery, setBoxQuery] = useState<string | undefined>(undefined)
   const [fundQuery, setFundQuery] = useState<string | undefined>(undefined)
   const [sectionQuery, setSectionQuery] = useState<string | undefined>(
-    undefined
+    undefined,
   )
   const [seriesQuery, setSeriesQuery] = useState<string | undefined>(undefined)
   const [locationQuery, setLocationQuery] = useState<string | undefined>(
-    undefined
+    undefined,
   )
   const [deteriorationQuery, setDeteriorationQuery] = useState<
     string | undefined
   >(undefined)
   const [typologyQuery, setTypologyQuery] = useState<string | undefined>(
-    undefined
+    undefined,
   )
 
   // -----------------------------------------
   // HOOKS (fetch)
   // -----------------------------------------
   const {
-  results: boxResults,
-  loading: boxLoading,
-  error: boxError,
-} = useSearchBoxes(boxQuery, true)
+    results: boxResults,
+    loading: boxLoading,
+    error: boxError,
+  } = useSearchBoxes(boxQuery, true)
   const {
     results: fundResults,
     loading: fundLoading,
@@ -119,31 +149,36 @@ const CreateRecordFileModal = () => {
     .join('-')
 
   useEffect(() => {
-    setValue('previous_reference_code', previousReferenceCode)
+    setValue('previous_reference_code', previousReferenceCode,{
+    shouldValidate: true,
+  })
   }, [previousReferenceCode, setValue])
 
   // -----------------------------------------
   // REGISTROS CORRECTOS (sin hidden inputs)
   // -----------------------------------------
-  useEffect(() => {
-    register('box_id', { required: 'Selecciona una caja.' })
-    register('fund_id', { required: 'Selecciona un fondo.' })
-    register('section_id', { required: 'Selecciona una sección.' })
-    register('series_id', { required: 'Selecciona una serie.' })
-    register('location_id', { required: 'Selecciona una ubicación.' })
+  // useEffect(() => {
+  //   register('box_id', { required: 'Selecciona una caja.' })
+  //   register('fund_id', { required: 'Selecciona un fondo.' })
+  //   register('section_id', { required: 'Selecciona una sección.' })
+  //   register('series_id', { required: 'Selecciona una serie.' })
+  //   register('location_id', { required: 'Selecciona una ubicación.' })
+  //   register('deterioration_status_id', {
+  //     required: 'Selecciona el estado de deterioro.',
+  //   })
 
-    register('typology_ids', {
-      required: 'Selecciona al menos una tipología.',
-    })
+  //   register('typology_ids', {
+  //     required: 'Selecciona al menos una tipología.',
+  //   })
 
-    register('document_sizes', {
-      required: 'Selecciona al menos un tamaño.',
-    })
+  //   register('document_sizes', {
+  //     required: 'Selecciona al menos un tamaño.',
+  //   })
 
-    register('previous_reference_code', {
-      required: 'Debes generar una referencia anterior.',
-    })
-  }, [register])
+  //   register('previous_reference_code', {
+  //     required: 'Debes generar una referencia anterior.',
+  //   })
+  // }, [register])
 
   const resetReference = () => {
     setPrevFund('')
@@ -159,8 +194,9 @@ const CreateRecordFileModal = () => {
   const onSubmit = async (data: CreateRecordFile) => {
     try {
       await handleCreate(data)
-      reset()
-      resetReference()
+      // reset()
+      resetForm()
+      // resetReference()
     } catch {}
   }
 
@@ -170,8 +206,8 @@ const CreateRecordFileModal = () => {
     <Modal
       visible
       onClose={() => {
-        reset()
-        resetReference()
+        // reset()
+        resetForm()
         closeCreate()
       }}
       showCloseButton
@@ -204,22 +240,26 @@ const CreateRecordFileModal = () => {
               rules={{ required: 'Campo obligatorio' }}
             /> */}
 
-            <AsyncSearchSelect
-  label="Caja"
-  placeholder="Buscar caja…"
-  value={watch('box_id') ?? null}
-  onChange={(id) =>
-    setValue('box_id', id, { shouldValidate: true })
-  }
-  onQueryChange={setBoxQuery}
-  results={boxResults.map((b) => ({
-    id: b.id,
-    label: `${b.box_number} — ${b.physical_location?.code ?? 'Sin ubicación'}`,
-  }))}
-  loading={boxLoading}
-  searchError={boxError}
-  error={errors.box_id?.message}
-/>
+            <Controller
+              name="box_id"
+              control={control}
+              rules={{ required: 'Selecciona una caja.' }}
+              render={({ field }) => (
+                <AsyncSearchSelect
+                  label="Caja"
+                  placeholder="Buscar caja…"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onQueryChange={setBoxQuery}
+                  results={boxResults.map((b) => ({
+                    id: b.id,
+                    label: `${b.box_number}`,
+                  }))}
+                  loading={boxLoading}
+                  error={errors.box_id?.message}
+                />
+              )}
+            />
 
             <FormInput
               name="page_count"
@@ -262,99 +302,120 @@ const CreateRecordFileModal = () => {
             />
 
             {/* DETERIORO */}
-            <AsyncSearchSelect
-              label="Deterioro"
-              placeholder="Buscar deterioro…"
-              value={watch('deterioration_status_id') ?? null}
-              onChange={(id) =>
-                setValue('deterioration_status_id', id, {
-                  shouldValidate: true,
-                })
-              }
-              onQueryChange={setDeteriorationQuery}
-              results={deteriorationResults.map((d) => ({
-                id: d.id,
-                label: d.name,
-              }))}
-              loading={deteriorationLoading}
-              searchError={deteriorationError}
-              error={errors.deterioration_status_id?.message}
+            <Controller
+              name="deterioration_status_id"
+              control={control}
+              rules={{ required: 'Selecciona el estado de deterioro.' }}
+              render={({ field }) => (
+                <AsyncSearchSelect
+                  label="Deterioro"
+                  placeholder="Buscar deterioro…"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onQueryChange={setDeteriorationQuery}
+                  results={deteriorationResults.map((d) => ({
+                    id: d.id,
+                    label: d.name,
+                  }))}
+                  loading={deteriorationLoading}
+                  searchError={deteriorationError}
+                  error={errors.deterioration_status_id?.message}
+                />
+              )}
             />
           </div>
 
           {/* FONDO / SECCIÓN */}
           <div className="grid grid-cols-2 gap-4">
-            <AsyncSearchSelect
-              label="Fondo"
-              placeholder="Buscar fondo…"
-              value={watch('fund_id') ?? null}
-              onChange={(id) =>
-                setValue('fund_id', id, { shouldValidate: true })
-              }
-              onQueryChange={setFundQuery}
-              results={fundResults.map((f) => ({
-                id: f.id,
-                label: `${f.acronym} — ${f.name}  (${f.start_date} → ${f.end_date})`,
-              }))}
-              loading={fundLoading}
-              searchError={fundError}
-              error={errors.fund_id?.message}
+            <Controller
+              name="fund_id"
+              control={control}
+              rules={{ required: 'Selecciona un fondo.' }}
+              render={({ field }) => (
+                <AsyncSearchSelect
+                  label="Fondo"
+                  placeholder="Buscar fondo…"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onQueryChange={setFundQuery}
+                  results={fundResults.map((f) => ({
+                    id: f.id,
+                    label: `${f.acronym} — ${f.name}`,
+                  }))}
+                  loading={fundLoading}
+                  searchError={fundError}
+                  error={errors.fund_id?.message}
+                />
+              )}
             />
 
-            <AsyncSearchSelect
-              label="Sección"
-              placeholder="Buscar sección…"
-              value={watch('section_id') ?? null}
-              onChange={(id) =>
-                setValue('section_id', id, { shouldValidate: true })
-              }
-              onQueryChange={setSectionQuery}
-              results={sectionResults.map((s) => ({
-                id: s.id,
-                                label: `${s.acronym} — ${s.name}  (${s.start_date} → ${s.end_date})`,
-
-              }))}
-              loading={sectionLoading}
-              searchError={sectionError}
-              error={errors.section_id?.message}
+            <Controller
+              name="section_id"
+              control={control}
+              rules={{ required: 'Selecciona una sección.' }}
+              render={({ field }) => (
+                <AsyncSearchSelect
+                  label="Sección"
+                  placeholder="Buscar sección…"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onQueryChange={setSectionQuery}
+                  results={sectionResults.map((s) => ({
+                    id: s.id,
+                    label: `${s.acronym} — ${s.name}`,
+                  }))}
+                  loading={sectionLoading}
+                  searchError={sectionError}
+                  error={errors.section_id?.message}
+                />
+              )}
             />
           </div>
 
           {/* SERIE / UBICACIÓN */}
           <div className="grid grid-cols-2 gap-4">
-            <AsyncSearchSelect
-              label="Serie"
-              placeholder="Buscar serie…"
-              value={watch('series_id') ?? null}
-              onChange={(id) =>
-                setValue('series_id', id, { shouldValidate: true })
-              }
-              onQueryChange={setSeriesQuery}
-              results={seriesResults.map((s) => ({
-                id: s.id,
-                                label: `${s.acronym} — ${s.name}  (${s.start_date} → ${s.end_date})`,
-
-              }))}
-              loading={seriesLoading}
-              searchError={seriesError}
-              error={errors.series_id?.message}
+            <Controller
+              name="series_id"
+              control={control}
+              rules={{ required: 'Selecciona una serie.' }}
+              render={({ field }) => (
+                <AsyncSearchSelect
+                  label="Serie"
+                  placeholder="Buscar serie…"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onQueryChange={setSeriesQuery}
+                  results={seriesResults.map((s) => ({
+                    id: s.id,
+                    label: `${s.acronym} — ${s.name}`,
+                  }))}
+                  loading={seriesLoading}
+                  searchError={seriesError}
+                  error={errors.series_id?.message}
+                />
+              )}
             />
 
-            <AsyncSearchSelect
-              label="Localidad"
-              placeholder="Buscar ubicación…"
-              value={watch('location_id') ?? null}
-              onChange={(id) =>
-                setValue('location_id', id, { shouldValidate: true })
-              }
-              onQueryChange={setLocationQuery}
-              results={locationResults.map((l) => ({
-                id: l.id,
-                label: l.name,
-              }))}
-              loading={locationLoading}
-              searchError={locationError}
-              error={errors.location_id?.message}
+            <Controller
+              name="location_id"
+              control={control}
+              rules={{ required: 'Selecciona una ubicación.' }}
+              render={({ field }) => (
+                <AsyncSearchSelect
+                  label="Localidad"
+                  placeholder="Buscar ubicación…"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onQueryChange={setLocationQuery}
+                  results={locationResults.map((l) => ({
+                    id: l.id,
+                    label: l.name,
+                  }))}
+                  loading={locationLoading}
+                  searchError={locationError}
+                  error={errors.location_id?.message}
+                />
+              )}
             />
           </div>
 
@@ -371,37 +432,46 @@ const CreateRecordFileModal = () => {
           />
 
           {/* TIPOLOGÍAS Y TAMAÑOS */}
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
             {/* TIPOS */}
-            <AsyncCheckSearchSelect
-              label="Tipologías"
-              placeholder="Buscar tipo..."
-              selectedIds={watch('typology_ids') || []}
-              onChange={(ids) =>
-                setValue('typology_ids', ids, { shouldValidate: true })
-              }
-              onQueryChange={setTypologyQuery}
-              results={typologyResults.map((t) => ({
-                id: t.id,
-                label: t.name,
-              }))}
-              loading={typologyLoading}
-              searchError={typologyError}
-              error={errors.typology_ids?.message}
+            <Controller
+              name="typology_ids"
+              control={control}
+              rules={{ required: 'Selecciona al menos una tipología.' }}
+              render={({ field }) => (
+                <AsyncCheckSearchSelect
+                  label="Tipologías"
+                  placeholder="Buscar tipo..."
+                  selectedIds={field.value ?? []} // 👈 CLAVE
+                  onChange={field.onChange}
+                  onQueryChange={setTypologyQuery}
+                  results={typologyResults.map((t) => ({
+                    id: t.id,
+                    label: t.name,
+                  }))}
+                  loading={typologyLoading} // ✅
+                  searchError={typologyError} // ✅
+                  error={errors.typology_ids?.message}
+                />
+              )}
             />
 
             {/* TAMAÑOS */}
-            <StaticCheckSearchSelect
-              label="Tamaños del documento"
-              options={DOCUMENT_SIZES}
-              selectedIds={watch('document_sizes')?.split(',') ?? []}
-              onChange={(ids) =>
-                setValue('document_sizes', ids.join(','), {
-                  shouldValidate: true,
-                })
-              }
-              error={errors.document_sizes?.message}
-            />
+            <Controller
+  name="document_sizes"
+  control={control}
+  rules={{ required: 'Selecciona al menos un tamaño.' }}
+  render={({ field }) => (
+    <StaticCheckSearchSelect
+      label="Tamaños del documento"
+      options={DOCUMENT_SIZES}
+      selectedIds={field.value ? field.value.split(',') : []}
+      onChange={(ids) => field.onChange(ids.join(','))}
+      error={errors.document_sizes?.message}
+    />
+  )}
+/>
+
           </div>
 
           {/* COMENTARIOS */}
@@ -417,68 +487,80 @@ const CreateRecordFileModal = () => {
             }}
           />
 
-          {/* REFERENCIA ANTERIOR */}
-          <div className="border border-dark-gray2 rounded-3xl p-4 mt-2 space-y-4 bg-main-gray text-center">
-            <h3 className="text-lg font-semibold text-blue-600">
-              Referencia anterior
-            </h3>
+         {/* REFERENCIA ANTERIOR */}
+<div className="rounded-3xl border border-blue-200 bg-blue-50/40 p-4 space-y-4">
+  <h3 className="text-center text-sm font-semibold text-blue-700 uppercase tracking-wide">
+    Referencia anterior
+  </h3>
 
-            <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
-              <TextInput
-                className="text-center border-dark-gray2 border rounded-3xl bg-white font-medium text-blue-600"
-                label="Fondo"
-                value={prevFund}
-                onChange={(e) => setPrevFund(e.target.value)}
-                toUpper
-              />
+  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+    <TextInput
+      label="Fondo"
+      value={prevFund}
+      onChange={(e) => setPrevFund(e.target.value)}
+      toUpper
+      className="text-center font-semibold text-blue-700"
+    />
 
-              <TextInput
-                className="text-center border-dark-gray2 border rounded-3xl bg-white font-medium text-blue-600"
-                label="Sección"
-                value={prevSection}
-                onChange={(e) => setPrevSection(e.target.value)}
-                toUpper
-              />
+    <TextInput
+      label="Sección"
+      value={prevSection}
+      onChange={(e) => setPrevSection(e.target.value)}
+      toUpper
+      className="text-center font-semibold text-blue-700"
+    />
 
-              <TextInput
-                className="text-center border-dark-gray2 border rounded-3xl bg-white font-medium text-blue-600"
-                label="Serie"
-                value={prevSeries}
-                onChange={(e) => setPrevSeries(e.target.value)}
-                toUpper
-              />
+    <TextInput
+      label="Serie"
+      value={prevSeries}
+      onChange={(e) => setPrevSeries(e.target.value)}
+      toUpper
+      className="text-center font-semibold text-blue-700"
+    />
 
-              <TextInput
-                className="text-center border-dark-gray2 border rounded-3xl bg-white font-medium text-blue-600"
-                label="No.Caja"
-                toUpper
-                value={prevBox}
-                onChange={(e) => setPrevBox(e.target.value)}
-              />
+    <TextInput
+      label="No. Caja"
+      value={prevBox}
+      onChange={(e) => setPrevBox(e.target.value)}
+      toUpper
+      className="text-center font-semibold text-blue-700"
+    />
 
-              <TextInput
-                className="text-center border-dark-gray2 border rounded-3xl bg-white font-medium text-blue-600"
-                label="No.Exp"
-                toUpper
-                value={prevExp}
-                onChange={(e) => setPrevExp(e.target.value)}
-              />
-            </div>
+    <TextInput
+      label="No. Exp"
+      value={prevExp}
+      onChange={(e) => setPrevExp(e.target.value)}
+      toUpper
+      className="text-center font-semibold text-blue-700"
+    />
+  </div>
 
-            <div className="px-3 py-1 border border-blue-600 rounded-3xl bg-white">
-              <p className="text-sm text-gray-700">Código generado:</p>
-              <p className="font-bold text-red text-base">
-                {previousReferenceCode || '—'}
-              </p>
-            </div>
-          </div>
+  <div className="rounded-xl border border-blue-300 bg-white py-2 text-center">
+    <p className="text-[11px] text-gray-500">Código generado</p>
+    <p className="text-sm font-bold text-red-600 tracking-wide">
+      {previousReferenceCode || '—'}
+    </p>
+  </div>
 
-          {/* ERROR GLOBAL visible */}
-          {errors.previous_reference_code && (
-            <p className="text-red-600 text-xs">
-              Debes generar una referencia anterior antes de guardar.
-            </p>
-          )}
+  {errors.previous_reference_code && (
+    <p className="text-center text-xs text-red-600">
+      {errors.previous_reference_code.message}
+    </p>
+  )}
+</div>
+<Controller
+  name="previous_reference_code"
+  control={control}
+  rules={{ required: 'Debes generar una referencia anterior.' }}
+  render={({ field }) => (
+   <input
+  type="hidden"
+  {...field}
+  value={field.value ?? ''}
+/>
+  )}
+/>
+
 
           {/* BUTTONS */}
           {loadingCreate ? (

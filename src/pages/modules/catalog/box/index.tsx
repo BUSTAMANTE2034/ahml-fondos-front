@@ -4,7 +4,7 @@ const BoxView = () => {
   return (
     <MainLayout>
       <BoxsTable/>
-      <div>Cajas</div>
+      
     </MainLayout>
   )
 }

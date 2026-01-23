@@ -27,7 +27,7 @@ interface ContextValue {
   archivists: User[];
   pages: number | null;
   current_page: number | null;
-  total: number | null;
+  total: number 
 
   query: string;
   queryInput: string;

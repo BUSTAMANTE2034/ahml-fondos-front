@@ -30,6 +30,7 @@ interface ContextValue {
   movements: MovementHistory[]
   pages: number | null
   current_page: number | null
+  totalItems: number
 
   // SEARCH
   query: string
@@ -119,6 +120,7 @@ export const MovementsProvider = ({ children }: { children: ReactNode }) => {
     loading: loadingGet,
     error: errorGet,
 
+  totalItems,
     currentPage: current_page,
     totalPages: pages,
 
@@ -283,6 +285,7 @@ export const MovementsProvider = ({ children }: { children: ReactNode }) => {
         movements,
         pages,
         current_page,
+        totalItems,
 
         query,
         queryInput,

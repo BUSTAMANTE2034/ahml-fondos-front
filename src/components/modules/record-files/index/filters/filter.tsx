@@ -8,6 +8,7 @@ import FilterTypology from './advanced/typology'
 import FilterFileDate from './advanced/file-date'
 import FilterOrder from './advanced/order'
 import FilterPreviousReferenceCoden from './advanced/previous_reference_code'
+import FilterUserQuery from './advanced/user_query'
 
 const RecordFilesFilter = () => {
   const {
@@ -63,6 +64,7 @@ const RecordFilesFilter = () => {
         <div className="flex flex-col gap-3 p-3 w-full">
           {/* <FilterSensitive />
           <FilterAvailability /> */}
+          <FilterUserQuery />
           <FilterDeterioration />
           <FilterTypology />  
           <FilterPreviousReferenceCoden/>

@@ -19,7 +19,7 @@ interface ContextValue {
   managers: User[]
   pages: number | null
   current_page: number | null
-  total: number | null
+  total: number 
 
   // Filtro texto
   query: string

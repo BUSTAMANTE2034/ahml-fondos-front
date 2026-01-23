@@ -23,7 +23,7 @@ export const useGetBoxes = ({
   // PAGINATION
   const [currentPage, setCurrentPage] = useState<number | null>(initialPage)
   const [pageSize, setPageSize] = useState<number | null>(initialPerPage)
-
+    const [totalItems, setTotalItems] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
   const [hasNext, setHasNext] = useState(false)
   const [hasPrev, setHasPrev] = useState(false)
@@ -73,6 +73,7 @@ const [order_by, setOrderBy] = useState<BoxOrderByParam | null>(
 
       const p = data.pagination
       setTotalPages(p.pages)
+      setTotalItems(p.total)
       setHasNext(p.has_next)
       setHasPrev(p.has_prev)
       setNextPage(p.next_page)
@@ -104,6 +105,7 @@ const [order_by, setOrderBy] = useState<BoxOrderByParam | null>(
     boxes,
     loading,
     error,
+    totalItems,
 
     // pagination
     currentPage,

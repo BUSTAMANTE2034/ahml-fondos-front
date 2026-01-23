@@ -23,6 +23,7 @@ import {
 import { useToast, useAuth } from '@contexts/index'
 
 interface ContextValue {
+  totalItems: number
   locations: Location[]
   pages: number | null
   current_page: number | null
@@ -109,6 +110,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
 
     currentPage:current_page,
     totalPages:pages,
+    totalItems,
 
     hasNext,
     hasPrev,
@@ -368,6 +370,7 @@ export const LocationsProvider = ({ children }: { children: ReactNode }) => {
     <LocationsContext.Provider
       value={{
         locations,
+        totalItems,
         pages,
         current_page,
 

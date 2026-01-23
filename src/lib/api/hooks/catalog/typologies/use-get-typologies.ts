@@ -17,7 +17,7 @@ export const useGetTypologies = ({
   const [typologies, setTypologies] = useState<Typology[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
+    const [totalItems, setTotalItems] = useState(0)
   // PAGINATION
   const [currentPage, setCurrentPage] = useState<number | null>(initialPage)
   const [pageSize, setPageSize] = useState<number | null>(initialPerPage)
@@ -69,6 +69,7 @@ export const useGetTypologies = ({
 
       const p = data.pagination
       setTotalPages(p.pages)
+      setTotalItems(p.total)
       setHasNext(p.has_next)
       setHasPrev(p.has_prev)
       setNextPage(p.next_page)
@@ -100,7 +101,7 @@ export const useGetTypologies = ({
     typologies,
     loading,
     error,
-
+    totalItems,
     // pagination
     currentPage,
     totalPages,
