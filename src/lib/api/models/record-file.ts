@@ -32,31 +32,38 @@ export interface DeteriorationStatus {
 // =========================
 //       RECORD FILE
 // =========================
+export interface AuditUser {
+  id: number
+  first_name: string
+  last_name: string
+  email: string
+}
+
 export type RecordFileAvailability =
-  | "available"
-  | "on_loan"
-  | "under_review"
-  | "unavailable"
+  | 'available'
+  | 'on_loan'
+  | 'under_review'
+  | 'unavailable'
 
 export interface RecordFile {
   id: number
   reference_code: string
-  previous_reference_code: string | null 
+  previous_reference_code: string | null
 
   subject: string
-  file_number: string | null        // backend expects string for ILIKE
-  box:{
+  file_number: string | null // backend expects string for ILIKE
+  box: {
     id: number
     box_number: string | null
     description: string | null
     physical_location: PhysicalLocation | null
-  }     // backend expects string for ILIKE
+  } // backend expects string for ILIKE
   sensitive_data: boolean
   comments: string | null
   availability_status: RecordFileAvailability
 
   page_count: number | null
-  document_sizes?: string | null 
+  document_sizes?: string | null
   file_date: string | null
   last_preservation_date: string | null
   last_fund_date: string | null
@@ -72,12 +79,10 @@ export interface RecordFile {
   deleted_at?: string | null
 
   // relaciones
-  user?: {
-    id: number
-    first_name: string
-    last_name: string
-    email: string
-  } | null
+  // relaciones de auditoría
+  user?: AuditUser | null // creador
+  updated_user?: AuditUser | null // último editor
+  deleted_user?: AuditUser | null // quien eliminó
 
   fund: {
     id: number
@@ -118,7 +123,7 @@ export interface RecordFile {
 // =========================
 export interface CreateRecordFile {
   subject: string
-  previous_reference_code?: string | null 
+  previous_reference_code?: string | null
   file_number?: string | null
   box_id?: number | null
   comments?: string | null
@@ -169,26 +174,26 @@ export interface RecordFileResponse {
 //      ORDER BY (BACKEND)
 // =========================
 export type RecordFileOrderByParam =
-  | "created_at_asc"
-  | "created_at_desc"
-  | "updated_at_asc"
-  | "updated_at_desc"
-  | "file_date_asc"
-  | "file_date_desc"
-  | "deterioration_status_updated_at_asc"
-  | "deterioration_status_updated_at_desc"
-  | "box_number_asc"
-  | "box_number_desc"
-  | "file_number_asc"
-  | "file_number_desc"
-  | "fund_name_asc"
-  | "fund_name_desc"
-  | "section_name_asc"
-  | "section_name_desc"
-  | "series_name_asc"
-  | "series_name_desc"
-  | "location_name_asc"
-  | "location_name_desc"
+  | 'created_at_asc'
+  | 'created_at_desc'
+  | 'updated_at_asc'
+  | 'updated_at_desc'
+  | 'file_date_asc'
+  | 'file_date_desc'
+  | 'deterioration_status_updated_at_asc'
+  | 'deterioration_status_updated_at_desc'
+  | 'box_number_asc'
+  | 'box_number_desc'
+  | 'file_number_asc'
+  | 'file_number_desc'
+  | 'fund_name_asc'
+  | 'fund_name_desc'
+  | 'section_name_asc'
+  | 'section_name_desc'
+  | 'series_name_asc'
+  | 'series_name_desc'
+  | 'location_name_asc'
+  | 'location_name_desc'
 
 export type RecordFileOrderBy =
   | RecordFileOrderByParam
@@ -201,18 +206,17 @@ export interface GetRecordFilesOptions {
   initialPage?: number
   initialPerPage?: number
 
-
   // búsqueda global
   initialQuery?: string
 
   // filtros directos
   initialReferenceCode?: string
-  initialPreviousReferenceCode?: string 
+  initialPreviousReferenceCode?: string
   initialFileNumber?: string
   initialBoxNumber?: string
 
   // confidencialidad
-  initialSensitive?: "all" | "delicate" | "not_delicate"
+  initialSensitive?: 'all' | 'delicate' | 'not_delicate'
 
   // filtros por nombre
   initialFundName?: string
@@ -224,7 +228,7 @@ export interface GetRecordFilesOptions {
   initialTypologyName?: string
 
   // disponibilidad
-  initialAvailabilityStatus?: RecordFileAvailability | "all"
+  initialAvailabilityStatus?: RecordFileAvailability | 'all'
 
   // fechas documentales
   initialFileDateAfter?: string | null

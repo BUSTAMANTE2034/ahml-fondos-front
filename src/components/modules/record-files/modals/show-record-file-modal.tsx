@@ -156,23 +156,50 @@ const ShowRecordFileModal = () => {
           </p>
         </div>
 
-        {/* ================= USUARIO ================= */}
-        <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray">
-          <h3 className="font-bold text-blue-600 text-sm mb-2">
-            Usuario creador
-          </h3>
+        {/* ================= USUARIOS (AUDITORÍA) ================= */}
+<div className="p-4 rounded-2xl border border-dark-gray bg-light-gray">
+  <h3 className="font-bold text-blue-600 text-sm mb-3">
+    Usuarios
+  </h3>
 
-          {selected.user ? (
-            <p className="text-sm">
-              {selected.user.first_name} {selected.user.last_name}<br />
-              <span className="text-xs text-dark2-gray">
-                {selected.user.email}
-              </span>
-            </p>
-          ) : (
-            <span>—</span>
-          )}
-        </div>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+
+    {/* USUARIO CREADOR */}
+    <div>
+      <p className="font-semibold mb-1">Usuario creador</p>
+
+      {selected.user ? (
+        <p>
+          {selected.user.first_name} {selected.user.last_name}<br />
+          <span className="text-xs text-dark2-gray">
+            {selected.user.email}
+          </span>
+        </p>
+      ) : (
+        <span className="text-dark2-gray">—</span>
+      )}
+    </div>
+
+    {/* USUARIO ACTUALIZADOR */}
+    <div>
+      <p className="font-semibold mb-1">Última actualización</p>
+
+      {selected.updated_user ? (
+        <p>
+          {selected.updated_user.first_name}{' '}
+          {selected.updated_user.last_name}<br />
+          <span className="text-xs text-dark2-gray">
+            {selected.updated_user.email}
+          </span>
+        </p>
+      ) : (
+        <span className="text-dark2-gray">—</span>
+      )}
+    </div>
+
+  </div>
+</div>
+
 {/* ================= METADATOS ================= */}
 <div className="p-4 rounded-2xl border border-dark-gray bg-light-gray">
   <h3 className="font-bold text-blue-600 text-sm mb-2">
