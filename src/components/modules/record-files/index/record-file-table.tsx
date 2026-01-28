@@ -21,8 +21,16 @@ import {
   RecordFileOrderFilter,
 } from './filters'
 import ExportRecordFilesExcelModal from '../modals/export-record_files-excel-modal'
+import { recordFileGrid } from '@/components/ui/functions'
 const Table = () => {
-  const { recordFiles, loadingGet, errorGet, openCreate,openExportExcel,openReorder } = useRecordFiles()
+  const {
+    recordFiles,
+    loadingGet,
+    errorGet,
+    openCreate,
+    openExportExcel,
+    openReorder,
+  } = useRecordFiles()
 
   return (
     <Card>
@@ -44,23 +52,46 @@ const Table = () => {
         </div>
       </CardHeader>
       <div
-        className="grid gap-1  grid-cols-[1.4fr_0.6fr_0.6fr_0.2fr] md:grid-cols-[0.8fr_0.2fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.2fr]   lg:grid-cols-[0.8fr_0.2fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.3fr_0.3fr_0.2fr]
-  px-2 pb-1 w-full items-center border-b-2 border-main-blue 
-  font-semibold text-sm md:text-base text-left"
+        className={`${recordFileGrid}
+    pb-1 w-full items-center border-b-2 border-main-blue 
+    font-semibold text-sm md:text-base  `}
       >
-        {/* THEAD */}
-        <span>Código</span>
-        <span className="hidden md:block">Exp.</span>
-        <span className="hidden md:block">Caja</span>
-        
-        <span className="hidden md:block">Fondo</span>
-        <span className="hidden md:block">Sección</span>
-        <span className="hidden md:block">Serie</span>
-        <span className="hidden lg:block">Estado</span>
+        {/* Código */}
+        <span className=''>Código</span>
+
+        {/* Exp. */}
+          <span className="hidden md:block">Exp.</span>
+
+        {/* Caja */}
+          <span className="hidden md:block">Caja</span>
+
+        {/* Fondo */}
+          <span className="hidden md:block">Fondo</span>
+
+        {/* Sección */}
+          <span className="hidden md:block">Sección</span>
+
+        {/* Serie */}
+          <span className="hidden md:block">Serie</span>
+
+        {/* Estado (sensible/normal) */}
+
+        <span className="hidden lg:block  ">Estado</span>
+
+        {/* Estatus */}
         <span>Estatus</span>
+
+        {/* Fecha */}
         <span>Fecha</span>
+
+        {/* Localidad */}
+
         <span className="hidden lg:block">Localidad</span>
-        <span className="hidden md:block">Usuario</span>
+
+        {/* Usuario */}
+          <span className="hidden md:block">Usuario</span>
+
+        {/* Columna menú */}
         <span></span>
 
         {/* FILA DE FILTROS */}
@@ -95,12 +126,18 @@ const Table = () => {
       </CardBody>
       {!loadingGet && !errorGet && recordFiles.length > 0 && (
         <div className="flex  flex-row items-center w-full justify-between">
-          <button onClick={openReorder} className="create text-sm! w-20!  font-semibold! h-8 ">
-            <span className='text-sm!'>Ordenar</span>
-          </button> <RecordFilesPaginator />
-          
-          <button onClick={openExportExcel} className="create text-sm! w-20!  font-semibold! h-8 ">
-            <span className='text-sm!'>Exportar</span>
+          <button
+            onClick={openReorder}
+            className="create text-sm! w-20!  font-semibold! h-8 "
+          >
+            <span className="text-sm!">Ordenar</span>
+          </button>{' '}
+          <RecordFilesPaginator />
+          <button
+            onClick={openExportExcel}
+            className="create text-sm! w-20!  font-semibold! h-8 "
+          >
+            <span className="text-sm!">Exportar</span>
           </button>
         </div>
       )}
@@ -108,10 +145,10 @@ const Table = () => {
       <UpdateRecordFileModal />
       <DeleteRecordFileModal />
       <GetRecordFileCoverModal />
-      <ExportRecordFilesExcelModal/>
-      <CreateLoanModal/>
-      <ReceiveLoanModal/>
-      <CreateMovementModal/>
+      <ExportRecordFilesExcelModal />
+      <CreateLoanModal />
+      <ReceiveLoanModal />
+      <CreateMovementModal />
       <ShowRecordFileModal />
       <ReorderRecordFilesModal />
     </Card>
@@ -121,7 +158,6 @@ const Table = () => {
 const RecordFilesTable = () => {
   return (
     <RecordFilesProvider>
-      
       <Table />
     </RecordFilesProvider>
   )

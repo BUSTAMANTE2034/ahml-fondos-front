@@ -150,3 +150,17 @@ export function isDateBeforeOrToday(dateString: string): boolean {
 
   return inputDate <= today;
 }
+
+
+export const recordFileGrid = `
+  grid
+  gap-1
+
+  grid-cols-[1.4fr_0.6fr_0.6fr_0.2fr]
+
+  /* MD */
+  md:grid-cols-[0.8fr_0.2fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.2fr]
+
+  /* LG */
+  lg:grid-cols-[0.8fr_0.2fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.3fr_0.3fr_0.2fr]
+`;

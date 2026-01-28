@@ -7,11 +7,11 @@ interface DateInputProps {
 
 export const FilterDateInput = ({ value, onChange }: DateInputProps) => {
   return (
-    <div className="relative w-full">
+    <div className="relative w-full min-w-0">
       <input
         type="date"
-        className=" font-normal
-          w-full text-xs rounded-md px-2 py-1 
+        className="
+          w-full min-w-0 text-xs rounded-md px-2 py-1 font-normal
           border border-gray-300
           focus:border-blue-400 focus:ring-1 focus:ring-blue-300
           focus:outline-none
@@ -37,3 +37,4 @@ export const FilterDateInput = ({ value, onChange }: DateInputProps) => {
     </div>
   )
 }
+

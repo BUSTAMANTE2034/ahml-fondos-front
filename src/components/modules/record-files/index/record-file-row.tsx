@@ -24,6 +24,7 @@ import {
   getAvailabilityLabel,
   getEntyityLabel,
   invertDate,
+  recordFileGrid,
 } from '@/components/ui/functions'
 import { RecordFile } from '@/lib/api/models/record-file.js'
 
@@ -47,7 +48,7 @@ const RecordFilesRow = ({ item: recordFile }: Props) => {
 
   return (
     <div
-      className={`grid gap-1  grid-cols-[1.4fr_0.6fr_0.6fr_0.2fr] md:grid-cols-[0.8fr_0.2fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.2fr]   lg:grid-cols-[0.8fr_0.2fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.3fr_0.3fr_0.2fr] text-xs md:text-sm  px-2  rounded-2xl   
+      className={`${recordFileGrid} text-xs md:text-sm  px-2   rounded-2xl   
     w-full items-center  text-left hover:bg-main-gray  ${
       recordFile.availability_status === 'on_loan' &&
       'bg-yellow-200  hover:bg-yellow-100 '
@@ -59,37 +60,57 @@ const RecordFilesRow = ({ item: recordFile }: Props) => {
       'bg-red-600  hover:bg-red-500  text-white'
     } `}
     >
-      <span className=" text-xs text-left">{recordFile.reference_code}</span>
-      <span className="text-xs font-medium hidden md:block text-left">
-        {recordFile.file_number}
-      </span>
-      <span className="text-xs hidden md:block text-left">
-        {recordFile.box.box_number}
+      {/* Código */}
+      <span className="text-xs text-left">{recordFile.reference_code}</span>
+
+      {/* Exp. */}
+      <span className="text-xs font-medium text-left hidden md:block  ">
+       {recordFile.file_number}
       </span>
 
-      <span className="hidden md:block text-xs text-left">
+      {/* Caja */}
+      <span className="text-xs text-left hidden md:block">
+      {recordFile.box?.box_number}
+      </span>
+
+      {/* Fondo */}
+      <span className="text-xs text-left hidden md:block">
         {recordFile.fund?.acronym}
       </span>
-      <span className=" text-xs hidden md:block text-left">
+
+      {/* Sección */}
+      <span className="text-xs text-left hidden md:block">
         {recordFile.section?.acronym}
       </span>
-      <span className="text-xs hidden md:block text-left">
+
+      {/* Serie */}
+      <span className="text-xs text-left hidden md:block">
         {recordFile.series?.acronym}
       </span>
-      <span className="hidden lg:block text-xs text-left">
-        {recordFile.sensitive_data ? 'Delicado' : 'Normal'}
+
+      {/* Sensible / Normal */}
+      <span className="text-xs text-left hidden lg:block ">
+          {recordFile.sensitive_data ? 'Delicado' : 'Normal'}
       </span>
 
+      {/* Estatus */}
       <span className="text-xs text-left">
         {getAvailabilityLabel(recordFile.availability_status)}
       </span>
+
+      {/* Fecha */}
       <span className="text-xs">{invertDate(recordFile.file_date)}</span>
-      <span className="text-xs hidden lg:block text-left">
+
+      {/* Localidad */}
+      <span className="text-xs text-left hidden lg:block">
         {recordFile.location?.name}
       </span>
-       <span className="text-xs hidden md:block text-left ">
+
+      {/* Usuario */}
+      <span className="text-xs text-left hidden md:block">
         {recordFile.user?.first_name}
       </span>
+
       <span className="flex items-center ml-auto">
         <MenuDesplegable
           className="text-black"

@@ -8,15 +8,17 @@ interface RowInputProps {
 
 export const FilterRowInput = ({ value, placeholder, onChange }: RowInputProps) => {
   return (
-    <div className="relative w-full font-normal">
+    <div className="relative w-full min-w-0 font-normal">
       <input
         type="text"
         className={`
-          w-full text-xs rounded-md px-2 py-1 ${value&&'pr-5'} 
-          border border-gray-300 
-          focus:border-blue-400 focus:ring-1 focus:ring-blue-300 
+          w-full min-w-0 text-xs rounded-md px-2 py-1 ${value && 'pr-5'}
+          border border-gray-300
+          focus:border-blue-400 focus:ring-1 focus:ring-blue-300
           focus:outline-none
-        `}        placeholder={placeholder}
+          truncate
+        `}
+        placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -26,8 +28,8 @@ export const FilterRowInput = ({ value, placeholder, onChange }: RowInputProps) 
           type="button"
           onClick={() => onChange("")}
           className="
-            absolute right-1.5 top-1/2 -translate-y-1/2 
-            text-blue-600 hover:text-blue-800 
+            absolute right-1.5 top-1/2 -translate-y-1/2
+            text-blue-600 hover:text-blue-800
             p-0.5 rounded-full cursor-pointer
             hover:bg-gray-200 active:bg-gray-300
           "

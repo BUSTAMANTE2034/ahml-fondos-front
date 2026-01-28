@@ -13,11 +13,14 @@ export function FilterSelect<T extends string>({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value as T)}
-      className=" font-normal
-        w-full text-xs rounded-md px-2 py-1
+      className="
+        w-full min-w-0 font-normal
+ounded-md px-2 py-1
+        text-xs
         border border-gray-300
         focus:border-blue-400 focus:ring-1 focus:ring-blue-300
         focus:outline-none
+        truncate
       "
     >
       {children}
