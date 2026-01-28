@@ -201,8 +201,8 @@ interface ContextValue {
   handleReorderWithFilters: (filters: {
     fund_id?: string
     section_id?: string
-    series_id?: number
-    box_number?: number
+    series_id?: string
+    box_id?: string
   }) => Promise<void>
 
   //CREATE MOVEMENT
@@ -781,8 +781,8 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
   type ReorderFilters = {
     fund_id?: string
     section_id?: string
-    series_id?: number
-    box_number?: number
+    series_id?: string
+    box_id?: string
   }
 
   const handleReorderWithFilters = async (filters: ReorderFilters) => {

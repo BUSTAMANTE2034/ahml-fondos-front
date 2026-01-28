@@ -102,7 +102,7 @@ const RecordFilesRow = ({ item: recordFile }: Props) => {
       <span className="text-xs">{invertDate(recordFile.file_date)}</span>
 
       {/* Localidad */}
-      <span className="text-xs text-left hidden lg:block">
+      <span className="text-xs text-left hidden lg:block truncate min-w-0">
         {recordFile.location?.name}
       </span>
 

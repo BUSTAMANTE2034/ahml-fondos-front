@@ -36,7 +36,7 @@ const RecordDiagnosisView = () => {
 const isCreate = Boolean(record_file_id)
 const isEdit = Boolean(record_diagnosis_id)
 const isList = !isCreate && !isEdit
-  // 👉 base dinámica, como antes pero bien
+  // base dinámica, como antes pero bien
   const basePath = location.pathname.split('/record_diagnosis')[0]
 
   const goRecordFiles = () => {
@@ -97,6 +97,7 @@ const isList = !isCreate && !isEdit
       <ShowRecordDiagnosisModal />
       <EditRecordDiagnosisModal/>
       <DeleteRecordDiagnosisModal />
+      
       <RecordDiagnosisPaginator />
     </Card>
   )

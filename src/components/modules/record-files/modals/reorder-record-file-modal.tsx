@@ -1,9 +1,10 @@
 import Modal from '@ui/modal'
 import Loader from '@ui/loader'
 import { useRecordFiles } from '../index/record-file-context'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 
 import {
+  useSearchBoxes,
   useSearchFunds,
   useSearchSections,
   useSearchSeries,
@@ -20,6 +21,12 @@ const ReorderRecordFilesModal = () => {
     loadingReorder,
   } = useRecordFiles()
 
+  useEffect(() => {
+  if (isReorderOpen) {
+    clearAllFilters()
+  }
+}, [isReorderOpen])
+
   // =================================================
   // QUERIES (IGUAL QUE CREATE)
   // =================================================
@@ -27,6 +34,7 @@ const ReorderRecordFilesModal = () => {
   const [sectionQuery, setSectionQuery] = useState<string | undefined>(
     undefined
   )
+  const [boxQuery, setBoxQuery] = useState<string | undefined>(undefined)
   const [seriesQuery, setSeriesQuery] = useState<string | undefined>(undefined)
 
   // =================================================
@@ -35,7 +43,7 @@ const ReorderRecordFilesModal = () => {
   const [fundId, setFundId] = useState<number | null>(null)
   const [sectionId, setSectionId] = useState<number | null>(null)
   const [seriesId, setSeriesId] = useState<number | null>(null)
-  const [boxNumber, setBoxNumber] = useState<string>('')
+  const [boxId, setBoxId] = useState<number | null>(null)
 
   // =================================================
   // LABELS SELECCIONADOS (PARA FILTRO GENERADO)
@@ -43,6 +51,7 @@ const ReorderRecordFilesModal = () => {
   const [fundLabel, setFundLabel] = useState('')
   const [sectionLabel, setSectionLabel] = useState('')
   const [seriesLabel, setSeriesLabel] = useState('')
+  const [boxLabel, setBoxLabel] = useState('')
 
   // =================================================
   // HOOKS SEARCH
@@ -59,6 +68,10 @@ const ReorderRecordFilesModal = () => {
     seriesQuery,
     true
   )
+  const { results: boxResults, loading: boxLoading } = useSearchBoxes(
+    boxQuery,
+    true
+  )
 
   // =================================================
   // VALIDACIONES
@@ -68,34 +81,36 @@ const ReorderRecordFilesModal = () => {
       fundId !== null ||
       sectionId !== null ||
       seriesId !== null ||
-      boxNumber.trim() !== ''
+      boxId !== null 
+      // boxNumber.trim() !== ''
     )
-  }, [fundId, sectionId, seriesId, boxNumber])
+  }, [fundId, sectionId, seriesId, boxId])
 
   const generatedFilter = useMemo(() => {
     const parts = [
       fundLabel,
       sectionLabel,
       seriesLabel,
-      boxNumber ? `C.${boxNumber}` : '',
+      boxLabel ? `C.${boxLabel}` : '',
     ]
     return parts.filter(Boolean).join('-')
-  }, [fundLabel, sectionLabel, seriesLabel, boxNumber])
+  }, [fundLabel, sectionLabel, seriesLabel, boxLabel])
 
   if (!isReorderOpen) return null
 
   // =================================================
   // HANDLERS
   // =================================================
-  const handleFiltered = async () => {
-    await handleReorderWithFilters({
-      fund_id: fundId ? String(fundId) : undefined,
-      section_id: sectionId ? String(sectionId) : undefined,
-      series_id: seriesId ?? undefined,
-      box_number: boxNumber ? Number(boxNumber) : undefined,
-    })
-    closeReorder()
-  }
+ const handleFiltered = async () => {
+  await handleReorderWithFilters({
+    fund_id: fundId ? String(fundId) : undefined,
+    section_id: sectionId ? String(sectionId) : undefined,
+    series_id: seriesId ? String(seriesId) : undefined, 
+    box_id: boxId ? String(boxId) : undefined,
+  })
+  closeReorder()
+}
+
 
   const handleAll = async () => {
     await handleReorderAll()
@@ -106,15 +121,16 @@ const ReorderRecordFilesModal = () => {
     setFundId(null)
     setSectionId(null)
     setSeriesId(null)
-    setBoxNumber('')
-
+    setBoxId(null)
     setFundLabel('')
     setSectionLabel('')
     setSeriesLabel('')
+    setBoxLabel('')
 
     setFundQuery(undefined)
     setSectionQuery(undefined)
     setSeriesQuery(undefined)
+    setBoxQuery(undefined)
   }
 
   // =================================================
@@ -201,7 +217,22 @@ const ReorderRecordFilesModal = () => {
             />
 
             {/* CAJA */}
-            <Input label="No. Caja" value={boxNumber} setter={setBoxNumber} />
+            <AsyncSearchSelect
+              label="Caja"
+              placeholder="Buscar caja…"
+              value={boxId}
+              onChange={(id) => {
+                setBoxId(id)
+                const s = boxResults.find((x) => x.id === id)
+                setBoxLabel(s ? `${s.box_number}` : '')
+              }}
+              onQueryChange={setBoxQuery}
+              results={boxResults.map((s) => ({
+                id: s.id,
+                label: `${s.box_number} — ${s.physical_location?.code || 'Sin ubicación'}`,
+              }))}
+              loading={seriesLoading}
+            />
           </div>
 
           <p className="text-xs text-dark2-gray">

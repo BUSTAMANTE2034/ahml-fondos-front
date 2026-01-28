@@ -1,12 +1,12 @@
-import { useState } from "react"
-import { apiFetch } from "@/lib/types/client"
-import { ApiError } from "@/lib/types/errors"
+import { useState } from 'react'
+import { apiFetch } from '@/lib/types/client'
+import { ApiError } from '@/lib/types/errors'
 
 type ReorderParams = {
   fund_id?: string
   section_id?: string
-  series_id?: number
-  box_number?: number
+  series_id?: string
+  box_id?: string
 }
 
 type ReorderResponse = {
@@ -26,17 +26,14 @@ export const useReorderRecordFiles = () => {
     try {
       const searchParams = new URLSearchParams()
 
-      if (params.fund_id)
-        searchParams.append("fund_id", params.fund_id)
+      if (params.fund_id) searchParams.append('fund_id', params.fund_id)
 
       if (params.section_id)
-        searchParams.append("section_id", params.section_id)
+        searchParams.append('section_id', params.section_id)
 
-      if (typeof params.series_id === "number")
-        searchParams.append("series_id", String(params.series_id))
+      if (params.series_id) searchParams.append('series_id', params.series_id)
 
-      if (typeof params.box_number === "number")
-        searchParams.append("box_number", String(params.box_number))
+      if (params.box_id) searchParams.append('box_id', params.box_id)
 
       const query = searchParams.toString()
       const url = query
@@ -44,13 +41,13 @@ export const useReorderRecordFiles = () => {
         : `/record-files/reorder-by-file-date`
 
       const res = await apiFetch<ReorderResponse>(url, {
-        method: "PUT",
+        method: 'PUT',
       })
 
       return res
     } catch (err: any) {
       if (err instanceof ApiError) setError(err.message)
-      else setError("Error desconocido.")
+      else setError('Error desconocido.')
       throw err
     } finally {
       setLoading(false)

@@ -86,7 +86,7 @@ const Table = () => {
 
         {/* Localidad */}
 
-        <span className="hidden lg:block">Localidad</span>
+        <span className="hidden lg:block ">Localidad</span>
 
         {/* Usuario */}
           <span className="hidden md:block">Usuario</span>
