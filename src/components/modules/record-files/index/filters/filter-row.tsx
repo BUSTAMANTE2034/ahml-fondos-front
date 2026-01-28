@@ -28,6 +28,8 @@ const RecordFileFilterRow = () => {
 
     file_date_after,
     setFileDateAfter,
+    file_date,
+    setFileDate,
   } = useRecordFiles()
 
   return (
@@ -107,7 +109,7 @@ const RecordFileFilterRow = () => {
       </div>
       {/* file_date_after */}
       <div className="">
-        <FilterDateInput value={file_date_after} onChange={setFileDateAfter} />
+        <FilterDateInput value={file_date} onChange={setFileDate} />
       </div>
       {/* location_name */}
       <div className="hidden lg:block">

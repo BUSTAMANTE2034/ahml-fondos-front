@@ -102,6 +102,8 @@ interface ContextValue {
   setFileDateAfter: (v: string | null) => void
   file_date_before: string | null
   setFileDateBefore: (v: string | null) => void
+  file_date: string | null
+  setFileDate: (v: string | null) => void
 
   // order
   order_by: RecordFileOrderByParam | null
@@ -251,6 +253,8 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
     goNext,
     goPrev,
     totalItems,
+    file_date,
+    setFileDate,
 
     query,
     queryInput,
@@ -514,12 +518,12 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
 
   const handleCreate = async (data: CreateRecordFile) => {
     try {
-      await createRecordFile(data)
+      const dat = await createRecordFile(data)
 
       toastSuccess({
         id: 301,
         title: 'Expediente creado',
-        message: 'El expediente fue creado correctamente.',
+        message: `El expediente ${dat.record_file.reference_code} fue creado correctamente.`,
       })
 
       closeCreate()
@@ -581,12 +585,12 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
     ) as UpdateRecordFile
 
     try {
-      await updateRecordFile(selected.id, payload)
-
+      const dat =await updateRecordFile(selected.id, payload)
+      
       toastSuccess({
         id: 303,
         title: 'Expediente actualizado',
-        message: 'El expediente fue actualizado correctamente.',
+        message: `El expediente ${dat.record_file.reference_code} fue actualizado correctamente.`,
       })
 
       closeEdit()
@@ -862,6 +866,8 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
         setFileDateAfter,
         file_date_before,
         setFileDateBefore,
+        file_date,
+        setFileDate,
 
         // orden
         order_by,

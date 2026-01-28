@@ -40,7 +40,7 @@ export const useGetRecordFiles = ({
   // fechas
   initialFileDateAfter = null,
   initialFileDateBefore = null,
-
+initialFileDate= null,
   // ordenamiento
   initialOrderBy = null,
 }: GetRecordFilesOptions = {}) => {
@@ -102,6 +102,7 @@ export const useGetRecordFiles = ({
   // fechas
   const [file_date_after, setFileDateAfter] = useState(initialFileDateAfter)
   const [file_date_before, setFileDateBefore] = useState(initialFileDateBefore)
+  const [file_date, setFileDate] = useState(initialFileDate)
 
   // ordenamiento (incluye los nuevos box_number y file_number)
   const [order_by, setOrderBy] = useState<RecordFileOrderByParam | null>(
@@ -162,6 +163,7 @@ export const useGetRecordFiles = ({
 
     if (file_date_after) params.append('file_date_after', file_date_after)
     if (file_date_before) params.append('file_date_before', file_date_before)
+    if (file_date) params.append('file_date', file_date)
 
     if (order_by) params.append('order_by', order_by)
     if (user_query.trim() !== '')
@@ -213,6 +215,7 @@ export const useGetRecordFiles = ({
 
     file_date_after,
     file_date_before,
+    file_date,
 
     order_by,
   ])
@@ -322,12 +325,17 @@ export const useGetRecordFiles = ({
 
     file_date_after,
     file_date_before,
+    file_date,
     setFileDateAfter: (v: string | null) => {
       setFileDateAfter(v)
       resetPage()
     },
     setFileDateBefore: (v: string | null) => {
       setFileDateBefore(v)
+      resetPage()
+    },
+    setFileDate: (v: string | null) => {
+      setFileDate(v)
       resetPage()
     },
 

@@ -27,7 +27,7 @@ export function messageForStatus(err: ApiError): string {
   const backendMsg = getApiMessage(err);
   switch (err.status) {
     // case 401: return 'No autorizado.';
-    case 403: return 'Permisos denegados.';
+    case 403: return backendMsg || 'Permisos denegados.';
     case 422: return backendMsg || 'Datos inválidos.';
     case 400: return backendMsg || 'Error en la solicitud.';
     default:

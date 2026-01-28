@@ -231,6 +231,7 @@ export interface GetRecordFilesOptions {
   initialAvailabilityStatus?: RecordFileAvailability | 'all'
 
   // fechas documentales
+  initialFileDate?: string | null
   initialFileDateAfter?: string | null
   initialFileDateBefore?: string | null
 
