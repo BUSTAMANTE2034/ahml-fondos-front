@@ -89,6 +89,8 @@ interface ContextValue {
 
   user_query: string
   setUserQuery: (v: string) => void
+  user_query2: string
+  setUserQuery2: (v: string) => void
 
   typology_name: string
   setTypologyName: (v: string) => void
@@ -302,6 +304,7 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
     // ordenamiento
     order_by,
     setOrderBy,
+    user_query2,setUserQuery2,
 
 
     refetch,
@@ -823,6 +826,8 @@ export const RecordFilesProvider = ({ children }: { children: ReactNode }) => {
         totalItems,
         user_query,
         setUserQuery,
+        user_query2,
+        setUserQuery2,
 
         // búsqueda global
         query,

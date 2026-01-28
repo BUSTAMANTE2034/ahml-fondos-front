@@ -44,10 +44,7 @@ const Table = () => {
         </div>
       </CardHeader>
       <div
-        className="grid gap-1  
-  grid-cols-[1.6fr_0.6fr_0.6fr_0.2fr]
-  md:grid-cols-[1fr_0.3fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.2fr]
-  lg:grid-cols-[1fr_0.3fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.3fr_0.2fr]
+        className="grid gap-1  grid-cols-[1.4fr_0.6fr_0.6fr_0.2fr] md:grid-cols-[0.8fr_0.2fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.2fr]   lg:grid-cols-[0.8fr_0.2fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.3fr_0.3fr_0.2fr]
   px-2 pb-1 w-full items-center border-b-2 border-main-blue 
   font-semibold text-sm md:text-base text-left"
       >
@@ -55,6 +52,7 @@ const Table = () => {
         <span>Código</span>
         <span className="hidden md:block">Exp.</span>
         <span className="hidden md:block">Caja</span>
+        
         <span className="hidden md:block">Fondo</span>
         <span className="hidden md:block">Sección</span>
         <span className="hidden md:block">Serie</span>
@@ -62,6 +60,7 @@ const Table = () => {
         <span>Estatus</span>
         <span>Fecha</span>
         <span className="hidden lg:block">Localidad</span>
+        <span className="hidden md:block">Usuario</span>
         <span></span>
 
         {/* FILA DE FILTROS */}

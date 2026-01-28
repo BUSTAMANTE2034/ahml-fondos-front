@@ -47,7 +47,7 @@ const RecordFilesRow = ({ item: recordFile }: Props) => {
 
   return (
     <div
-      className={`grid gap-1  grid-cols-[1.6fr_0.6fr_0.6fr_0.2fr] md:grid-cols-[1fr_0.3fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.2fr]   lg:grid-cols-[1fr_0.3fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.3fr_0.2fr] text-xs md:text-sm  px-2  rounded-2xl   
+      className={`grid gap-1  grid-cols-[1.4fr_0.6fr_0.6fr_0.2fr] md:grid-cols-[0.8fr_0.2fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.2fr]   lg:grid-cols-[0.8fr_0.2fr_0.2fr_0.2fr_0.2fr_0.2fr_0.3fr_0.3fr_0.3fr_0.3fr_0.3fr_0.2fr] text-xs md:text-sm  px-2  rounded-2xl   
     w-full items-center  text-left hover:bg-main-gray  ${
       recordFile.availability_status === 'on_loan' &&
       'bg-yellow-200  hover:bg-yellow-100 '
@@ -59,32 +59,36 @@ const RecordFilesRow = ({ item: recordFile }: Props) => {
       'bg-red-600  hover:bg-red-500  text-white'
     } `}
     >
-      <span className=" text-xs ">{recordFile.reference_code}</span>
-      <span className="text-xs font-medium hidden md:block">
+      <span className=" text-xs text-left">{recordFile.reference_code}</span>
+      <span className="text-xs font-medium hidden md:block text-left">
         {recordFile.file_number}
       </span>
-      <span className="text-xs hidden md:block">
+      <span className="text-xs hidden md:block text-left">
         {recordFile.box.box_number}
       </span>
-      <span className="hidden md:block text-xs">
+
+      <span className="hidden md:block text-xs text-left">
         {recordFile.fund?.acronym}
       </span>
-      <span className=" text-xs hidden md:block">
+      <span className=" text-xs hidden md:block text-left">
         {recordFile.section?.acronym}
       </span>
-      <span className="text-xs hidden md:block">
+      <span className="text-xs hidden md:block text-left">
         {recordFile.series?.acronym}
       </span>
-      <span className="hidden lg:block text-xs">
+      <span className="hidden lg:block text-xs text-left">
         {recordFile.sensitive_data ? 'Delicado' : 'Normal'}
       </span>
 
-      <span className="text-xs">
+      <span className="text-xs text-left">
         {getAvailabilityLabel(recordFile.availability_status)}
       </span>
       <span className="text-xs">{invertDate(recordFile.file_date)}</span>
-      <span className="text-xs hidden lg:block">
+      <span className="text-xs hidden lg:block text-left">
         {recordFile.location?.name}
+      </span>
+       <span className="text-xs hidden md:block text-left ">
+        {recordFile.user?.first_name}
       </span>
       <span className="flex items-center ml-auto">
         <MenuDesplegable

@@ -20,6 +20,7 @@ const RecordFileFilterRow = () => {
     setSeriesName,
     location_name,
     setLocationName,
+    user_query2,setUserQuery2,
 
     sensitive,
     setSensitive,
@@ -62,6 +63,7 @@ const RecordFileFilterRow = () => {
           onChange={setBoxNumber}
         />
       </div>
+      
       {/* fund_name */}
       <div className="hidden md:block ">
         <FilterRowInput
@@ -117,6 +119,14 @@ const RecordFileFilterRow = () => {
           value={location_name}
           placeholder="Localidad..."
           onChange={setLocationName}
+        />
+      </div>
+      {/* Usuario*/}
+       <div className="hidden md:block ">
+        <FilterRowInput
+          value={user_query2}
+          placeholder="Usuario..."
+          onChange={setUserQuery2}
         />
       </div>
       <span></span>

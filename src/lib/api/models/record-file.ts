@@ -208,6 +208,7 @@ export interface GetRecordFilesOptions {
 
   // búsqueda global
   initialQuery?: string
+  initialUserQuery2?: string
 
   // filtros directos
   initialReferenceCode?: string

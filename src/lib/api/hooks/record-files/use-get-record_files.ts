@@ -19,6 +19,7 @@ export const useGetRecordFiles = ({
   // filtros directos
   initialReferenceCode = '',
   initialUserQuery = '',
+  initialUserQuery2 = '',
   initialPreviousReferenceCode = '',
   initialFileNumber = '',
   initialBoxNumber = '',
@@ -92,6 +93,7 @@ initialFileDate= null,
     initialDeteriorationName
   )
   const [user_query, setUserQuery] = useState(initialUserQuery)
+  const [user_query2, setUserQuery2] = useState(initialUserQuery2)
   const [typology_name, setTypologyName] = useState(initialTypologyName)
 
   // disponibilidad
@@ -168,6 +170,8 @@ initialFileDate= null,
     if (order_by) params.append('order_by', order_by)
     if (user_query.trim() !== '')
       params.append('user_query', user_query.trim())
+    if (user_query2.trim() !== '')
+      params.append('user_query2', user_query2.trim())
 
     const url = `/record-files?${params.toString()}`
 
@@ -200,6 +204,7 @@ initialFileDate= null,
     previous_reference_code,
     file_number,
     box_number,
+    user_query2,
 
     sensitive,
 
@@ -261,6 +266,11 @@ initialFileDate= null,
     user_query,
     setUserQuery: (v: string) => {
       setUserQuery(v)
+      resetPage()
+    },
+    user_query2,
+    setUserQuery2: (v: string) => {
+      setUserQuery2(v)
       resetPage()
     },
     file_number,
